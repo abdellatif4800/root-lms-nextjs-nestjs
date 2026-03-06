@@ -1,150 +1,175 @@
 "use client";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
-import { ThemeToggle } from "./ThemeToggle"; // Adjust path if necessary
+import { UserMenu, ThemeToggle } from "@repo/ui";
+import { RootState, toggleAuthModal, useAppDispatch, useAppSelector } from "@repo/reduxSetup";
 
-// --- Sub-Component: User Dropdown (Logged In State) ---
-const UserMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+// Derive a readable page name from the pathname
+function getPageLabel(pathname: string): { section: string; page: string } {
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts.length === 0) return { section: "SYS_ADMIN", page: "Dashboard" };
+  const section = parts[0].toUpperCase();
+  const page = parts[parts.length - 1]
+    .replace(/([A-Z])/g, "_$1")
+    .replace(/-/g, "_")
+    .toUpperCase();
+  return { section, page };
+}
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  return (
-    <div className="relative" ref={menuRef}>
-      {/* Trigger Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`
-          flex items-center gap-2 px-3 py-1.5 border transition-all duration-200
-          text-[10px] font-bold uppercase tracking-wider
-          ${isOpen
-            ? "border-teal-glow text-teal-glow bg-surface-900 shadow-[0_0_10px_rgba(45,212,191,0.2)]"
-            : "border-surface-700 text-secondary hover:text-white hover:border-surface-600"
-          }
-        `}
-      >
-        <div className="w-2 h-2 bg-emerald-glow animate-pulse" /> {/* Online Status Dot */}
-        <span>User_01</span>
-        <span className="text-[8px] opacity-60 ml-1">{isOpen ? "▲" : "▼"}</span>
-      </button>
-
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div
-          className="absolute right-0 top-full mt-2 w-48 bg-surface-900 border border-surface-700 z-50 flex flex-col shadow-xl"
-          style={{ boxShadow: '4px 4px 0px rgba(0,0,0,0.5)' }}
-        >
-          {/* Menu Header */}
-          <div className="px-4 py-2 border-b border-surface-800 bg-surface-950/50">
-            <span className="text-[9px] text-teal-glow font-digital opacity-80">ACCESS_LEVEL: ADMIN</span>
-          </div>
-
-          {/* Menu Items */}
-          <Link href="/profile" className="px-4 py-3 text-xs text-secondary hover:bg-surface-800 hover:text-white transition-colors border-l-2 border-transparent hover:border-purple-glow text-left flex items-center group">
-            <span className="opacity-0 group-hover:opacity-100 mr-2 text-purple-glow">{">"}</span>
-            Profile_Config
-          </Link>
-          <Link href="/settings" className="px-4 py-3 text-xs text-secondary hover:bg-surface-800 hover:text-white transition-colors border-l-2 border-transparent hover:border-purple-glow text-left flex items-center group">
-            <span className="opacity-0 group-hover:opacity-100 mr-2 text-purple-glow">{">"}</span>
-            System_Settings
-          </Link>
-
-          <div className="border-t border-surface-800 my-1"></div>
-
-          <button
-            onClick={() => console.log("Logout")}
-            className="px-4 py-3 text-xs text-red-400 hover:bg-red-950/20 hover:text-red-300 transition-colors border-l-2 border-transparent hover:border-red-500 text-left flex items-center group w-full"
-          >
-            <span className="opacity-0 group-hover:opacity-100 mr-2 text-red-500">{">"}</span>
-            Terminate_Session
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// --- Main Navbar Component ---
 export const Navbar = () => {
   const pathname = usePathname();
-
-  // MOCK STATE: Change this to true/false to see both states
-  const isLoggedIn = true;
+  const dispatch = useAppDispatch();
+  const { user, isAuth } = useAppSelector((state: RootState) => state.authSlice);
+  const { section, page } = getPageLabel(pathname);
 
   return (
-    <nav className="w-full lg:w-[85%] max-w-7xl mx-auto flex flex-row items-center justify-between font-digital tracking-widest py-3 px-4">
+    <header
+      className="h-14 shrink-0 bg-surface-900/80 border border-surface-800 border-b-2 border-b-teal-glow relative flex items-center justify-between px-5 backdrop-blur-sm"
+      style={{ boxShadow: "4px 4px 0px var(--surface-800)" }}
+    >
+      {/* Scanline */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.03] z-0"
+        style={{
+          background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.4) 2px, rgba(0,0,0,0.4) 4px)"
+        }}
+      />
 
-      {/* 1. Logo Section */}
-      <Link href="/" className="group flex items-center gap-2">
-        <div className="h-6 w-1 bg-teal-glow group-hover:bg-emerald-glow transition-colors shadow-[0_0_8px_var(--teal-glow)]" />
-        <h1 className="text-lg font-black uppercase flex items-center">
-          <span className="text-primary group-hover:text-white transition-colors">
-            Root_LMS
-          </span>
-          <span className="text-teal-glow ml-1 text-xs animate-pulse">_</span>
-        </h1>
-      </Link>
+      {/* Corner accents */}
+      <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l border-teal-glow/50 pointer-events-none z-10" />
+      <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-surface-700 pointer-events-none z-ROOT10" />
 
-      {/* 2. Navigation Links (Slim & Centered) */}
-      <div className="hidden md:flex items-center gap-8 border-x border-surface-800 px-8 h-6">
-        {["Tutorials", "Courses", "Community"].map((item) => {
-          const href = `/${item.toLowerCase()}`;
-          const isActive = pathname === href;
+      {/* ── LEFT: Breadcrumb ── */}
+      <div className="relative z-20 flex items-center gap-2.5">
+        {/* Teal left accent bar */}
+        <div className="w-0.5 h-5 bg-teal-glow" style={{ boxShadow: "0 0 6px var(--shadow-teal)" }} />
 
-          return (
-            <Link
-              key={item}
-              href={href}
-              className={`
-                text-[11px] font-bold uppercase transition-all flex items-center
-                ${isActive
-                  ? "text-purple-glow drop-shadow-[0_0_5px_rgba(168,85,247,0.6)]"
-                  : "text-secondary hover:text-white"
-                }
-              `}
+        <div className="flex flex-col gap-0">
+          {/* Breadcrumb path */}
+          <div className="flex items-center gap-1.5 leading-none">
+            <span
+              className="text-[10px] font-digital font-black text-teal-glow uppercase tracking-wider"
+              style={{ textShadow: "0 0 8px var(--shadow-teal)" }}
             >
-              {isActive && <span className="mr-1.5 text-purple-glow">{">"}</span>}
-              {item}
-            </Link>
-          );
-        })}
+              {section}
+            </span>
+            <span className="text-surface-700 text-[10px]">/</span>
+            <span className="text-[10px] font-digital font-black text-text-primary uppercase tracking-wider">
+              {page}
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* 3. Action Section (Theme & User) */}
-      <div className="flex items-center gap-4">
+      {/* ── RIGHT: Actions ── */}
+      <div className="relative z-20 flex items-center gap-4">
 
-        {/* Theme Toggle (Assuming it's an icon button) */}
-        <div className="opacity-80 hover:opacity-100 transition-opacity">
-          <ThemeToggle />
+        {/* Status */}
+        <div className="hidden md:flex items-center gap-2 border border-surface-700 px-2.5 py-1"
+          style={{ clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px))" }}
+        >
+          <span className="w-1.5 h-1.5 bg-emerald-glow animate-pulse" style={{ boxShadow: "0 0 5px var(--shadow-emerald)" }} />
+          <span className="text-[8px] font-terminal uppercase tracking-[0.2em] text-text-secondary">
+            <span className="text-emerald-glow font-bold">ONLINE</span>
+          </span>
         </div>
 
-        {/* Separator */}
-        <div className="h-4 w-[1px] bg-surface-800 hidden sm:block" />
+        <div className="h-4 w-px bg-surface-700" />
 
-        {/* User Auth State */}
-        {isLoggedIn ? (
+        {/* Theme Toggle */}
+        <ThemeToggle />
+
+        <div className="h-4 w-px bg-surface-700" />
+
+        {/* Auth */}
+        {isAuth ? (
           <UserMenu />
         ) : (
           <button
             type="button"
-            className="bg-emerald-glow text-surface-950 text-[10px] font-black uppercase px-5 py-1.5 hover:bg-white hover:text-black transition-all active:translate-y-[1px]"
-            style={{ boxShadow: '3px 3px 0px rgba(16, 185, 129, 0.2)' }}
+            className="
+              relative group overflow-hidden
+              bg-transparent border border-emerald-glow/60
+              text-emerald-glow text-[9px] font-digital font-black uppercase tracking-[0.2em]
+              px-4 py-1.5
+              hover:text-black transition-colors duration-200 active:scale-95
+            "
+            style={{ clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))" }}
+            onClick={() => dispatch(toggleAuthModal())}
           >
-            _INIT_LOGIN
+            <span className="absolute inset-0 bg-emerald-glow translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-200 z-0" />
+            <span className="relative z-10">_INIT_LOGIN</span>
           </button>
         )}
       </div>
-    </nav>
+    </header>
   );
 };
+
+
+// "use client";
+// import { usePathname } from "next/navigation";
+// import { useState, useRef, useEffect } from "react";
+// import { UserMenu, ThemeToggle } from "@repo/ui"; // Adjust path if necessary
+// import { RootState, toggleAuthModal, useAppDispatch, useAppSelector } from "@repo/reduxSetup";
+//
+//
+// export const Navbar = () => {
+//   const pathname = usePathname();
+//   const dispatch = useAppDispatch()
+//   const { user, isAuth } = useAppSelector((state: RootState) => state.authSlice)
+//
+//   return (
+//
+//     <header
+//       className="
+//             h-16 mb-4 shrink-0
+//             bg-surface-900 
+//             border border-surface-800 
+//             border-b-2 border-b-teal-glow
+//             relative flex items-center justify-between px-6
+//           "
+//       style={{ boxShadow: '4px 4px 0px var(--surface-800)' }}
+//     >
+//       {/* Header Scanline Overlay */}
+//       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] z-10 opacity-50" />
+//
+//       {/* Left: Breadcrumbs / Title (Z-20 to sit above scanlines) */}
+//       <div className="relative z-20 flex items-center gap-2">
+//         <span className="text-purple-glow font-digital text-sm tracking-wider">SYS_ADMIN</span>
+//         <span className="text-surface-700">/</span>
+//         <span className="text-white text-xs font-bold uppercase tracking-widest">Dashboard</span>
+//       </div>
+//
+//       {/* Right: Actions (Theme Toggle, User Profile) */}
+//       <div className="relative z-20 flex items-center gap-6">
+//         {/* Status Indicator */}
+//         <div className="hidden md:flex items-center gap-2 text-[10px] font-mono uppercase">
+//           <span className="text-text-secondary">Sys_Status:</span>
+//           <span className="text-emerald-glow animate-pulse">Online</span>
+//         </div>
+//
+//         <div className="h-4 w-[1px] bg-surface-700"></div>
+//
+//         {/* Theme Toggle Button */}
+//         <ThemeToggle />
+//
+//         {/* Simple User Badge */}
+//         {
+//           isAuth ? (
+//             < UserMenu />
+//           ) : (
+//             <button
+//               type="button"
+//               className="bg-emerald-glow text-surface-950 text-[10px] font-black uppercase px-5 py-1.5 hover:bg-white hover:text-black transition-all active:translate-y-[1px]"
+//               style={{ boxShadow: '3px 3px 0px rgba(16, 185, 129, 0.2)' }}
+//               onClick={() => dispatch(toggleAuthModal())}
+//             >
+//               _INIT_LOGIN
+//             </button>
+//           )
+//         }
+//       </div>
+//     </header>
+//
+//   );
+// };
+//
