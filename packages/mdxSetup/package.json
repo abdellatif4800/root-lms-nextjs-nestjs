@@ -1,0 +1,38 @@
+{
+  "name": "@repo/mdxSetup",
+  "version": "0.0.0",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./styles.css": "./src/styles.css"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build:mdxSetup": "tsc",
+    "check-types": "tsc --noEmit",
+    "dev:mdxSetup": "tsc --watch",
+    "lint": "eslint src --max-warnings 0"
+  },
+  "peerDependencies": {
+    "@mdxeditor/editor": "^3.52.3",
+    "radix-ui": "^1.4.3",
+    "@mdx-js/mdx": "^3.1.1",
+    "next-mdx-remote": "^6.0.0",
+    "@repo/gql":"workspace:*",
+    "react": "*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "*",
+    "@types/react": "*",
+    "typescript": "*"
+  },
+  "dependencies": {
+  }
+}
