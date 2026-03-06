@@ -1,10 +1,15 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { tutorials } from "../dummyTutorials";
-import { gql } from "@apollo/client";
-import TutorialViewer from "./TutorialViewr";
-import { ApolloProviderWrapper, createServerApolloClient, GET_TUTORIAL } from "@repo/gql";
+import { ContentArea, UnitsList } from "@repo/ui";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+  getTutorialById,
+  getUnitsByTutorialId,
+  getAllUnitProgressByTutorialAndUser,
+
+} from "@repo/gql";
 import { log } from "console";
+
 
 interface PageProps {
   tutorialId: Promise<{ tutorialId: string }>;
@@ -14,23 +19,40 @@ interface PageProps {
 export default async function TutorialPage({ params }: PageProps) {
   const resolvedParams = await params
 
-  const client = createServerApolloClient("user");
-  await client.query({
-    query: GET_TUTORIAL,
-    variables: { ID: resolvedParams.tutorialId },
-    context: {
-      headers: {
-        Authorization: `Bearer ...`,
-        Cookie: "sessionId=abcd1234",
-      },
-    },
+  const queryClient = new QueryClient()
+
+
+  const tutorialId = resolvedParams.tutorialId;
+  const userId = "c3b67ca3-44a1-4f05-a511-980758b24176"
+
+  await queryClient.prefetchQuery({
+    queryKey: ['tutorialById'],
+    queryFn: () => getUnitsByTutorialId(tutorialId),
+  })
+
+  await queryClient.prefetchQuery({
+    queryKey: ['unitProgress', userId, tutorialId],
+    queryFn: () =>
+      getAllUnitProgressByTutorialAndUser(userId, tutorialId),
   });
 
-  const initialApolloState = client.cache.extract(); // cache to hydrate client
+  const tutorialData = queryClient.getQueryData(['tutorialById']);
 
   return (
-    <ApolloProviderWrapper initialApolloState={initialApolloState} role="user">
-      <TutorialViewer tutorialId={resolvedParams.tutorialId} />
-    </ApolloProviderWrapper>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+
+      {/* Tutorial page wrapper — drop-in replacement for the inline div */}
+      <div className="
+  h-full w-full bg-surface-950
+  flex gap-4 overflow-hidden
+  font-terminal text-text-primary min-h-0
+
+" >
+        <UnitsList firstUnit={tutorialData.units[0].id} />
+
+
+        <ContentArea tutorialData={tutorialData} />
+      </div>
+    </HydrationBoundary>
   );
 }

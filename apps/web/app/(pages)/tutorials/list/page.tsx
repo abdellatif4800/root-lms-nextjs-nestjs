@@ -1,22 +1,26 @@
-import { GET_TUTORIALS_LIST, ApolloProviderWrapper, createServerApolloClient } from "@repo/gql";
-import TutorialsPage from "./TutorialsPage";
+import {
+  getTutorials,
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
 
+} from "@repo/gql";
+import { TutorialsPage } from "@repo/ui"
 
 export default async function TutorialsListPage() {
-  const client = createServerApolloClient("user");
 
-  await client.query({
-    query: GET_TUTORIALS_LIST,
-    variables: {
-      Filters: {}
-    }
-  });
+  const queryClient = new QueryClient()
 
-  const initialApolloState = client.cache.extract(); // cache to hydrate client
+  await queryClient.prefetchQuery({
+    queryKey: ['tutorials'],
+    queryFn: () => getTutorials({ publish: true }),
+  })
+
 
   return (
-    <ApolloProviderWrapper initialApolloState={initialApolloState} role="user">
-      <TutorialsPage />
-    </ApolloProviderWrapper>
+
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <TutorialsPage isPublic={true} />
+    </HydrationBoundary>
   );
 }
