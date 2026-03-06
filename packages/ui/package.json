@@ -4,12 +4,12 @@
   "sideEffects": [
     "**/*.css"
   ],
-  "files": [
-    "dist"
-  ],
   "exports": {
-    "./styles.css": "./dist/index.css",
-    "./*": "./dist/*.js"
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./styles.css": "./dist/index.css"
   },
   "license": "MIT",
   "scripts": {
@@ -21,16 +21,49 @@
     "lint": "eslint src --max-warnings 0"
   },
   "peerDependencies": {
-    "react": "^19"
+    "flowbite": "^4.0.1",
+    "flowbite-react": "^0.12.16",
+    "@repo/gql": "workspace:*",
+    "@repo/reduxSetup": "workspace:*",
+    "@repo/mdxSetup": "workspace:*",
+    "@repo/reactFlowSetup": "workspace:*",
+    "@tiptap/extension-bold": "^3.16.0",
+    "@tiptap/extension-code-block": "^3.16.0",
+    "@tiptap/extension-code-block-lowlight": "^3.17.1",
+    "@tiptap/extension-details": "^3.17.1",
+    "@tiptap/extension-emoji": "^3.17.1",
+    "@tiptap/extension-hard-break": "^3.17.1",
+    "@tiptap/extension-heading": "^3.17.1",
+    "@tiptap/extension-horizontal-rule": "^3.17.1",
+    "@tiptap/extension-image": "^3.17.1",
+    "@tiptap/extension-link": "^3.17.1",
+    "@tiptap/extension-list": "^3.17.1",
+    "@tiptap/extension-mathematics": "^3.17.1",
+    "@tiptap/extension-mention": "^3.17.1",
+    "@tiptap/extension-placeholder": "^3.17.1",
+    "@tiptap/extension-table": "^3.17.1",
+    "@tiptap/extension-text": "^3.17.1",
+    "@tiptap/extension-text-style": "^3.17.1",
+    "@tiptap/extension-underline": "^3.16.0",
+    "@tiptap/extension-youtube": "^3.17.1",
+    "@tiptap/extensions": "^3.17.1",
+    "@tiptap/pm": "^3.16.0",
+    "@tiptap/react": "^3.16.0",
+    "@tiptap/starter-kit": "^3.16.0",
+    "katex": "^0.16.28",
+    "next-themes": "*",
+    "next": "*",
+    "react": "*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/cli": "^4.1.5",
-    "@types/react": "^19.1.0",
+    "@types/node": "*",
+    "@types/react": "*",
     "eslint": "^9.39.1",
-    "tailwindcss": "^4.1.5",
-    "typescript": "5.9.2"
+    "tailwindcss": "*",
+    "typescript": "*"
   }
 }
