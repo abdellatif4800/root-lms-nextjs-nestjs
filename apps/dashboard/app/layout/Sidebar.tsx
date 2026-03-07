@@ -114,7 +114,7 @@ export default function Sidebar() {
           </div>
           <div className={`flex flex-col gap-0 overflow-hidden transition-all duration-300 ${isOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
             <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-40 leading-none whitespace-nowrap">
-              // ACCESS::GRANTED
+              {"// ACCESS::GRANTED"}
             </span>
             <Link href="/" className="text-[11px] font-digital font-black text-teal-glow uppercase tracking-wider hover:text-white transition-colors leading-tight whitespace-nowrap"
               style={{ textShadow: "0 0 8px var(--shadow-teal)" }}

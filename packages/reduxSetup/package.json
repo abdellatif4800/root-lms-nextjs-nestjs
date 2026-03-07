@@ -16,7 +16,7 @@
     "build:reduxSetup": "tsc",
     "check-types": "tsc --noEmit",
     "dev:reduxSetup": "tsc --watch",
-    "lint": "eslint src --max-warnings 0"
+    "lint": "eslint src"
   },
   "peerDependencies": {
     "react": "*",

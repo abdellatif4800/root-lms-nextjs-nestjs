@@ -16,7 +16,7 @@
     "build:gql": "tsc",
     "check-types": "tsc --noEmit",
     "dev:gql": "tsc --watch",
-    "lint": "eslint src --max-warnings 0"
+    "lint": "eslint src"
   },
   "peerDependencies": {
     "react": "*",

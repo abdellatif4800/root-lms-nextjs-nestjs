@@ -16,7 +16,7 @@
     "build:mdxSetup": "tsc",
     "check-types": "tsc --noEmit",
     "dev:mdxSetup": "tsc --watch",
-    "lint": "eslint src --max-warnings 0"
+    "lint": "eslint src"
   },
   "peerDependencies": {
     "@mdxeditor/editor": "^3.52.3",

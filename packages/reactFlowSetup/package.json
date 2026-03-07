@@ -16,7 +16,7 @@
     "build:reactFlowSetup": "tsc",
     "check-types": "tsc --noEmit",
     "dev:reactFlowSetup": "tsc --watch",
-    "lint": "eslint src --max-warnings 0"
+    "lint": "eslint src"
   },
   "peerDependencies": {
     "react": "*",

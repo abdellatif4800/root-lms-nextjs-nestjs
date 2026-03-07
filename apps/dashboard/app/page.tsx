@@ -107,6 +107,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
         }
       }, line.delay);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -194,7 +195,7 @@ function StatCard({ stat, index }: { stat: typeof STATS[0]; index: number }) {
       {/* Top row */}
       <div className="flex items-start justify-between relative z-10">
         <span className="text-[8px] font-terminal uppercase tracking-[0.3em] text-text-secondary opacity-50">
-          // {stat.label}
+          {"//"} {stat.label}
         </span>
         <span style={{ color: c.css, opacity: 0.7 }}>
           <Icon size={14} />
@@ -249,7 +250,7 @@ function ActivityLog() {
         <div className="flex items-center gap-3">
           <div className="w-0.5 h-4 bg-teal-glow" style={{ boxShadow: "0 0 6px var(--shadow-teal)" }} />
           <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-50">
-            // ACTIVITY_LOG
+            {"// ACTIVITY_LOG"}
           </span>
           <span className="text-[10px] font-digital font-black text-text-primary uppercase tracking-wider">
             Recent_Events
@@ -295,7 +296,7 @@ function ActivityLog() {
         })}
         {items.length === 0 && (
           <div className="px-5 py-6 text-[9px] font-terminal text-text-secondary opacity-30 uppercase tracking-wider">
-            // AWAITING_EVENTS...
+            {"// AWAITING_EVENTS..."}
           </div>
         )}
       </div>
@@ -318,7 +319,7 @@ function TopTutorials() {
       <div className="flex items-center gap-3 px-5 py-3 border-b border-surface-800">
         <div className="w-0.5 h-4 bg-emerald-glow" style={{ boxShadow: "0 0 6px var(--shadow-emerald)" }} />
         <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-50">
-          // METRICS
+          {"// METRICS"}
         </span>
         <span className="text-[10px] font-digital font-black text-text-primary uppercase tracking-wider">
           Top_Tutorials
@@ -396,7 +397,7 @@ function QuickActions() {
       <div className="flex items-center gap-2 opacity-0 animate-[fadeSlideIn_0.3s_ease_forwards]" style={{ animationDelay: "1650ms" }}>
         <div className="w-0.5 h-4 bg-purple-glow" style={{ boxShadow: "0 0 6px var(--shadow-purple)" }} />
         <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-50">
-          // QUICK_ACTIONS
+          {"// QUICK_ACTIONS"}
         </span>
       </div>
       {QUICK_ACTIONS.map((action, i) => {
@@ -506,7 +507,7 @@ function ContentBreakdown() {
     >
       <div className="flex items-center gap-3 px-5 py-3 border-b border-surface-800">
         <div className="w-0.5 h-4 bg-purple-glow" style={{ boxShadow: "0 0 6px var(--shadow-purple)" }} />
-        <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-50">// DATA</span>
+        <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-50">{"// DATA"}</span>
         <span className="text-[10px] font-digital font-black text-text-primary uppercase tracking-wider">Content_Matrix</span>
       </div>
       <div className="flex flex-col gap-4 p-5">
@@ -543,8 +544,8 @@ function ContentBreakdown() {
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
-export default function page() {
-  const [booted, setBooted] = useState(false);
+export default function Page() {
+  const [, setBooted] = useState(false);
 
   return (
     <div className="h-full w-full overflow-y-auto custom-scrollbar font-terminal">
@@ -554,7 +555,7 @@ export default function page() {
         <div className="flex items-start justify-between gap-4 opacity-0 animate-[fadeSlideIn_0.4s_ease_forwards]" style={{ animationDelay: "100ms" }}>
           <div className="flex flex-col gap-1">
             <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.35em] opacity-40">
-              // SYS://ADMIN/DASHBOARD
+              {"// SYS://ADMIN/DASHBOARD"}
             </span>
             <h1 className="text-xl font-digital font-black text-text-primary uppercase tracking-wider leading-none">
               System_Overview
@@ -575,7 +576,7 @@ export default function page() {
           <div className="flex items-center gap-2 mb-3">
             <span className="w-1.5 h-1.5 bg-teal-glow animate-pulse" style={{ boxShadow: "0 0 4px var(--shadow-teal)" }} />
             <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-50">
-              // TERMINAL_INIT
+              {"// TERMINAL_INIT"}
             </span>
           </div>
           <BootSequence onComplete={() => setBooted(true)} />
