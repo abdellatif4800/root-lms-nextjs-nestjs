@@ -1,5 +1,11 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Node, Edge } from "@xyflow/react";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type Node, type Edge } from "@xyflow/react";
+
+// 1. Extend Record<string, unknown> to satisfy XYFlow v12
+export interface TutorialNodeData extends Record<string, unknown> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tutorial: any;
+}
 
 interface RoadmapState {
   nodes: Node[];
@@ -13,87 +19,87 @@ const initialState: RoadmapState = {
   currentNode: null,
 };
 
-interface TutorialNodeData {
-  tutorial: any; // You can type this more strictly if you have a Tutorial type
-}
+export const roadmapSlice = createSlice({
+  name: "roadmaps",
+  initialState,
+  reducers: {
+    addTutorialNode: (state, action: PayloadAction<{ tutorial: any; position?: { x: number; y: number } }>) => {
+      const id = `t${state.nodes.length + 1}`;
+      const newNode: Node<TutorialNodeData> = {
+        id,
+        type: "tutorial",
+        position: action.payload.position || { x: 100, y: 100 },
+        data: { tutorial: action.payload.tutorial },
+      };
 
-export const roadmapSlice = createSlice(
-  {
-    name: "roadmaps",
-    initialState,
-    reducers: {
-
-      addTutorialNode: (state, action: PayloadAction<{ tutorial: any; position?: { x: number; y: number } }>) => {
-        const id = `t${state.nodes.length + 1}`;
-        const newNode: Node<TutorialNodeData> = {
-          id,
-          type: "tutorial", // use this in React Flow
-          position: action.payload.position || { x: 100, y: 100 },
-          data: { tutorial: action.payload.tutorial },
-        };
-        state.nodes.push(newNode)
-        state.currentNode = newNode;
-        console.log("newNode", newNode);
-
-      },
-
-
-      // Update a node by ID
-      updateNode: (state, action: PayloadAction<{ id: string; changes: Partial<Node> }>) => {
-        const index = state.nodes.findIndex(n => n.id === action.payload.id);
-        if (index !== -1) {
-          state.nodes[index] = { ...state.nodes[index], ...action.payload.changes };
-          if (state.currentNode?.id === action.payload.id) {
-            state.currentNode = state.nodes[index]; // sync selected node
-          }
-        }
-
-      },
-
-      // Set current node
-      setCurrentNode: (state, action: PayloadAction<Node | null>) => {
-        state.currentNode = action.payload;
-      },
-
-      // Remove node
-      removeNode: (state, action: PayloadAction<string>) => {
-        state.nodes = state.nodes.filter(n => n.id !== action.payload);
-        if (state.currentNode?.id === action.payload) state.currentNode = null;
-        state.edges = state.edges.filter(e => e.source !== action.payload && e.target !== action.payload);
-      },
-
-      // Add edge
-      addEdge: (state, action: PayloadAction<Edge>) => {
-        state.edges.push(action.payload);
-        console.log(state.edges);
-
-      },
-
-      // Update edges if needed
-      setEdges: (state, action: PayloadAction<Edge[]>) => {
-        state.edges = action.payload;
-      },
-      setNodes: (state, action: PayloadAction<Node[]>) => {
-        state.nodes = action.payload;
-        state.currentNode = null;
-      },
-      updateEdge: (state, action: PayloadAction<{ id: string; changes: Partial<Edge> }>) => {
-        const index = state.edges.findIndex(e => e.id === action.payload.id);
-        if (index !== -1) {
-          state.edges[index] = { ...state.edges[index], ...action.payload.changes };
-        }
-      },
-
-      removeEdge: (state, action: PayloadAction<string>) => {
-        state.edges = state.edges.filter(e => e.id !== action.payload);
-      }
-
-
+      // Bypassing Immer's deeply nested WritableDraft inference limits
+      state.nodes.push(newNode as any);
+      state.currentNode = newNode as any;
     },
-  }
-)
+
+    // 2. Added the missing addNode reducer
+    addNode: (state, action: PayloadAction<Node>) => {
+      state.nodes.push(action.payload as any);
+    },
+
+    updateNode: (state, action: PayloadAction<{ id: string; changes: Partial<Node> }>) => {
+      const index = state.nodes.findIndex(n => n.id === action.payload.id);
+      if (index !== -1) {
+        // Cast the merged result to avoid Partial<Node> optional 'id' errors
+        state.nodes[index] = { ...state.nodes[index], ...action.payload.changes } as any;
+        if (state.currentNode?.id === action.payload.id) {
+          state.currentNode = state.nodes[index] as any;
+        }
+      }
+    },
+
+    setCurrentNode: (state, action: PayloadAction<Node | null>) => {
+      state.currentNode = action.payload as any;
+    },
+
+    removeNode: (state, action: PayloadAction<string>) => {
+      state.nodes = state.nodes.filter(n => n.id !== action.payload) as any;
+      if (state.currentNode?.id === action.payload) state.currentNode = null;
+      state.edges = state.edges.filter(e => e.source !== action.payload && e.target !== action.payload) as any;
+    },
+
+    addEdge: (state, action: PayloadAction<Edge>) => {
+      state.edges.push(action.payload as any);
+    },
+
+    setEdges: (state, action: PayloadAction<Edge[]>) => {
+      state.edges = action.payload as any;
+    },
+
+    setNodes: (state, action: PayloadAction<Node[]>) => {
+      state.nodes = action.payload as any;
+      state.currentNode = null;
+    },
+
+    updateEdge: (state, action: PayloadAction<{ id: string; changes: Partial<Edge> }>) => {
+      const index = state.edges.findIndex(e => e.id === action.payload.id);
+      if (index !== -1) {
+        state.edges[index] = { ...state.edges[index], ...action.payload.changes } as any;
+      }
+    },
+
+    removeEdge: (state, action: PayloadAction<string>) => {
+      state.edges = state.edges.filter(e => e.id !== action.payload) as any;
+    }
+  },
+});
 
 export const {
-  addTutorialNode, addNode, updateNode, removeNode, setCurrentNode, addEdge, setEdges, setNodes, updateEdge, removeEdge
-} = roadmapSlice.actions
-export default roadmapSlice.reducer
+  addTutorialNode,
+  addNode,
+  updateNode,
+  removeNode,
+  setCurrentNode,
+  addEdge,
+  setEdges,
+  setNodes,
+  updateEdge,
+  removeEdge
+} = roadmapSlice.actions;
+
+export default roadmapSlice.reducer;
