@@ -1,4 +1,18 @@
-export function AuthInput({ label, type, placeholder }: { label: string, type: string, placeholder: string }) {
+import React from "react";
+
+export function AuthInput({
+  label,
+  type,
+  placeholder,
+  value, // NEW: Accepts the current text
+  onChange // NEW: Accepts the function to update the text
+}: {
+  label: string,
+  type: string,
+  placeholder: string,
+  value: string,
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}) {
   return (
     <div className="flex flex-col gap-1 mb-4">
       <label className="text-[10px] uppercase font-bold text-text-secondary tracking-wider pl-1">{label}</label>
@@ -6,6 +20,8 @@ export function AuthInput({ label, type, placeholder }: { label: string, type: s
         <input
           type={type}
           placeholder={placeholder}
+          value={value} // Hooked up to parent state
+          onChange={onChange} // Fires when user types
           className="
           w-full bg-surface-950 border border-surface-700 text-text-primary text-xs font-mono p-3
           focus:outline-none focus:border-teal-glow focus:ring-1 focus:ring-teal-glow/50

@@ -11,8 +11,31 @@ const publicApi = process.env.NEXT_PUBLIC_GRAPHQL || ''
 const adminApi = process.env.NEXT_PUBLIC_ADMIN_GRAPHQL || ''
 
 
+export async function REGISTER(userData: { email: string, password: string }) {
+  return publicApiClient.request(
+    gql`
+mutation Users($userData: CreateUserInput!) {
+  registerUser(createUserInput: $userData) {
+    id
+    email
+    username
+  }
+}
+    `,
+    {
+      userData: userData
+    }
+  ).then(res => {
+    return res.user_signin
+  }
+  )
+}
 
-export function SIGNIN(userData: { email: string, password: string }) {
+
+
+
+
+export async function SIGNIN(userData: { email: string, password: string }) {
   return publicApiClient.request(
     gql`
 mutation Users($userData: FindUserInput!) {

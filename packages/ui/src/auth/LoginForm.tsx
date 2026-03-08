@@ -4,12 +4,16 @@ import { AuthInput } from "./AuthInput";
 import { publicApiClient, SIGNIN, useMutation, useQuery, getMe } from "@repo/gql"
 import { RootState, setAuthUser, toggleAuthModal, useAppDispatch, useAppSelector, useDispatch } from "@repo/reduxSetup";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function LoginForm() {
   const dispatch = useAppDispatch()
   const { redirect } = useAppSelector((state: RootState) => state.authSlice);
 
   const router = useRouter()
+
+  const [email, setEmail] = useState("test@mail.com");
+  const [password, setPassword] = useState("pass123");
 
   const meQuery = useQuery({
     queryKey: ['me'],
@@ -33,9 +37,7 @@ export function LoginForm() {
   })
 
   const handleSignin = async () => {
-    mutation.mutate(
-      { email: 'asd1243', password: 'asd' }
-    )
+    mutation.mutate({ email, password });
   }
 
   return (
@@ -44,8 +46,20 @@ export function LoginForm() {
         <div className="mb-6 p-3 border-l-2 border-teal-glow bg-teal-glow/5 text-teal-glow text-xs font-mono">
           {'>'} Please identify yourself to access the mainframe.
         </div>
-        <AuthInput label="User_ID / Email" type="text" placeholder="ENTER_IDENTITY..." />
-        <AuthInput label="Passcode" type="password" placeholder="ENTER_SECRET..." />
+        <AuthInput
+          label="User_ID / Email"
+          type="text"
+          placeholder="ENTER_IDENTITY..."
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <AuthInput
+          label="Passcode"
+          type="password"
+          placeholder="ENTER_SECRET..."
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
         <div className="flex justify-between items-center mt-2 mb-6">
           <label className="flex items-center gap-2 cursor-pointer group">
