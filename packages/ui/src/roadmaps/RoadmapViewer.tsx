@@ -12,7 +12,7 @@ export function RoadmapViewPage({ roadmapId }: { roadmapId: string }) {
   });
 
   if (isLoading) return (
-    <div className="h-full w-full bg-surface-950 flex flex-col items-center justify-center gap-4">
+    <div className="h-full w-full flex flex-col items-center justify-center gap-4">
       <div className="flex gap-1.5">
         {[0, 1, 2].map(i => (
           <span
@@ -33,7 +33,7 @@ export function RoadmapViewPage({ roadmapId }: { roadmapId: string }) {
   );
 
   if (isError) return (
-    <div className="h-full w-full bg-surface-950 flex items-center justify-center p-8">
+    <div className="h-full w-full  flex items-center justify-center p-8">
       <div
         className="border border-red-500/30 bg-red-500/5 px-6 py-4 max-w-sm w-full"
         style={{ clipPath: "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))" }}
@@ -61,7 +61,7 @@ export function RoadmapViewPage({ roadmapId }: { roadmapId: string }) {
   }));
 
   return (
-    <div className="h-full w-full bg-surface-950 flex flex-col overflow-hidden relative">
+    <div className="h-full w-full  flex flex-col overflow-hidden relative">
 
       {/* Top HUD bar */}
       <div className="shrink-0 flex items-center justify-between px-5 py-3 border-b border-surface-800 bg-surface-900/80 backdrop-blur-sm z-10">
@@ -114,53 +114,3 @@ export function RoadmapViewPage({ roadmapId }: { roadmapId: string }) {
     </div>
   );
 }
-
-
-
-// "use client"
-//
-// import { getRoadmap, useQuery } from '@repo/gql';
-// import { Edge, Node, AdminPanel, ReactFlowComponent } from '@repo/reactFlowSetup'
-// import { RootState, setEdges, updateNode, useDispatch, useSelector } from '@repo/reduxSetup';
-// import { useEffect, useState } from 'react';
-//
-//
-// export function RoadmapViewPage({ roadmapId }: { roadmapId: string }) {
-//
-//   const { data: roadmap, isLoading, isError } = useQuery({
-//     queryKey: ["roadmap", roadmapId],
-//     queryFn: () => getRoadmap(roadmapId),
-//   });
-//
-//   if (isLoading) return <div>Loading...</div>;
-//   if (isError) return <div>Failed to load roadmap</div>;
-//
-//   const nodes: Node[] = roadmap.nodes.map((n: any) => ({
-//     id: n.clientId,
-//     type: "tutorial",
-//     position: { x: n.positionX, y: n.positionY },
-//     data: { tutorial: n.tutorial },
-//   }));
-//
-//   const edges: Edge[] = roadmap.edges.map((e: any) => ({
-//     id: e.id,
-//     source: e.sourceClientId,
-//     target: e.targetClientId,
-//     type: "default",
-//   }));
-//
-//
-//
-//   return (
-//
-//     <div className="h-full w-full border border-purple-glow relative">
-//
-//       <ReactFlowComponent
-//         nodes={nodes}
-//         edges={edges}
-//         isEditable={false}
-//       />
-//     </div>
-//   )
-// }
-//

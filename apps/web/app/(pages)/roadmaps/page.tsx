@@ -14,7 +14,7 @@ export default async function page({ params }: any) {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="h-screen overflow-y-auto">  {/* 👈 add this wrapper */}
-        <RoadmapsList />
+        <RoadmapsList isPublic={true} />
       </div>
     </HydrationBoundary>
   )

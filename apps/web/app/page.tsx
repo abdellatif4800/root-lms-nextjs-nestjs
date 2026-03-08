@@ -36,8 +36,6 @@ export default function Home() {
 
   return (
     <div className="home-root" style={{ background: "transparent" }}>
-      {/* Scanlines */}
-      {/* <div className="scanline-overlay" /> */}
 
       {/* Ambient glow orbs */}
       <div className="home-orb home-orb-teal" />
@@ -47,14 +45,20 @@ export default function Home() {
 
         {/* Header */}
         <div className="home-header">
-
           <div className="home-title-wrap">
-            <h1 className={`home-title${glitch ? " is-glitch" : ""}`}>
-              {text}
+            <h1 className={`home-title text-center${glitch ? " is-glitch" : ""}`}>
+              {/* On small screens the title splits into two lines at the underscore before LMS */}
+              <span className="inline sm:hidden">
+                {text.slice(0, 11)}
+                {text.length > 11 && <br />}
+                {text.slice(11)}
+              </span>
+              <span className="hidden sm:inline">
+                {text}
+              </span>
               <span className="home-cursor" />
             </h1>
           </div>
-
         </div>
 
         {/* Cards */}

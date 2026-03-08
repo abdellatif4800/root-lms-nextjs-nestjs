@@ -124,7 +124,6 @@ export function RoadmapsList({ isPublic }: { isPublic: boolean }) {
                   }}
                   onClick={() => {
                     if (isPublic) {
-
                       router.push(`/roadmaps/${roadmap.id}`)
                     } else {
                       router.push(`/roadmaps/roadmapEditor?editOrCreate=edit&roadmapId=${roadmap.id}`)

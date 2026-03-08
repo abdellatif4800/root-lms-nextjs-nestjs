@@ -14,7 +14,7 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
     <div className={`
       ${digitalFont.variable} ${terminalFont.variable}
       h-screen w-full bg-surface-950 flex flex-col items-center
-      p-4 md:p-6 overflow-hidden font-terminal text-gray-300 relative
+      p-2 sm:p-4 md:p-6 overflow-hidden font-terminal text-gray-300 relative
     `}>
 
       {/* Grid lines */}
@@ -29,7 +29,7 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
         }}
       />
 
-      {/* Grid intersection dots — slightly more visible than lines */}
+      {/* Grid intersection dots */}
       <div
         className="pointer-events-none fixed inset-0 z-0"
         style={{
@@ -58,9 +58,9 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
       <MainLayoutClient>
         {pathname !== "/" &&
           (pathname === "/tutorials/list" || !pathname.startsWith("/tutorials/")) && (
-            <div className="w-full flex justify-center mb-6 shrink-0 relative z-20">
+            <div className="w-full flex justify-center mb-3 sm:mb-6 shrink-0 relative z-20">
               <div
-                className="w-full lg:w-[70%] pb-4 border-b border-surface-800 flex items-center justify-center"
+                className="w-full lg:w-[70%] pb-3 sm:pb-4 border-b border-surface-800 flex items-center justify-center"
                 style={{ borderImage: "linear-gradient(90deg, transparent, var(--nav-border), transparent) 1" }}
               >
                 <Navbar />
@@ -68,14 +68,8 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
           )}
 
-        <main className="w-full lg:w-[98%] flex-1 overflow-hidden custom-scrollbar relative z-20 ">
-          {/* style={{ */}
-          {/*   background: "linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.08) 50%), linear-gradient(90deg, rgba(255,0,0,0.015), rgba(0,255,0,0.008), rgba(0,0,255,0.015))", */}
-          {/*   backgroundSize: "100% 2px, 3px 100%", */}
-          {/* }} */}
-          <div
-            className="pointer-events-none absolute z-10"
-          />
+        <main className="w-full lg:w-[98%] flex-1 overflow-hidden custom-scrollbar relative z-20">
+          <div className="pointer-events-none absolute z-10" />
           <div className="relative z-20 h-full">
             {children}
           </div>

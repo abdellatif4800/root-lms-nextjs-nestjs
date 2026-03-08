@@ -1,13 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { useDispatch, toggleAuthModal, useAppDispatch } from "@repo/reduxSetup"
+import { useDispatch, toggleAuthModal, useAppDispatch, useAppSelector, RootState } from "@repo/reduxSetup"
 import { LoginForm } from "./LoginForm"
 import { RegisterForm } from "./RegisterForm"
 
 export function AuthComponent({ isPublic }: { isPublic: boolean }) {
   const dispatch = useAppDispatch()
   const [isLogin, setIsLogin] = useState(true)
+  const { isRequired } = useAppSelector((state: RootState) => state.authSlice);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-950/80 backdrop-blur-sm">
@@ -27,7 +28,7 @@ export function AuthComponent({ isPublic }: { isPublic: boolean }) {
               {isLogin ? 'AUTH_SEQUENCE_V1' : 'NEW_USER_PROTOCOL'}
             </span>
           </div>
-          {isPublic &&
+          {isPublic || !isRequired &&
 
             <button
               onClick={() => dispatch(toggleAuthModal())}

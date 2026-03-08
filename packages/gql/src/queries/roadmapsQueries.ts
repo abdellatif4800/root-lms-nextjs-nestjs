@@ -159,7 +159,10 @@ query GetRoadmap($id: ID!) {
     id
     title
     description
-    authorId
+    author{
+      id
+      username
+    } 
     nodes {
       id
       clientId

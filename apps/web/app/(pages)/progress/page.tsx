@@ -1,10 +1,9 @@
-import { dehydrate, getTutoialsInProgressByUser, HydrationBoundary, QueryClient } from "@repo/gql";
+import { dehydrate, getMe, getTutoialsInProgressByUser, HydrationBoundary, QueryClient } from "@repo/gql";
 import { ProgressPageContent } from "@repo/ui";
 
-export default async function ProgressPage() {
+export default async function ProgressPage({ searchParams }: any) {
   const queryClient = new QueryClient()
-
-  const userId = "c3b67ca3-44a1-4f05-a511-980758b24176"
+  const { userId } = await searchParams
 
   await queryClient.prefetchQuery({
     queryKey: ['unitProgressByUser', userId],
@@ -15,7 +14,9 @@ export default async function ProgressPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProgressPageContent unitProgressByUser={unitProgressByUser} />
+      <ProgressPageContent
+        unitProgressByUser={unitProgressByUser}
+      />
     </HydrationBoundary>
   );
 }

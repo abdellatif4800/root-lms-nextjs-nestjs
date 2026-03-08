@@ -1,9 +1,15 @@
+'use client'
+
 import { AuthInput } from "./AuthInput";
 import { publicApiClient, SIGNIN, useMutation, useQuery, getMe } from "@repo/gql"
-import { setAuthUser, toggleAuthModal, useAppDispatch, useDispatch } from "@repo/reduxSetup";
+import { RootState, setAuthUser, toggleAuthModal, useAppDispatch, useAppSelector, useDispatch } from "@repo/reduxSetup";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const dispatch = useAppDispatch()
+  const { redirect } = useAppSelector((state: RootState) => state.authSlice);
+
+  const router = useRouter()
 
   const meQuery = useQuery({
     queryKey: ['me'],
@@ -17,7 +23,9 @@ export function LoginForm() {
       const user = await meQuery.refetch();
       dispatch(toggleAuthModal())
       dispatch(setAuthUser(user.data.me))
-      console.log(user)
+      if (redirect === "user-progress-page") {
+        router.replace(`/progress?userId=${user.data.me.sub}`)
+      }
     },
     onError: (err) => {
       console.error("Error saving:", err);

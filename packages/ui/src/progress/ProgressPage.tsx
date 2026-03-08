@@ -1,7 +1,8 @@
 "use client";
+import { setRedirect, setRequired, toggleAuthModal, useDispatch } from "@repo/reduxSetup";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-
+import { useSearchParams } from "next/navigation";
 function AnimatedBar({ percentage }: { percentage: number }) {
   const [width, setWidth] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
@@ -83,10 +84,28 @@ function UnitBadge({ unit, index }: { unit: any; index: number }) {
 }
 
 export function ProgressPageContent({ unitProgressByUser }: any) {
-  const data = Array.isArray(unitProgressByUser) ? unitProgressByUser : [unitProgressByUser];
+  const dispatch = useDispatch();
 
-  const totalCompleted = data.filter((item: any) => item.isCompleted).length;
-  const avgProgress = Math.round(data.reduce((acc: number, item: any) => acc + item.percentage, 0) / data.length);
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("userId")
+
+  useEffect(() => {
+    if (userId === undefined) {
+      dispatch(toggleAuthModal())
+      dispatch(setRequired())
+      dispatch(setRedirect('user-progress-page'))
+    }
+  }, []);
+
+  const data = unitProgressByUser
+    ? (Array.isArray(unitProgressByUser) ? unitProgressByUser : [unitProgressByUser])
+    : [];
+
+  const totalCompleted = data.filter((item: any) => item?.isCompleted).length;
+
+  const avgProgress = data.length > 0
+    ? Math.round(data.reduce((acc: number, item: any) => acc + (item?.percentage || 0), 0) / data.length)
+    : 0;
 
   return (
     <div className="h-[calc(100vh-80px)] w-full flex flex-col font-terminal overflow-hidden">
