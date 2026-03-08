@@ -98,6 +98,21 @@
   --radius-lg: 0px;
   --radius-xl: 0px;
   --radius-2xl: 0px;
+
+  /* ── Breakpoints ── */
+  --breakpoint-xs: 375px;   /* small phones */
+  --breakpoint-sm: 640px;   /* large phones / landscape */
+  --breakpoint-md: 768px;   /* tablets */
+  --breakpoint-lg: 1024px;  /* small laptops — sidebar opens here */
+  --breakpoint-xl: 1280px;  /* desktops */
+  --breakpoint-2xl: 1536px; /* wide screens */
+
+  /* ── Shadow tokens (box-shadow utilities) ── */
+  --shadow-card:    4px 4px 0px var(--surface-800);
+  --shadow-card-lg: 6px 6px 0px var(--surface-700);
+  --shadow-teal-glow:    0 0 12px var(--shadow-teal);
+  --shadow-emerald-glow: 0 0 12px var(--shadow-emerald);
+  --shadow-purple-glow:  0 0 12px var(--shadow-purple);
 }
 
 
@@ -755,8 +770,45 @@ box-shadow: 6px 6px 0px var(--surface-700);
     text-shadow: 0 0 10px var(--shadow-teal);
   }
 
+  .text-glow-emerald {
+    text-shadow: 0 0 10px var(--shadow-emerald);
+  }
+
   .text-glow-purple {
     text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+  }
+
+  /* Box-shadow utilities matching the design system */
+  .shadow-card {
+    box-shadow: 4px 4px 0px var(--surface-800);
+  }
+
+  .shadow-card-lg {
+    box-shadow: 6px 6px 0px var(--surface-700);
+  }
+
+  .shadow-glow-teal {
+    box-shadow: 0 0 12px var(--shadow-teal);
+  }
+
+  .shadow-glow-emerald {
+    box-shadow: 0 0 12px var(--shadow-emerald);
+  }
+
+  .shadow-glow-purple {
+    box-shadow: 0 0 12px var(--shadow-purple);
+  }
+
+  .shadow-glow-teal-sm {
+    box-shadow: 0 0 6px var(--shadow-teal);
+  }
+
+  .shadow-glow-emerald-sm {
+    box-shadow: 0 0 6px var(--shadow-emerald);
+  }
+
+  .shadow-glow-purple-sm {
+    box-shadow: 0 0 6px var(--shadow-purple);
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -878,4 +930,3 @@ box-shadow: 6px 6px 0px var(--surface-700);
           0%, 100% { opacity: 0.6; }
           50% { opacity: 0.2; }
         }
-

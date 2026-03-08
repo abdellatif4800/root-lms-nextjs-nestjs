@@ -17,7 +17,6 @@ type AdminLink = {
   subRoutes?: SubRoute[]
 }
 
-// SVG icons — themed, no emoji
 const Icons = {
   dashboard: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
@@ -41,6 +40,11 @@ const Icons = {
       <path d="M6 9l6 6 6-6" />
     </svg>
   ),
+  menu: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
+      <path d="M3 12h18M3 6h18M3 18h18" />
+    </svg>
+  ),
 }
 
 const ADMIN_LINKS: AdminLink[] = [
@@ -62,9 +66,35 @@ const ADMIN_LINKS: AdminLink[] = [
 ]
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(true)
+  // On lg+ starts open, on smaller screens starts closed
+  const [isOpen, setIsOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const [expandedMenus, setExpandedMenus] = useState<string[]>([])
   const pathname = usePathname()
+
+  useEffect(() => {
+    const checkScreen = () => {
+      const mobile = window.innerWidth < 1024
+      setIsMobile(mobile)
+      if (!mobile) setIsOpen(true)   // always open on desktop
+      else setIsOpen(false)          // closed by default on mobile
+    }
+    checkScreen()
+    window.addEventListener('resize', checkScreen)
+    return () => window.removeEventListener('resize', checkScreen)
+  }, [])
+
+  // Listen for open trigger fired by Navbar hamburger button
+  useEffect(() => {
+    const handler = () => setIsOpen(true)
+    window.addEventListener('sidebar:open', handler)
+    return () => window.removeEventListener('sidebar:open', handler)
+  }, [])
+
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    if (isMobile) setIsOpen(false)
+  }, [pathname])
 
   useEffect(() => {
     ADMIN_LINKS.forEach(link => {
@@ -75,184 +105,193 @@ export default function Sidebar() {
   }, [pathname])
 
   const toggleMenu = (name: string) => {
-    if (!isOpen) setIsOpen(true)
     setExpandedMenus(prev =>
       prev.includes(name) ? prev.filter(i => i !== name) : [...prev, name]
     )
   }
 
   return (
-    <aside
-      className={`
-        relative flex-shrink-0 flex flex-col
-        bg-surface-900/80 border border-surface-800 border-t-2 border-t-teal-glow
-        backdrop-blur-sm
+    <>
+      {/* ── Mobile backdrop ── */}
+      {isMobile && isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* ── Sidebar ── */}
+      <aside className={`
+        flex-shrink-0 flex flex-col z-50
+        bg-surface-900/95 border border-surface-800 border-t-2 border-t-teal-glow
+        backdrop-blur-sm shadow-card
         transition-all duration-300 ease-in-out
-        ${isOpen ? 'w-56' : 'w-[52px]'}
-      `}
-      style={{ boxShadow: "4px 4px 0px var(--surface-800)" }}
-    >
-      {/* Scanline */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.03] z-0"
-        style={{
-          background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.4) 2px, rgba(0,0,0,0.4) 4px)"
-        }}
-      />
-      {/* Right edge accent */}
-      <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-teal-glow/30 via-transparent to-transparent pointer-events-none z-10" />
+        ${isMobile
+          /* Mobile: fixed overlay, slides in from left, always full-width when open */
+          ? `fixed top-0 left-0 h-full ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64'}`
+          /* Desktop: in-flow, collapsible */
+          : `relative ${isOpen ? 'w-56' : 'w-[52px]'}`
+        }
+      `}>
 
-      <div className="flex flex-col h-full relative z-20">
+        {/* Scanline */}
+        <div className="scanline-overlay opacity-[0.03]" />
 
-        {/* ── Header ── */}
-        <div className="h-14 flex items-center px-3.5 border-b border-surface-800 shrink-0 gap-3 overflow-hidden">
-          {/* Icon mark */}
-          <div
-            className="shrink-0 w-6 h-6 border border-teal-glow/50 flex items-center justify-center text-teal-glow"
-            style={{ boxShadow: "0 0 8px var(--shadow-teal)" }}
-          >
-            <span className="text-[9px] font-digital font-black">&gt;_</span>
+        {/* Right edge accent */}
+        <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-teal-glow/30 via-transparent to-transparent pointer-events-none z-10" />
+
+        <div className="flex flex-col h-full relative z-20">
+
+          {/* ── Header ── */}
+          <div className="h-14 flex items-center px-3.5 border-b border-surface-800 shrink-0 gap-3 overflow-hidden">
+            <div className="shrink-0 w-6 h-6 border border-teal-glow/50 flex items-center justify-center text-teal-glow shadow-glow-teal">
+              <span className="text-[9px] font-digital font-black">&gt;_</span>
+            </div>
+            {/* Label — visible when open (always on mobile since w-64, conditional on desktop) */}
+            <div className={`flex flex-col gap-0 overflow-hidden transition-all duration-300 ${(isMobile || isOpen) ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+              <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-40 leading-none whitespace-nowrap">
+                {"// ACCESS::GRANTED"}
+              </span>
+              <Link
+                href="/"
+                className="text-[11px] font-digital font-black text-teal-glow uppercase tracking-wider hover:text-white transition-colors leading-tight whitespace-nowrap text-glow-teal"
+              >
+                ROOT_ADMIN
+              </Link>
+            </div>
+            {/* Close button — mobile only */}
+            {isMobile && (
+              <button
+                onClick={() => setIsOpen(false)}
+                className="ml-auto text-text-secondary hover:text-teal-glow transition-colors shrink-0"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
-          <div className={`flex flex-col gap-0 overflow-hidden transition-all duration-300 ${isOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
-            <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-40 leading-none whitespace-nowrap">
-              {"// ACCESS::GRANTED"}
-            </span>
-            <Link href="/" className="text-[11px] font-digital font-black text-teal-glow uppercase tracking-wider hover:text-white transition-colors leading-tight whitespace-nowrap"
-              style={{ textShadow: "0 0 8px var(--shadow-teal)" }}
-            >
-              ROOT_ADMIN
-            </Link>
-          </div>
-        </div>
 
-        {/* ── Nav Links ── */}
-        <nav className="flex-1 overflow-y-auto custom-scrollbar p-2 flex flex-col gap-0.5">
-          {ADMIN_LINKS.map((link) => {
-            const hasSubRoutes = !!link.subRoutes
-            const isExpanded = expandedMenus.includes(link.name)
-            const isParentActive = pathname === link.href
-            const isChildActive = hasSubRoutes && link.subRoutes?.some(sub => pathname === sub.href)
-            const isActive = isParentActive || isChildActive
+          {/* ── Nav Links ── */}
+          <nav className="flex-1 overflow-y-auto custom-scrollbar p-2 flex flex-col gap-0.5">
+            {ADMIN_LINKS.map((link) => {
+              const hasSubRoutes = !!link.subRoutes
+              const isExpanded = expandedMenus.includes(link.name)
+              const isParentActive = pathname === link.href
+              const isChildActive = hasSubRoutes && link.subRoutes?.some(sub => pathname === sub.href)
+              const isActive = isParentActive || isChildActive
 
-            return (
-              <div key={link.name} className="flex flex-col">
-                {hasSubRoutes ? (
-                  <button
-                    onClick={() => toggleMenu(link.name)}
-                    className={`
-                      group flex items-center gap-3 px-3 py-2.5 w-full text-left
-                      border transition-all duration-200 relative overflow-hidden
-                      ${isActive
-                        ? 'bg-surface-800/80 border-teal-glow/50 text-teal-glow'
-                        : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-800/50 hover:border-surface-700'
-                      }
-                    `}
-                    style={isActive ? { boxShadow: "inset 0 0 12px rgba(45,212,191,0.06)" } : {}}
-                  >
-                    {/* Active left bar */}
-                    {isActive && (
-                      <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-teal-glow"
-                        style={{ boxShadow: "0 0 6px var(--shadow-teal)" }} />
-                    )}
-                    <span className={`shrink-0 transition-colors ${isActive ? 'text-teal-glow' : 'text-text-secondary group-hover:text-text-primary'}`}>
-                      {link.icon}
-                    </span>
-                    <span className={`flex-1 flex items-center justify-between overflow-hidden transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-                      <span className="text-[10px] font-digital font-black uppercase tracking-wider whitespace-nowrap">
+              return (
+                <div key={link.name} className="flex flex-col">
+                  {hasSubRoutes ? (
+                    <button
+                      onClick={() => toggleMenu(link.name)}
+                      className={`
+                        group flex items-center gap-3 px-3 py-2.5 w-full text-left
+                        border transition-all duration-200 relative overflow-hidden
+                        ${isActive
+                          ? 'bg-surface-800/80 border-teal-glow/50 text-teal-glow [box-shadow:inset_0_0_12px_rgba(45,212,191,0.06)]'
+                          : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-800/50 hover:border-surface-700'
+                        }
+                      `}
+                    >
+                      {isActive && (
+                        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-teal-glow shadow-glow-teal-sm" />
+                      )}
+                      <span className={`shrink-0 transition-colors ${isActive ? 'text-teal-glow' : 'text-text-secondary group-hover:text-text-primary'}`}>
+                        {link.icon}
+                      </span>
+                      <span className={`flex-1 flex items-center justify-between overflow-hidden transition-all duration-300 ${(isMobile || isOpen) ? 'opacity-100' : 'opacity-0 w-0'}`}>
+                        <span className="text-[10px] font-digital font-black uppercase tracking-wider whitespace-nowrap">
+                          {link.name}
+                        </span>
+                        <span className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : 'rotate-0'} text-text-secondary`}>
+                          {Icons.chevron}
+                        </span>
+                      </span>
+                    </button>
+                  ) : (
+                    <Link
+                      href={{ pathname: link.href }}
+                      className={`
+                        group flex items-center gap-3 px-3 py-2.5
+                        border transition-all duration-200 relative overflow-hidden
+                        ${isActive
+                          ? 'bg-surface-800/80 border-teal-glow/50 text-teal-glow [box-shadow:inset_0_0_12px_rgba(45,212,191,0.06)]'
+                          : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-800/50 hover:border-surface-700'
+                        }
+                      `}
+                    >
+                      {isActive && (
+                        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-teal-glow shadow-glow-teal-sm" />
+                      )}
+                      <span className={`shrink-0 transition-colors ${isActive ? 'text-teal-glow' : 'text-text-secondary group-hover:text-text-primary'}`}>
+                        {link.icon}
+                      </span>
+                      <span className={`text-[10px] font-digital font-black uppercase tracking-wider whitespace-nowrap overflow-hidden transition-all duration-300 ${(isMobile || isOpen) ? 'opacity-100' : 'opacity-0 w-0'}`}>
                         {link.name}
                       </span>
-                      <span className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : 'rotate-0'} text-text-secondary`}>
-                        {Icons.chevron}
-                      </span>
-                    </span>
-                  </button>
-                ) : (
-                  <Link
-                    href={{ pathname: link.href }}
-                    className={`
-                      group flex items-center gap-3 px-3 py-2.5
-                      border transition-all duration-200 relative overflow-hidden
-                      ${isActive
-                        ? 'bg-surface-800/80 border-teal-glow/50 text-teal-glow'
-                        : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-800/50 hover:border-surface-700'
-                      }
-                    `}
-                    style={isActive ? { boxShadow: "inset 0 0 12px rgba(45,212,191,0.06)" } : {}}
-                  >
-                    {isActive && (
-                      <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-teal-glow"
-                        style={{ boxShadow: "0 0 6px var(--shadow-teal)" }} />
-                    )}
-                    <span className={`shrink-0 transition-colors ${isActive ? 'text-teal-glow' : 'text-text-secondary group-hover:text-text-primary'}`}>
-                      {link.icon}
-                    </span>
-                    <span className={`text-[10px] font-digital font-black uppercase tracking-wider whitespace-nowrap overflow-hidden transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-                      {link.name}
-                    </span>
-                  </Link>
-                )}
+                    </Link>
+                  )}
 
-                {/* ── Sub-menu ── */}
-                {hasSubRoutes && isOpen && (
-                  <div className={`
-                    overflow-hidden transition-all duration-300 ease-in-out
-                    border-l border-surface-800 ml-[26px] mt-0.5
-                    ${isExpanded ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}
-                  `}>
-                    {link.subRoutes?.map((sub, idx) => {
-                      const isSubActive = pathname === sub.href
-                      return (
-                        <Link
-                          key={sub.name}
-                          href={{ pathname: sub.href, query: sub.query }}
-                          className={`
-                            flex items-center gap-2 px-3 py-1.5
-                            text-[9px] font-terminal uppercase tracking-[0.2em]
-                            border-l-2 transition-all duration-200
-                            opacity-0 animate-[fadeSlideIn_0.2s_ease_forwards]
-                            ${isSubActive
-                              ? 'text-teal-glow border-teal-glow bg-teal-glow/5'
-                              : 'text-text-secondary border-transparent hover:text-text-primary hover:border-surface-600 hover:bg-surface-800/30'
-                            }
-                          `}
-                          style={{ animationDelay: `${idx * 40}ms` }}
-                        >
-                          <span className={`text-[8px] font-bold transition-opacity ${isSubActive ? 'opacity-100 text-teal-glow' : 'opacity-0'}`}>›</span>
-                          {sub.name}
-                        </Link>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </nav>
+                  {/* ── Sub-menu ── */}
+                  {hasSubRoutes && (isMobile || isOpen) && (
+                    <div className={`
+                      overflow-hidden transition-all duration-300 ease-in-out
+                      border-l border-surface-800 ml-[26px] mt-0.5
+                      ${isExpanded ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}
+                    `}>
+                      {link.subRoutes?.map((sub, idx) => {
+                        const isSubActive = pathname === sub.href
+                        return (
+                          <Link
+                            key={sub.name}
+                            href={{ pathname: sub.href, query: sub.query }}
+                            className={`
+                              flex items-center gap-2 px-3 py-1.5
+                              text-[9px] font-terminal uppercase tracking-[0.2em]
+                              border-l-2 transition-all duration-200
+                              opacity-0 animate-[fadeSlideIn_0.2s_ease_forwards]
+                              ${isSubActive
+                                ? 'text-teal-glow border-teal-glow bg-teal-glow/5'
+                                : 'text-text-secondary border-transparent hover:text-text-primary hover:border-surface-600 hover:bg-surface-800/30'
+                              }
+                            `}
+                            style={{ animationDelay: `${idx * 40}ms` }}
+                          >
+                            <span className={`text-[8px] font-bold transition-opacity ${isSubActive ? 'opacity-100 text-teal-glow' : 'opacity-0'}`}>›</span>
+                            {sub.name}
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </nav>
 
-        {/* ── Footer / Collapse ── */}
-        <div className="shrink-0 border-t border-surface-800">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="
-              w-full flex items-center justify-center gap-2 py-3 px-3
-              text-text-secondary hover:text-teal-glow
-              hover:bg-surface-800/50
-              transition-all duration-200 group
-            "
-          >
-            <span
-              className={`text-[10px] font-digital font-black uppercase tracking-wider transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen ? 'opacity-100 max-w-xs' : 'opacity-0 max-w-0'}`}
-            >
-              [ Collapse ]
-            </span>
-            {/* Chevron arrow */}
-            <span className={`shrink-0 transition-transform duration-300 group-hover:text-teal-glow ${isOpen ? 'rotate-0' : 'rotate-180'}`}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </span>
-          </button>
+          {/* ── Footer / Collapse (desktop only) ── */}
+          {!isMobile && (
+            <div className="shrink-0 border-t border-surface-800">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full flex items-center justify-center gap-2 py-3 px-3 text-text-secondary hover:text-teal-glow hover:bg-surface-800/50 transition-all duration-200 group"
+              >
+                <span className={`text-[10px] font-digital font-black uppercase tracking-wider transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen ? 'opacity-100 max-w-xs' : 'opacity-0 max-w-0'}`}>
+                  [ Collapse ]
+                </span>
+                <span className={`shrink-0 transition-transform duration-300 group-hover:text-teal-glow ${isOpen ? 'rotate-0' : 'rotate-180'}`}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
+                    <path d="M15 18l-6-6 6-6" />
+                  </svg>
+                </span>
+              </button>
+            </div>
+          )}
+
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   )
 }
