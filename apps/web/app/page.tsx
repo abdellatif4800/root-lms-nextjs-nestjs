@@ -35,13 +35,13 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="home-root" style={{ background: "transparent" }}>
+    <div className="h-screen home-root" style={{ background: "transparent" }}>
 
       {/* Ambient glow orbs */}
       <div className="home-orb home-orb-teal" />
       <div className="home-orb home-orb-emerald" />
 
-      <div className="home-content">
+      <div className="home-content overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
         {/* Header */}
         <div className="home-header">
