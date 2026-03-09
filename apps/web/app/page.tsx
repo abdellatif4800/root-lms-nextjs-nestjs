@@ -7,7 +7,7 @@ export default function Home() {
   const [text, setText] = useState("");
   const [showCards, setShowCards] = useState(false);
   const [glitch, setGlitch] = useState(false);
-  const fullText = "WELCOME_TO_ROOT_LMS...";
+  const fullText = "> ./ ROOT_LMS...";
 
   // Typewriter
   useEffect(() => {
