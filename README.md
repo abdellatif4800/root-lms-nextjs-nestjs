@@ -2,8 +2,9 @@
 
 > A cyberpunk-themed, full-stack Learning Management System built as a Turborepo monorepo — featuring tutorials, roadmaps, and progress tracking with a terminal-aesthetic UI.
 
-**Live Demo for web:** [next-graphql-elearning-web.vercel.app](https://next-graphql-elearning-web.vercel.app/)
-**Live Demo for dashboard:** [next-graphql-elearning-dashboard.vercel.app](https://next-graphql-elearning-dashboard.vercel.app)
+**Live Demo for web:** [rootlms.vercel.app](https://rootlms.vercel.app)
+
+**Live Demo for dashboard:** [rootlms-dashboard.vercel.app](https://rootlms-dashboard.vercel.app)
 
 ---
 
