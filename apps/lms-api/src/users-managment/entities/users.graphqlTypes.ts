@@ -35,8 +35,8 @@ export class UsersType {
   @Field({ nullable: true })
   subscriptionStatus: string;
 
-  @Field({ nullable: true })
-  currentPeriodEnd: Date;
+  @Field(() => Date, { nullable: true }) // ← add nullable: true
+  currentPeriodEnd: Date | null; // ← add | null
 
   @Field()
   createdAt: Date;
