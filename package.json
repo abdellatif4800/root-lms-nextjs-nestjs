@@ -9,6 +9,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "baseline-browser-mapping": "^2.10.8",
     "prettier": "^3.6.0",
     "prettier-plugin-tailwindcss": "^0.7.1",
     "turbo": "^2.7.6"

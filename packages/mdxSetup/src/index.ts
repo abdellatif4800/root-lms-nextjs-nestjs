@@ -4,6 +4,7 @@ export * from "./ForwardRefEditor"
 export * from "./InitializedMDXEditor"
 export * from "./customComponents/HorizontalSeprator"
 export * from "./customComponents/CustomImage"
+export * from "./customComponents/CustomVideo"
 
 export { MDXRemote } from "next-mdx-remote/rsc";
 
