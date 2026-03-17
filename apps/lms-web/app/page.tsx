@@ -37,6 +37,7 @@ export default function Home() {
   return (
     <div className="h-screen home-root" style={{ background: "transparent" }}>
 
+
       {/* Ambient glow orbs */}
       <div className="home-orb home-orb-teal" />
       <div className="home-orb home-orb-emerald" />

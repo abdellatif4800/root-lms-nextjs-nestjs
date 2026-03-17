@@ -15,6 +15,7 @@ export const Navbar = () => {
     { label: "Tutorials", href: "/tutorials/list" },
     { label: "Roadmaps", href: "/roadmaps" },
     { label: "My Progress", href: `/progress?userId=${user?.sub}` },
+    { label: "Pricing", href: `/pricing` },
   ];
 
   return (

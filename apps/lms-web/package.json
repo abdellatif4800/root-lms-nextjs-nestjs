@@ -14,6 +14,7 @@
     "@repo/gql": "workspace:*",
     "@repo/reactFlowSetup": "workspace:*",
     "@repo/reduxSetup": "workspace:*",
+    "@repo/mdxSetup": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/ui": "workspace:*",
     "next": "16.0.10",
