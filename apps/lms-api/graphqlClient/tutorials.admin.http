@@ -1,0 +1,116 @@
+### create tutorila
+
+GRAPHQL https://vercel-nest-gql-lms.vercel.app/graphql HTTP/1.1
+Accept: application/json
+
+mutation CreateTutorial($input: CreateTutorialInput!) {
+  createTutorial(input: $input) {
+    id
+    tutorialName
+    description
+    level
+    thumbnail
+    publish
+    units {
+      content
+      id
+      tutorialId
+      order
+      unitTitle
+    }
+  }
+}
+
+{
+  "input": {
+    "authorId": "c3b67ca3-44a1-4f05-a511-980758b24176",
+    "category": "Backend",
+    "description": "asdsadadadsa",
+    "level": "Intermediate",
+    "publish": false,
+    "thumbnail": "image.png",
+    "tutorialName": "unpublished tutorial ",
+    "units": [
+      {
+        "content": "<div>Unit_01 content <ul><li>one</li><li>two</li><li>three</li></ul></div>",
+        "order": 1,
+        "publish": false,
+        "unitTitle": "Unit_01 "
+      },
+      {
+        "content": "<div><h1>Title</h1><i>Unit_02 content</i></div>",
+        "order": 2,
+        "publish": false,
+        "unitTitle": "Unit_02"
+      },
+      {
+        "content": "<div><h1>Title</h1>content</div>",
+        "order": 2,
+        "publish": false,
+        "unitTitle": "Unit asd  sada03"
+      }
+    ]
+  }
+}
+
+
+### update tutorila
+
+GRAPHQL {{adminBase}} HTTP/1.1
+Accept: application/json
+
+mutation UpdateTutorial($input: UpdateTutorialInput!) {
+  updateTutorial(updateTutorialInput: $input) {
+    id
+    tutorialName
+    description
+    level
+    thumbnail
+    publish
+    authorId
+    units {
+      content
+      id
+      tutorialId
+      order
+      publish
+      unitTitle
+    }
+  }
+}
+
+{
+  "input": {
+    "authorId": "c3b67ca3-44a1-4f05-a511-980758b24176",
+    "category": "Frontend",
+    "description": "desc 11312123",
+    "id": "f0e70623-08e9-40cb-ab8c-137230d91c42",
+    "level": "Intermediate123",
+    "publish": true,
+    "thumbnail": "image.png",
+    "tutorialName": "tutorial 103",
+    "units": [
+      {
+        "content": "<div>Unit_01 content123asasda</div>",
+        "id": "2c260661-9407-4a9f-bba9-7b90bcd21764",
+        "order": 1,
+        "publish": false,
+        "unitTitle": "Unit_01"
+      },
+      {
+        "content": "<div>Unit_02 contentvdvdv</div>",
+        "id": "c3760d04-d8db-4ec2-812e-6c66c77e6a73",
+        "order": 2,
+        "publish": false,
+        "unitTitle": "Unit_1022"
+      },
+      {
+        "content": "<div>Unit_02 contentvdvdv</div>",
+        "id": "166018e8-4ed6-4aed-aad8-ac460fe1b38f",
+        "order": 3,
+        "publish": true,
+        "unitTitle": "Unit_102"
+      }
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+### list tutorials
+
+GRAPHQL https://vercel-nest-gql-lms.vercel.app/graphql HTTP/1.1
+Accept: application/json
+
+query Tutorial($Filters: FilterTutorialInput!) {
+  tutorialList(filters: $Filters) {
+    id
+    tutorialName
+    category
+    level
+    publish
+    author {
+      id
+      username
+    }
+    units {
+      id
+      order
+      content
+      tutorialId
+    }
+  }
+}
+
+{
+  "Filters": {
+    "publish": true
+  }
+}
+
+
+### tutorial by id
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query Tutorial($ID: ID!) {
+  tutorialById(id: $ID) {
+    id
+    tutorialName
+    level
+    publish
+    thumbnail
+    author {
+      id
+    }
+    units {
+      id
+      unitTitle
+
+      order
+      content
+      tutorialId
+    }
+  }
+}
+
+{
+  "ID": "f0e70623-08e9-40cb-ab8c-137230d91c42"
+}
+
+
+### unit by id
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query UnitById($ID: ID!) {
+  unitById(id: $ID) {
+    id
+    unitTitle
+    content
+    order
+    publish
+    tutorialId
+    createdAt
+    updatedAt
+  }
+}
+
+{
+  "ID": "9958d673-a88c-419a-a755-a03dce0f4d59"
+}

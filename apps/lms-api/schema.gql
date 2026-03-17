@@ -1,0 +1,280 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthResponse {
+  access_token: String!
+  user: UsersType
+}
+
+input CreateRoadmapInput {
+  authorId: ID!
+  description: String
+  edges: [RoadmapEdgeInput!]
+  nodes: [RoadmapNodeInput!]
+  title: String!
+}
+
+input CreateTutorialInput {
+  authorId: String!
+  category: String!
+  description: String
+  level: String
+  publish: Boolean!
+  thumbnail: String
+  tutorialName: String!
+  units: [CreateUnitInput]
+}
+
+input CreateUnitInput {
+  content: String!
+  id: String
+  order: Int!
+  publish: Boolean!
+  unitTitle: String!
+}
+
+input CreateUnitProgressInput {
+  isCompleted: Boolean
+  unitId: String!
+  userId: String!
+}
+
+input CreateUserInput {
+  email: String!
+  isBlocked: Boolean
+  password: String!
+  role: UserRole
+  username: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input FilterTutorialInput {
+  authorId: String
+  categories: [String!]
+  createdAfter: DateTime
+  createdBefore: DateTime
+  id: String
+  levels: [String!]
+  publish: Boolean!
+  tutorialName: String
+}
+
+input FindUserInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  addRoadmapEdge(roadmapId: ID!, sourceNodeId: ID!, targetNodeId: ID!): RoadmapType!
+  addRoadmapNode(clientId: String!, positionX: Float!, positionY: Float!, roadmapId: ID!, tutorialId: ID!): RoadmapType!
+  createRoadmap(input: CreateRoadmapInput!): RoadmapType!
+  createTutorial(input: CreateTutorialInput!): TutorialType!
+  createUnitProgress(createUnitProgressInput: CreateUnitProgressInput!): UnitProgressType!
+  logout: Boolean!
+  registerUser(createUserInput: CreateUserInput!): UsersType!
+  removeTutorial(id: ID!): TutorialType!
+  removeUser(id: Int!): UsersType!
+  updateRoadmap(input: UpdateRoadmapInput!): RoadmapType!
+  updateTutorial(updateTutorialInput: UpdateTutorialInput!): TutorialType!
+  updateUnitProgress(updateUnitProgressInput: UpdateUnitProgressInput!): UnitProgressType!
+  updateUser(updateUserInput: UpdateUserInput!): UsersType!
+  user_signin(userData: FindUserInput!): AuthResponse!
+}
+
+type PayloadType {
+  email: String!
+  exp: Float
+  iat: Float
+  role: UserRole!
+  sub: String!
+  username: String!
+}
+
+type Query {
+  """Required by GraphQL spec (do not use)"""
+  _adminQueryRoot: Boolean!
+  me: PayloadType!
+  roadmap(id: ID!): RoadmapType!
+  roadmaps: [RoadmapType!]!
+  tutorialById(id: ID!): TutorialType!
+  tutorialList(filters: FilterTutorialInput): [TutorialType!]!
+  tutorialsWithProgressByUser(userId: ID!): [TutorialWithProgressType!]!
+  unitById(id: ID!): TutorialUnit!
+  unitProgress(id: ID!): UnitProgressType!
+  unitProgressByTutorialAndUser(tutorialId: ID!, userId: ID!): [UnitProgressType!]!
+  unitProgressByUser(userId: ID!): [UnitProgressType!]!
+  users: [UsersType!]!
+}
+
+input RoadmapEdgeInput {
+  sourceNodeId: ID!
+  targetNodeId: ID!
+}
+
+type RoadmapEdgeType {
+  id: ID!
+  sourceClientId: String
+  sourceNodeId: ID!
+  targetClientId: String
+  targetNodeId: ID!
+}
+
+input RoadmapNodeInput {
+  clientId: String
+  positionX: Float! = 0
+  positionY: Float! = 0
+  tutorialId: ID!
+}
+
+type RoadmapNodeType {
+  clientId: String!
+  id: ID!
+  positionX: Float!
+  positionY: Float!
+  tutorial: TutorialType!
+}
+
+type RoadmapType {
+  author: UsersType!
+  authorId: String!
+  createdAt: DateTime!
+  description: String
+  edges: [RoadmapEdgeType]
+  id: ID!
+  nodes: [RoadmapNodeType]
+  title: String!
+  updatedAt: DateTime!
+}
+
+type TutorialType {
+  author: UsersType!
+  authorId: String!
+  category: String!
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  level: String
+  publish: Boolean!
+  thumbnail: String
+  tutorialName: String
+  units: [TutorialUnit]
+  unitsTitlesList: [String!]
+  updatedAt: DateTime!
+}
+
+type TutorialUnit {
+  content: String
+  createdAt: DateTime!
+  id: ID!
+  order: Int
+  publish: Boolean!
+  tutorialId: String!
+  unitTitle: String
+  updatedAt: DateTime!
+}
+
+type TutorialWithProgressType {
+  createdAt: DateTime!
+  currentUnitId: ID
+  id: ID!
+  isCompleted: Boolean!
+  percentage: Float!
+  tutorial: TutorialType
+  tutorialId: ID!
+  updatedAt: DateTime!
+  user: UsersType
+  userId: ID
+}
+
+type UnitProgressType {
+  createdAt: DateTime!
+  id: ID!
+  isCompleted: Boolean!
+  unit: TutorialUnit
+  unitId: ID!
+  user: UsersType
+  userId: ID!
+}
+
+input UpdateRoadmapAuthorInput {
+  id: ID!
+}
+
+input UpdateRoadmapEdgeInput {
+  sourceClientId: String!
+  targetClientId: String!
+}
+
+input UpdateRoadmapInput {
+  author: UpdateRoadmapAuthorInput
+  createdAt: DateTime
+  description: String
+  edges: [UpdateRoadmapEdgeInput!]
+  id: ID!
+  nodes: [UpdateRoadmapNodeInput!]
+  title: String
+  updatedAt: DateTime
+}
+
+input UpdateRoadmapNodeInput {
+  clientId: String!
+  id: ID
+  positionX: Float!
+  positionY: Float!
+  tutorial: UpdateRoadmapTutorialInput
+  tutorialId: ID
+}
+
+input UpdateRoadmapTutorialInput {
+  id: ID!
+  tutorialName: String
+}
+
+input UpdateTutorialInput {
+  authorId: String
+  category: String
+  description: String
+  id: ID!
+  level: String
+  publish: Boolean
+  thumbnail: String
+  tutorialName: String
+  units: [CreateUnitInput!]
+}
+
+input UpdateUnitProgressInput {
+  id: String!
+  isCompleted: Boolean
+}
+
+input UpdateUserInput {
+  email: String
+  id: Int!
+  isBlocked: Boolean
+  password: String
+  role: UserRole
+  username: String
+}
+
+"""User role enum"""
+enum UserRole {
+  ADMIN
+  MODERATOR
+  USER
+}
+
+type UsersType {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  isBlocked: Boolean!
+  password: String!
+  role: UserRole!
+  updatedAt: DateTime!
+  username: String!
+}

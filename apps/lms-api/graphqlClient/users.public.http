@@ -1,0 +1,56 @@
+### registration
+
+GRAPHQL http://localhost:8002/graphql HTTP/1.1
+Accept: application/json
+
+mutation Users($userData: CreateUserInput!) {
+  registerUser(createUserInput: $userData) {
+    id
+    email
+    username
+  }
+}
+
+{
+  "userData": {
+    "email": "asd1243",
+    "password": "asd",
+    "username": "asd"
+  }
+}
+
+
+### sigin
+
+GRAPHQL https://vercel-nest-gql-lms.vercel.app/graphql HTTP/1.1
+Accept: application/json
+
+mutation Users($userData: FindUserInput!) {
+  user_signin(userData: $userData) {
+    access_token
+  }
+}
+
+{
+  "userData": {
+    "email": "asd1243",
+    "password": "asd"
+  }
+}
+
+
+### me
+
+
+### 
+
+GRAPHQL https://vercel-nest-gql-lms.vercel.app/graphql HTTP/1.1
+Accept: application/json
+Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMmJhYTlmMC1iZGMwLTQ1MDItYWNkMy03ZjMzYjQ5NTNmY2YiLCJ1c2VybmFtZSI6ImFzZCIsInJvbGUiOiJVU0VSIiwiZW1haWwiOiJhc2QxMjQzIiwiaWF0IjoxNzcyNzk4OTAzLCJleHAiOjE3NzI3OTk4MDN9.7diYZFbT5uL_zlDTHYfcs1mcIvgxo6uN9JiVSlVIgpU
+
+query {
+  me {
+    sub
+    email
+  }
+}

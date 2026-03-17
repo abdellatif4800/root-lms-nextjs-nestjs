@@ -1,0 +1,371 @@
+### Create Unit Progress
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+mutation CreateUnitProgress($input: CreateUnitProgressInput!) {
+  createUnitProgress(createUnitProgressInput: $input) {
+    userId
+    id
+    unitId
+    isCompleted
+    createdAt
+  }
+}
+
+{
+  "input": {
+    "isCompleted": true,
+    "unitId": "89a457df-238b-4603-b6be-9df386a566b7",
+    "userId": "c3b67ca3-44a1-4f05-a511-980758b24176"
+  }
+}
+
+
+### Create Tutorial Progress
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+mutation CreateTutorialProgress($input: CreateTutorialProgressInput!) {
+  createTutorialProgress(createTutorialProgressInput: $input) {
+    id
+    userId
+    tutorialId
+    percentage
+    currentUnitId
+    isCompleted
+    createdAt
+  }
+}
+
+{
+  "input": {
+    "isCompleted": false,
+    "percentage": 0,
+    "tutorialId": "uuid-here",
+    "userId": "uuid-here"
+  }
+}
+
+
+### Get All Tutorial Progress
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query {
+  tutorialProgress {
+    id
+    userId
+    tutorialId
+    percentage
+    currentUnitId
+    isCompleted
+    createdAt
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+
+
+### Get All Unit Progress
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query {
+  unitProgress {
+    id
+    userId
+    unitId
+    isCompleted
+    createdAt
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+
+
+### Get Tutorial Progress By ID
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query GetTutorialProgressById($id: ID!) {
+  tutorialProgress(id: $id) {
+    id
+    userId
+    tutorialId
+    percentage
+    currentUnitId
+    isCompleted
+    createdAt
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+
+{
+  "id": "uuid-here"
+}
+
+
+### Get Unit Progress By ID
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query GetUnitProgressById($id: ID!) {
+  unitProgress(id: $id) {
+    id
+    userId
+    unitId
+    isCompleted
+    createdAt
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+
+{
+  "id": "4d092403-6b4d-42d2-a582-cc53499a6c2d"
+}
+
+
+### Update Unit Progress
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+mutation UpdateUnitProgress($input: UpdateUnitProgressInput!) {
+  updateUnitProgress(updateUnitProgressInput: $input) {
+    id
+    isCompleted
+  }
+}
+
+{
+  "input": {
+    "id": "uuid-here",
+    "isCompleted": true
+  }
+}
+
+
+### Update Tutorial Progress
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+mutation UpdateTutorialProgress($input: UpdateTutorialProgressInput!) {
+  updateTutorialProgress(updateTutorialProgressInput: $input) {
+    id
+    percentage
+    currentUnitId
+    isCompleted
+  }
+}
+
+{
+  "input": {
+    "currentUnitId": "uuid-here",
+    "id": "uuid-here",
+    "isCompleted": false,
+    "percentage": 50
+  }
+}
+
+
+### Get Tutorial Progress By User ID
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query GetTutorialProgressByUserId($userId: ID!) {
+  tutorialProgressByUser(userId: $userId) {
+    id
+    userId
+    tutorialId
+    percentage
+    currentUnitId
+    isCompleted
+    createdAt
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+
+{
+  "userId": "uuid-here"
+}
+
+
+### Get Unit Progress By User ID
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query GetUnitProgressByUserId($userId: ID!) {
+  unitProgressByUser(userId: $userId) {
+    id
+    userId
+    unit {
+      id
+      tutorialId
+    }
+    isCompleted
+    createdAt
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+
+{
+  "userId": "c3b67ca3-44a1-4f05-a511-980758b24176"
+}
+
+
+### Get Tutorial Progress By User And Tutorial
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query GetTutorialProgressByUserAndTutorial($userId: ID!, $tutorialId: ID!) {
+  tutorialProgressByUserAndTutorial(userId: $userId, tutorialId: $tutorialId) {
+    id
+    userId
+    tutorialId
+    percentage
+    currentUnitId
+    isCompleted
+    createdAt
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+
+{
+  "tutorialId": "uuid-here",
+  "userId": "uuid-here"
+}
+
+
+### Get Unit Progress By User And Unit
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query GetUnitProgressByUserAndUnit($userId: ID!, $unitId: ID!) {
+  unitProgressByUserAndUnit(userId: $userId, unitId: $unitId) {
+    id
+    userId
+    unitId
+    isCompleted
+    createdAt
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+
+{
+  "unitId": "uuid-here",
+  "userId": "uuid-here"
+}
+
+
+### Get All Unit Progress By Tutorial And User
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query GetUnitProgressByTutorialAndUser($userId: ID!, $tutorialId: ID!) {
+  unitProgressByTutorialAndUser(userId: $userId, tutorialId: $tutorialId) {
+    id
+    userId
+    isCompleted
+    createdAt
+    unit {
+      id
+      unitTitle
+      tutorialId
+    }
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+
+{
+  "tutorialId": "6cc60c3a-9ce8-4c4f-a133-5473a4e42076",
+  "userId": "c3b67ca3-44a1-4f05-a511-980758b24176"
+}
+
+
+### Get all Tutorials progress ny user
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query GetTutorialsWithProgressByUser($userId: ID!) {
+  tutorialsWithProgressByUser(userId: $userId) {
+    id
+    userId
+    tutorialId
+    percentage
+    currentUnitId
+    isCompleted
+    createdAt
+    updatedAt
+    tutorial {
+      id
+      tutorialName
+      description
+      level
+      author {
+        id
+        username
+      }
+      units {
+        id
+        unitTitle
+        order
+      }
+    }
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+
+{
+  "userId": "c3b67ca3-44a1-4f05-a511-980758b24176"
+}

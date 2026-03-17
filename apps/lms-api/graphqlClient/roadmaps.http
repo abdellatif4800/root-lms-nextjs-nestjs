@@ -1,0 +1,391 @@
+### list roadmaps
+
+GRAPHQL https://vercel-nest-gql-lms.vercel.app/graphql HTTP/1.1
+Accept: application/json
+
+query Roadmaps {
+  roadmaps {
+    id
+    title
+    nodes {
+      id
+      clientId
+      positionY
+      positionX
+      tutorial {
+        id
+        tutorialName
+      }
+    }
+    edges {
+      id
+      sourceNodeId
+      targetNodeId
+      sourceClientId
+      targetClientId
+    }
+    author {
+      id
+    }
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+
+### roadmap by id
+
+GRAPHQL https://vercel-nest-gql-lms.vercel.app/graphql HTTP/1.1
+Accept: application/json
+
+query Roadmap($ID: ID!) {
+  roadmap(id: $ID) {
+    id
+    title
+    nodes {
+      id
+      clientId
+      positionY
+      positionX
+      tutorial {
+        id
+        tutorialName
+      }
+    }
+    edges {
+      id
+      sourceNodeId
+      targetNodeId
+      sourceClientId
+      targetClientId
+    }
+    author {
+      id
+    }
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+{
+  "ID": "dbffc9b3-751f-4dc4-9ac2-f1cc24178358"
+}
+
+
+### create roadmap
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+mutation CreateRoadmap($input: CreateRoadmapInput!) {
+  createRoadmap(input: $input) {
+    id
+    title
+    description
+    authorId
+    nodes {
+      id
+      positionX
+      positionY
+      tutorial {
+        id
+        tutorialName
+      }
+    }
+    edges {
+      id
+      sourceNodeId
+      targetNodeId
+    }
+  }
+}
+
+{
+  "input": {
+    "authorId": "c3b67ca3-44a1-4f05-a511-980758b24176",
+    "description": "Step-by-step roadmap to learn React",
+    "title": "React Learning Roadmap"
+  }
+}
+
+
+### create node
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+mutation AddRoadmapNode(
+  $roadmapId: ID!
+  $tutorialId: ID!
+  $positionX: Float!
+  $positionY: Float!
+) {
+  addRoadmapNode(
+    roadmapId: $roadmapId
+    tutorialId: $tutorialId
+    positionX: $positionX
+    positionY: $positionY
+  ) {
+    id
+    title
+    nodes {
+      id
+      positionX
+      positionY
+      tutorial {
+        id
+        tutorialName
+      }
+    }
+  }
+}
+
+{
+  "positionX": 200,
+  "positionY": 200,
+  "roadmapId": "97cb389c-6a83-4d19-b8e0-37ba1d2578ca",
+  "tutorialId": "56d8577f-d102-4fac-812a-1b97d71ddf9c"
+}
+
+
+### create edge
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+mutation AddRoadmapEdge(
+  $roadmapId: ID!
+  $sourceNodeId: ID!
+  $targetNodeId: ID!
+) {
+  addRoadmapEdge(
+    roadmapId: $roadmapId
+    sourceNodeId: $sourceNodeId
+    targetNodeId: $targetNodeId
+  ) {
+    id
+    title
+    edges {
+      id
+      sourceNodeId
+      targetNodeId
+    }
+  }
+}
+
+{
+  "roadmapId": "97cb389c-6a83-4d19-b8e0-37ba1d2578ca",
+  "sourceNodeId": "ee0078f0-8d35-4162-8242-73d02a38894c",
+  "targetNodeId": "89ecfcf0-8c07-4756-84fb-9a518f2ec10d"
+}
+
+
+### Get roadmap with nodes and edges
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query GetRoadmap($id: ID!) {
+  roadmap(id: $id) {
+    id
+    title
+    description
+    authorId
+    nodes {
+      id
+      clientId
+      positionX
+      positionY
+      tutorial {
+        id
+        tutorialName
+      }
+    }
+    edges {
+      id
+      sourceNodeId
+      targetNodeId
+      sourceClientId
+      targetClientId
+    
+    createdAt
+    updatedAt
+  }
+}
+
+{
+  "id": "7d1fb135-3d23-478b-9898-32dc6cd5ef43"
+}
+
+
+### Get all roadmaps
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+query GetRoadmaps {
+  roadmaps {
+    id
+    title
+    description
+    authorId
+    nodes {
+      id
+      clientId
+      positionX
+      positionY
+      tutorial {
+        id
+        tutorialName
+      }
+    }
+    edges {
+      id
+      sourceNodeId
+      targetNodeId
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+
+### create whole roadmap
+
+GRAPHQL {{base}} HTTP/1.1
+Accept: application/json
+
+mutation CreateRoadmap($input: CreateRoadmapInput!) {
+  createRoadmap(input: $input) {
+    id
+    title
+    description
+    authorId
+    nodes {
+      id
+      clientId
+      tutorial {
+        id
+        tutorialName
+      }
+      positionX
+      positionY
+    }
+    edges {
+      id
+      sourceNodeId
+      targetNodeId
+    }
+  }
+}
+
+{
+  "input": {
+    "authorId": "c3b67ca3-44a1-4f05-a511-980758b24176",
+    "description": "A roadmap for learning web development",
+    "edges": [
+      {
+        "sourceNodeId": "node-1",
+        "targetNodeId": "node-2"
+      }
+    ],
+    "nodes": [
+      {
+        "clientId": "node-1",
+        "positionX": 100,
+        "positionY": 200,
+        "tutorialId": "56d8577f-d102-4fac-812a-1b97d71ddf9c"
+      },
+      {
+        "clientId": "node-2",
+        "positionX": 300,
+        "positionY": 200,
+        "tutorialId": "4156777c-af75-47ee-abe6-880ab94b855c"
+      }
+    ],
+    "title": "My Learning Roadmap"
+  }
+}
+
+
+### 
+
+
+### update whole roadmap
+
+GRAPHQL https://vercel-nest-gql-lms.vercel.app/graphql HTTP/1.1
+Accept: application/json
+
+mutation UpdateRoadmap($input: UpdateRoadmapInput!) {
+  updateRoadmap(input: $input) {
+    id
+    title
+    nodes {
+      id
+      clientId
+      positionY
+      positionX
+      tutorial {
+        id
+        tutorialName
+      }
+    }
+    edges {
+      id
+      sourceNodeId
+      targetNodeId
+      sourceClientId
+      targetClientId
+    }
+    author {
+      id
+    }
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+{
+  "input": {
+    "author": {
+      "id": "b2baa9f0-bdc0-4502-acd3-7f33b4953fcf"
+    },
+    "createdAt": "2026-02-26T03:42:57.183Z",
+    "description": "A roadmap for learning web development123",
+    "edges": [
+      {
+        "sourceClientId": "node-1",
+        "targetClientId": "node-2"
+      }
+    ],
+    "id": "7d1fb135-3d23-478b-9898-32dc6cd5ef43",
+    "nodes": [
+      {
+        "clientId": "node-2",
+        "positionX": 300,
+        "positionY": 200,
+        "tutorial": {
+          "id": "4156777c-af75-47ee-abe6-880ab94b855c",
+          "tutorialName": "tutorial 101"
+        }
+      },
+      {
+        "clientId": "node-1",
+        "positionX": 100,
+        "positionY": 200,
+        "tutorial": {
+          "id": "56d8577f-d102-4fac-812a-1b97d71ddf9c",
+          "tutorialName": "tutorial 102"
+        }
+      }
+    ],
+    "title": "My Learning Roadmap",
+    "updatedAt": "2026-02-26T03:42:57.183Z"
+  }
+}
+
+
+### 
