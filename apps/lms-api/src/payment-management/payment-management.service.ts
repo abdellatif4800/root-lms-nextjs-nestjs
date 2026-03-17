@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { log } from 'node:console';
-import { Users } from 'src/users-managment/entities/user.entity';
+import { Users } from '../users-managment/entities/user.entity';
 import Stripe from 'stripe';
 import { Repository } from 'typeorm';
 

@@ -2,7 +2,7 @@ import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { PaymentManagementService } from './payment-management.service';
 import { raw, type Request } from 'express';
 import type { RawBodyRequest } from '@nestjs/common';
-import { CreateCheckoutSessionDto } from '../dto/create-checkout-session.dto';
+import { CreateCheckoutSessionDto } from './dto/create-checkout-session.dto';
 
 @Controller('payment')
 export class PaymentManagementController {
