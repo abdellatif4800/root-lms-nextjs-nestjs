@@ -1,9 +1,11 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { PaymentManagementService } from './payment-management.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Users } from 'src/users-managment/entities/user.entity';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [ConfigModule.forRoot(), TypeOrmModule.forFeature([Users])],
   providers: [
     PaymentManagementService,
     {

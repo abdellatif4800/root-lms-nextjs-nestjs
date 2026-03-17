@@ -26,6 +26,18 @@ export class UsersType {
   @Field(() => UserRole)
   role: UserRole;
 
+  @Field({ nullable: true })
+  stripeCustomerId: string;
+
+  @Field({ nullable: true })
+  subscriptionId: string;
+
+  @Field({ nullable: true })
+  subscriptionStatus: string;
+
+  @Field({ nullable: true })
+  currentPeriodEnd: Date;
+
   @Field()
   createdAt: Date;
 

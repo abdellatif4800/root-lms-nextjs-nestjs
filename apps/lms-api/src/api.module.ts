@@ -12,6 +12,7 @@ import { UsersModule } from './users-managment/users.module';
 import { FileStorageModule } from './file-storage/file-storage.module';
 import { ProgressModule } from './progress-managment/progress.module';
 import { RoadmapsModule } from './roadmaps-managment/roadmaps.module';
+import { PaymentManagementModule } from './payment-management/src/payment-management.module';
 
 @Module({
   imports: [
@@ -89,6 +90,9 @@ import { RoadmapsModule } from './roadmaps-managment/roadmaps.module';
     //-----------------------------------
 
     FileStorageModule,
+    //-----------------------------------
+
+    PaymentManagementModule,
   ],
   controllers: [ApiController],
   providers: [ApiService],

@@ -21,6 +21,12 @@ export class TutorialType {
   @Field()
   category: string;
 
+  @Field()
+  isPaid: boolean;
+
+  @Field(() => Int, { nullable: true })
+  price: number;
+
   @Field(() => UsersType)
   author: UsersType;
 

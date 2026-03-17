@@ -1,0 +1,9 @@
+### 
+
+POST http://localhost:8002/payment/create-checkout-session HTTP/1.1
+Content-Type: application/json
+
+{
+  "lookupKey": "plus",
+  "userId": "42af69ef-d158-4681-ac33-71ec6ab9aef4"
+}

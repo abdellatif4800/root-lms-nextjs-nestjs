@@ -34,6 +34,18 @@ export class Users {
   })
   role: UserRole;
 
+  @Column({ nullable: true })
+  stripeCustomerId: string;
+
+  @Column({ nullable: true })
+  subscriptionId: string;
+
+  @Column({ nullable: true })
+  subscriptionStatus: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  currentPeriodEnd: Date | null;
+
   @OneToMany(() => Tutorial, (tutorial) => tutorial.author)
   tutorials: Tutorial[];
 

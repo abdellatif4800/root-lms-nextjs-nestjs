@@ -35,6 +35,12 @@ export class Tutorial {
   @Column()
   category: string;
 
+  @Column({ default: false })
+  isPaid: boolean;
+
+  @Column({ type: 'int', nullable: true })
+  price: number;
+
   @ManyToOne(() => Users, (user) => user.tutorials, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'authorId' })
   author: Users;

@@ -158,7 +158,9 @@ type TutorialType {
   createdAt: DateTime!
   description: String
   id: ID!
+  isPaid: Boolean!
   level: String
+  price: Int
   publish: Boolean!
   thumbnail: String
   tutorialName: String
@@ -270,11 +272,15 @@ enum UserRole {
 
 type UsersType {
   createdAt: DateTime!
+  currentPeriodEnd: DateTime
   email: String!
   id: ID!
   isBlocked: Boolean!
   password: String!
   role: UserRole!
+  stripeCustomerId: String
+  subscriptionId: String
+  subscriptionStatus: String
   updatedAt: DateTime!
   username: String!
 }
