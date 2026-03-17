@@ -1,4 +1,10 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { log } from 'node:console';
 import { Users } from '../users-managment/entities/user.entity';
@@ -65,15 +71,24 @@ export class PaymentManagementService {
   }
 
   async handleWebhook(rawBody: Buffer, signature: string) {
-    const event = this.stripe.webhooks.constructEvent(
-      rawBody,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!, // ✅ Error 1 fixed
-    );
+    let event: Stripe.Event;
+
+    try {
+      event = this.stripe.webhooks.constructEvent(
+        rawBody,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET!,
+      );
+    } catch (err) {
+      this.logger.error(
+        `⚠️ Webhook signature verification failed: ${err.message}`,
+      );
+      throw new BadRequestException(`Webhook Error: ${err.message}`);
+    }
 
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.Checkout.Session;
+        const session = event.data.object;
         if (session.mode === 'subscription') {
           // ✅ Error 2 fixed — guard null
           if (!session.client_reference_id) break;
@@ -100,7 +115,7 @@ export class PaymentManagementService {
 
       case 'customer.subscription.updated':
       case 'customer.subscription.deleted': {
-        const sub = event.data.object as Stripe.Subscription;
+        const sub = event.data.object;
         const periodEnd = (sub as any).current_period_end; // ✅ Error 3 fixed
 
         await this.userRepo.update(

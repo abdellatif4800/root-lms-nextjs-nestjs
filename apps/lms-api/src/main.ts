@@ -31,6 +31,7 @@ async function bootstrapServer() {
   if (!cachedApp) {
     const app = await NestFactory.create(ApiModule, {
       logger: new ConsoleLogger({ json: true, colors: true }),
+      rawBody: true,
     });
 
     configureApp(app);

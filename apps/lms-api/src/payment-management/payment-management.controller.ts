@@ -6,7 +6,8 @@ import {
   Post,
   Req,
   Query,
-  UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { PaymentManagementService } from './payment-management.service';
 import { raw, type Request } from 'express';
@@ -35,6 +36,7 @@ export class PaymentManagementController {
   }
 
   @Post('webhook')
+  @HttpCode(HttpStatus.OK)
   stripeWebhook(@Req() req: RawBodyRequest<Request>) {
     const rawBody: any = req.rawBody;
     const sig = req.headers['stripe-signature'] as string;
