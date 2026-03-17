@@ -1,5 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+./Screen Shot 2026-03-03 at 05.58.13.png
+./Screen Shot 2026-03-03 at 05.58.29.png
+./Screen Shot 2026-03-03 at 05.59.05.png
+./Screen Shot 2026-03-03 at 05.59.35.png
+./Screen Shot 2026-03-03 at 05.59.19.png
+
 # dependencies
 node_modules
 .pnp
