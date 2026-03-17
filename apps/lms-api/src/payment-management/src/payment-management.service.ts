@@ -61,9 +61,7 @@ export class PaymentManagementService {
               stripeCustomerId: session.customer as string,
               subscriptionId: sub.id,
               subscriptionStatus: sub.status,
-              currentPeriodEnd: periodEnd
-                ? new Date(periodEnd * 1000)
-                : undefined,
+              currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
             },
           );
         }
@@ -79,9 +77,7 @@ export class PaymentManagementService {
           { stripeCustomerId: sub.customer as string },
           {
             subscriptionStatus: sub.status,
-            currentPeriodEnd: periodEnd
-              ? new Date(periodEnd * 1000)
-              : undifined,
+            currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
             // ✅ Error 4 fixed — column now exists on entity
           },
         );
