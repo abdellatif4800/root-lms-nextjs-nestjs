@@ -1,4 +1,13 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { PaymentManagementService } from './payment-management.service';
 import { raw, type Request } from 'express';
 import type { RawBodyRequest } from '@nestjs/common';
@@ -14,6 +23,15 @@ export class PaymentManagementController {
       body.userId,
       body.lookupKey,
     );
+  }
+
+  @Get('session-status')
+  async getSessionStatus(@Query('session_id') sessionId: string) {
+    if (!sessionId) {
+      throw new BadRequestException('session_id query parameter is required');
+    }
+
+    return this.paymentService.getSessionStatus(sessionId);
   }
 
   @Post('webhook')

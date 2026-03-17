@@ -34,6 +34,36 @@ export class PaymentManagementService {
     return { url: session.url };
   }
 
+  // Add this inside payment-management.service.ts
+
+  async getSessionStatus(sessionId: string) {
+    try {
+      // Retrieve the session from Stripe and expand the subscription data
+      const session = await this.stripe.checkout.sessions.retrieve(sessionId, {
+        expand: ['subscription', 'line_items'],
+      });
+
+      const subscription = session.subscription as Stripe.Subscription | null;
+
+      // Determine plan name from line items or price lookup key
+      let planName = 'PRO';
+      if (session.line_items?.data.length) {
+        const price = session.line_items.data[0].price;
+        planName = price?.lookup_key || 'PRO';
+      }
+
+      return {
+        status: session.status, // 'complete', 'open', 'expired'
+        customerEmail: session.customer_details?.email || 'N/A',
+        subscriptionStatus: subscription?.status || 'inactive',
+        planName: planName,
+      };
+    } catch (error) {
+      this.logger.error(`Error fetching session status: ${error.message}`);
+      throw new Error('Failed to retrieve session status');
+    }
+  }
+
   async handleWebhook(rawBody: Buffer, signature: string) {
     const event = this.stripe.webhooks.constructEvent(
       rawBody,
