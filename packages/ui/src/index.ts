@@ -33,3 +33,8 @@ export * from './roadmaps/RoadmapsList'
 
 // ProgressPage
 export * from './progress/ProgressPage'
+
+
+// payment
+export * from './payment/success'
+export * from './payment/pricing'
