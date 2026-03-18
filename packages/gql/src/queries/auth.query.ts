@@ -62,6 +62,7 @@ export const getMe = async () => {
           username
           email
           role
+subscriptionStatus
         }   
       }`
   )

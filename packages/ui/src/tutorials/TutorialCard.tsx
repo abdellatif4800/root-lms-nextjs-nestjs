@@ -4,6 +4,7 @@ import Link from "next/link";
 
 export function TutorialCard({ tutorial }: { tutorial: any }) {
   const { isPublic } = useAppSelector((state: RootState) => state.tutorialSlice);
+  const { isAuth, user } = useAppSelector((state: RootState) => state.authSlice);
 
   const displayData = {
     id: tutorial.id,
@@ -18,21 +19,35 @@ export function TutorialCard({ tutorial }: { tutorial: any }) {
       "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=2069&auto=format&fit=crop",
     level: tutorial.level || "CORE_SYSTEM",
     category: tutorial.category || "General_Sector",
-    instructorName: tutorial.instructor?.name || "ROOT_ADMIN",
+    instructorName: tutorial.author?.username || tutorial.instructor?.name || "ROOT_ADMIN",
+    isPaid: tutorial.isPaid,
+    price: tutorial.price || 0,
   };
 
   const actionLink = !isPublic
     ? { pathname: "/tutorials/tutorialEditor", query: { editOrCreate: "edit", tutorialId: tutorial.id } }
     : { pathname: `/tutorials/${displayData.id}` };
 
-  const actionLabel = !isPublic ? "Edit" : "Read_Now";
+  // ✅ key condition — active subscription unlocks paid content
+  const hasAccess = isAuth && user?.subscriptionStatus === "active";
+
+  // show green Read/Edit button when:
+  // - admin view (always)
+  // - free tutorial (always)
+  // - paid tutorial + user has active subscription
+  const showActionBtn = !isPublic || !displayData.isPaid || hasAccess;
+
+  // show purple Unlock button when:
+  // - public view + paid + no active subscription
+  const showUnlockBtn = isPublic && displayData.isPaid && !hasAccess;
+
+  // show lock overlay on thumbnail same condition as unlock button
+  const showLockOverlay = showUnlockBtn;
 
   return (
     <div className="relative group">
       {/* Hard offset shadow layer */}
-      <div
-        className="absolute inset-0 bg-surface-700 translate-x-[6px] translate-y-[6px] group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-300 [clip-path:polygon(0_0,calc(100%-12px)_0,100%_12px,100%_100%,12px_100%,0_calc(100%-12px))]"
-      />
+      <div className="absolute inset-0 bg-surface-700 translate-x-[6px] translate-y-[6px] group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-300 [clip-path:polygon(0_0,calc(100%-12px)_0,100%_12px,100%_100%,12px_100%,0_calc(100%-12px))]" />
 
       <div className="h-[340px] flex flex-col bg-surface-900 border border-surface-800 hover:border-teal-glow/60 transition-all duration-300 relative overflow-hidden [clip-path:polygon(0_0,calc(100%-12px)_0,100%_12px,100%_100%,12px_100%,0_calc(100%-12px))]">
 
@@ -60,7 +75,7 @@ export function TutorialCard({ tutorial }: { tutorial: any }) {
             </span>
           </div>
 
-          {/* Publish status badge — top left */}
+          {/* Publish status badge — top left (admin only) */}
           {!isPublic && (
             <div className="absolute top-0 left-0 z-10">
               {tutorial?.publish ? (
@@ -74,6 +89,22 @@ export function TutorialCard({ tutorial }: { tutorial: any }) {
                   Draft
                 </span>
               )}
+            </div>
+          )}
+
+          {/* Lock overlay — paid + public + not subscribed */}
+          {showLockOverlay && (
+            <div
+              className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-1.5"
+              style={{ background: "rgba(6,10,15,0.72)", backdropFilter: "blur(1px)" }}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <span className="text-[8px] font-digital font-black text-purple-glow uppercase tracking-[0.2em]">
+                Premium
+              </span>
             </div>
           )}
 
@@ -105,6 +136,8 @@ export function TutorialCard({ tutorial }: { tutorial: any }) {
 
           {/* Footer */}
           <div className="mt-auto pt-3 border-t border-surface-800 flex items-center justify-between shrink-0">
+
+            {/* Instructor */}
             <div className="flex flex-col gap-0.5">
               <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-50">
                 // instructor
@@ -114,13 +147,46 @@ export function TutorialCard({ tutorial }: { tutorial: any }) {
               </span>
             </div>
 
-            <Link
-              href={actionLink}
-              className="relative group/btn overflow-hidden border border-emerald-glow/60 bg-transparent text-emerald-glow text-[9px] font-digital font-black uppercase tracking-wider px-4 py-1.5 hover:text-black transition-colors duration-200 active:scale-95 [clip-path:polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,6px_100%,0_calc(100%-6px))]"
-            >
-              <span className="absolute inset-0 bg-emerald-glow -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-200 z-0" />
-              <span className="relative z-10">{actionLabel}</span>
-            </Link>
+            {/* Price tag — admin view */}
+            {!isPublic && displayData.isPaid && (
+              <span className="text-[9px] font-digital font-black text-purple-glow border border-purple-glow/40 px-2 py-1">
+                ${displayData.price}
+              </span>
+            )}
+
+            {/* Price tag — public + paid + not subscribed */}
+            {showUnlockBtn && (
+              <span className="text-[9px] font-digital font-black text-purple-glow/60 border border-purple-glow/20 px-2 py-1">
+                ${displayData.price}
+              </span>
+            )}
+
+            {/* Read / Edit button — free, admin, or subscribed user */}
+            {showActionBtn && (
+              <Link
+                href={actionLink}
+                className="relative group/btn overflow-hidden border border-emerald-glow/60 bg-transparent text-emerald-glow text-[9px] font-digital font-black uppercase tracking-wider px-4 py-1.5 hover:text-black transition-colors duration-200 active:scale-95 [clip-path:polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,6px_100%,0_calc(100%-6px))]"
+              >
+                <span className="absolute inset-0 bg-emerald-glow -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-200 z-0" />
+                <span className="relative z-10">
+                  {!isPublic ? "Edit" : "Read_Now"}
+                </span>
+              </Link>
+            )}
+
+            {/* Unlock button — paid + public + no active subscription */}
+            {showUnlockBtn && (
+              <button className="relative group/btn overflow-hidden border border-purple-glow/60 bg-transparent text-purple-glow text-[9px] font-digital font-black uppercase tracking-wider px-4 py-1.5 hover:text-black transition-colors duration-200 active:scale-95 [clip-path:polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,6px_100%,0_calc(100%-6px))]">
+                <span className="absolute inset-0 bg-purple-glow -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-200 z-0" />
+                <span className="relative z-10 flex items-center gap-1">
+                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  Unlock
+                </span>
+              </button>
+            )}
           </div>
         </div>
       </div>

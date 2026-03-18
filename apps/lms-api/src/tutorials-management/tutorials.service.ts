@@ -43,6 +43,10 @@ export class TutorialsService {
       qb.andWhere('tutorial.publish = :publish', { publish: filters.publish });
     }
 
+    if (filters?.isPaid !== undefined && filters?.isPaid !== null) {
+      qb.andWhere('tutorial.isPaid = :isPaid', { isPaid: filters.isPaid });
+    }
+
     if (filters?.authorId) {
       qb.andWhere('tutorial.authorId = :authorId', {
         authorId: filters.authorId,

@@ -15,8 +15,8 @@ function configureApp(app: INestApplication) {
   // Enable CORS
   // Note: Don't forget to add your live frontend URL here for production!
   app.enableCors({
-    origin: true,
-    //origin: ['http://localhost:3001', 'http://localhost:3000'],
+    //origin: true,
+    origin: ['http://localhost:3001', 'http://localhost:3000'],
     credentials: true,
   });
 

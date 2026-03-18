@@ -1,4 +1,4 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, Int } from '@nestjs/graphql';
 
 @InputType()
 export class FilterTutorialInput {
@@ -19,6 +19,12 @@ export class FilterTutorialInput {
 
   @Field()
   publish: boolean;
+
+  @Field({ nullable: true })
+  isPaid?: boolean;
+
+  @Field(() => Int, { nullable: true })
+  price?: number;
 
   @Field({ nullable: true })
   createdAfter?: Date;

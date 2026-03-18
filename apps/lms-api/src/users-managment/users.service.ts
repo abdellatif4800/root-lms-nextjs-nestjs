@@ -69,6 +69,7 @@ export class UsersService {
       username: targetUser.username,
       role: UserRole.USER,
       email: targetUser.email,
+      subscriptionStatus: targetUser.subscriptionStatus,
     };
 
     if (isPasswordMatch)
@@ -77,7 +78,6 @@ export class UsersService {
 
   async getUserFromToken(token: string) {
     const payload = this.jwtService.verify(token);
-    log(payload);
     return payload; // return payload if valid
   }
 

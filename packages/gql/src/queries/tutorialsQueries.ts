@@ -86,6 +86,8 @@ export function getTutorials(filters: any) {
         category
         publish
 thumbnail
+isPaid
+price
         units {
           id
           order
@@ -111,6 +113,9 @@ description
 level
 publish
 thumbnail
+isPaid
+price
+
           unitsTitlesList
   author{
 id

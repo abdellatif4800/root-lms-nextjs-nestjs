@@ -59,7 +59,9 @@ input FilterTutorialInput {
   createdAfter: DateTime
   createdBefore: DateTime
   id: String
+  isPaid: Boolean
   levels: [String!]
+  price: Int
   publish: Boolean!
   tutorialName: String
 }
@@ -92,6 +94,7 @@ type PayloadType {
   iat: Float
   role: UserRole!
   sub: String!
+  subscriptionStatus: String
   username: String!
 }
 

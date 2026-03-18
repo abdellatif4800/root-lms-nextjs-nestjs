@@ -6,6 +6,7 @@ interface BaseAuthPayload {
 }
 
 export interface UserAuthPayload extends BaseAuthPayload {
+  subscriptionStatus: string; // e.g., 'active', 'inactive', 'trial'
   role: UserRole.USER;
 }
 

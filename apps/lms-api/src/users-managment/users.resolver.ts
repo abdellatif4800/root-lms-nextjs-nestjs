@@ -14,7 +14,7 @@ import { log } from 'console';
 
 @Resolver(() => UsersType)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Mutation(() => UsersType, { name: 'registerUser' })
   createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
@@ -33,7 +33,7 @@ export class UsersResolver {
   ) {
     const result: any = await this.usersService.findUser(userData);
 
-    ctx.res.cookie('access_token', result.access_token, {
+    ctx.res.cookie('lms_access_token', result.access_token, {
       httpOnly: true,
       sameSite: 'none', // Required for cross-site
       secure: true, // Required for SameSite='none' (works on HTTPS/Vercel)
@@ -49,17 +49,20 @@ export class UsersResolver {
 
   @Query(() => PayloadType, { name: 'me' })
   async me(@Context() ctx: { req: Request }) {
-    const token: string = ctx.req.cookies['access_token'];
+    const token: string = ctx.req.cookies['lms_access_token'];
 
     if (!token) throw new UnauthorizedException();
 
     try {
       const payload = await this.usersService.getUserFromToken(token);
+      log(payload);
+
       return {
         sub: payload.sub,
         username: payload.username,
         role: payload.role,
         email: payload.email,
+        subscriptionStatus: payload.subscriptionStatus,
         iat: payload.iat,
         exp: payload.exp,
       };
@@ -70,7 +73,7 @@ export class UsersResolver {
 
   @Mutation(() => Boolean)
   logout(@Context() ctx: { res: Response }) {
-    ctx.res.clearCookie('access_token', {
+    ctx.res.clearCookie('lms_access_token', {
       httpOnly: true,
       sameSite: 'none',
       secure: true, // must match cookie options

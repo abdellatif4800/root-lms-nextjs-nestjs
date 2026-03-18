@@ -8,6 +8,7 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
   const [categories, setCategories] = useState<string[]>([]);
   const [levels, setLevels] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<"PUBLISHED" | "DRAFT" | null>("PUBLISHED");
+  const [accessFilter, setAccessFilter] = useState<boolean | null>(null); // null = all, false = free, true = paid
 
   const { isPublic } = useAppSelector((state: RootState) => state.tutorialSlice);
 
@@ -27,6 +28,10 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
     setStatusFilter((prev) => (prev === status ? null : status));
   };
 
+  const handleAccessChange = (val: boolean) => {
+    setAccessFilter((prev) => (prev === val ? null : val));
+  };
+
   const buildPublishValue = (status: "PUBLISHED" | "DRAFT" | null) => {
     if (status === "PUBLISHED") return true;
     if (status === "DRAFT") return false;
@@ -40,13 +45,12 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
     if (tutorialName.trim()) filters.tutorialName = tutorialName.trim();
     if (categories.length > 0) filters.categories = categories;
     if (levels.length > 0) filters.levels = levels;
+    if (publishValue !== undefined) filters.publish = publishValue;
 
-    if (publishValue !== undefined) {
-      filters.publish = publishValue;
-    }
-    if (status === null && !isPublic) {
-      filters.__showAll = true;
-    }
+    // isPaid: true = paid, false = free, null = don't filter
+    if (accessFilter !== null) filters.isPaid = accessFilter;
+
+    if (status === null && !isPublic) filters.__showAll = true;
 
     loadFilterdData(filters);
   };
@@ -56,17 +60,19 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
     setCategories([]);
     setLevels([]);
     setStatusFilter("PUBLISHED");
-    loadFilterdData({ publish: true });
+    setAccessFilter(false);
+    loadFilterdData({ publish: true, isPaid: false });
   };
 
   const activeFilterCount =
     categories.length +
     levels.length +
     (tutorialName ? 1 : 0) +
-    (statusFilter !== "PUBLISHED" ? 1 : 0);
+    (statusFilter !== "PUBLISHED" ? 1 : 0) +
+    (accessFilter !== null ? 1 : 0);
 
   return (
-    <aside className="w-72 h-full border-r border-surface-800 bg-surface-900 shrink-0 flex flex-col custom-shadow">
+    <aside className="w-72 h-full border-r border-surface-800 bg-surface-900 shrink-0 flex flex-col custom-shadow relative z-[100]">
 
       {/* ── Header ── */}
       <header className="px-5 py-4 border-b border-surface-800 flex flex-col gap-4">
@@ -83,7 +89,6 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
                 {activeFilterCount}
               </span>
             )}
-            {/* Close button — always visible since filter is always an overlay */}
             <button
               onClick={onClose}
               className="text-text-secondary hover:text-teal-glow transition-colors"
@@ -154,6 +159,41 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
             )}
           </FilterSection>
         )}
+
+        {/* Access Type — FREE / PAID */}
+        <FilterSection label="Access_Type" accent="teal">
+          <div className="flex gap-2">
+            {([
+              { label: "FREE", value: false },
+              { label: "PAID", value: true },
+            ] as const).map(({ label, value }) => {
+              const isActive = accessFilter === value;
+              const isFree = value === false;
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => handleAccessChange(value)}
+                  className={`
+                    flex-1 py-2 text-[9px] font-digital font-black uppercase tracking-wider
+                    border transition-all duration-200
+                    ${isActive && isFree ? "bg-teal-glow   text-black border-teal-glow   shadow-glow-teal-sm" : ""}
+                    ${isActive && !isFree ? "bg-purple-glow text-black border-purple-glow shadow-glow-purple-sm" : ""}
+                    ${!isActive && isFree ? "bg-transparent text-teal-glow   border-teal-glow/30   hover:border-teal-glow   hover:bg-teal-glow/10" : ""}
+                    ${!isActive && !isFree ? "bg-transparent text-purple-glow border-purple-glow/30 hover:border-purple-glow hover:bg-purple-glow/10" : ""}
+                  `}
+                >
+                  {isActive ? `[✓] ${label}` : label}
+                </button>
+              );
+            })}
+          </div>
+          {accessFilter === null && (
+            <p className="text-[8px] font-terminal text-text-secondary opacity-40 uppercase tracking-wider text-center">
+              // showing all access types
+            </p>
+          )}
+        </FilterSection>
 
         {/* Search */}
         <FilterSection label="Query_Protocol" accent="teal">

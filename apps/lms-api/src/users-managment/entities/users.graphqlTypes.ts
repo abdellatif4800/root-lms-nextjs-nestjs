@@ -69,6 +69,9 @@ export class PayloadType {
   email: string;
 
   @Field({ nullable: true })
+  subscriptionStatus: string;
+
+  @Field({ nullable: true })
   iat?: number; // issued at timestamp
 
   @Field({ nullable: true })

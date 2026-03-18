@@ -65,7 +65,7 @@ export function TutorialsPage({ isPublic }: { isPublic: boolean }) {
   }, [data]);
 
   return (
-    <div className="h-full w-full font-terminal text-text-primary flex flex-col overflow-hidden relative">
+    <div className="relative h-full w-full font-terminal text-text-primary flex flex-col overflow-hidden relative">
 
       {/* ── Backdrop (all screen sizes) ── */}
       {filterOpen && (
@@ -77,7 +77,7 @@ export function TutorialsPage({ isPublic }: { isPublic: boolean }) {
 
       {/* ── Filter — always fixed overlay from left ── */}
       <div className={`
-        fixed top-0 left-0 h-full z-50
+        absolute top-0 left-0 h-full z-50
         transition-transform duration-300 ease-in-out
         ${filterOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
