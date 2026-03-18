@@ -173,11 +173,13 @@ type TutorialUnit {
   content: String
   createdAt: DateTime!
   id: ID!
+  muxPlaybackId: String
   order: Int
   publish: Boolean!
   tutorialId: String!
   unitTitle: String
   updatedAt: DateTime!
+  videoStatus: String
 }
 
 type TutorialWithProgressType {

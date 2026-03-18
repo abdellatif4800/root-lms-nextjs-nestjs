@@ -221,33 +221,15 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
 
     //fake data for test 
     const baseTutorialData = {
-      authorId: "b2baa9f0-bdc0-4502-acd3-7f33b4953fcf",
+      authorId: "a1000000-0000-0000-0000-000000000001",
       category: "Backend",
       description: "A comprehensive guide to mastering modern frontend frameworks from scratch.",
       level: "Intermediate",
       thumbnail: "https://example.com/images/react-mastery-thumb.jpg",
       publish: true,
       tutorialName: "Mastering React and Beyond",
-      units: [
-        {
-          unitTitle: "Introduction to Components",
-          order: 1,
-          content: "In this unit, we explore the fundamental building blocks of React...",
-          publish: true,
-        },
-        {
-          unitTitle: "State and Lifecycle",
-          order: 2,
-          content: "Learn how to manage internal component data using the useState hook...",
-          publish: true,
-        },
-        {
-          unitTitle: "Advanced Hooks & Context",
-          order: 3,
-          content: "Deep dive into useMemo, useCallback, and the Context API for global state...",
-          publish: false,
-        }
-      ],
+      units:
+        units
     };
 
 
