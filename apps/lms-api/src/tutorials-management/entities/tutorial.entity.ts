@@ -83,6 +83,19 @@ export class Unit {
   @Column({ type: 'int', nullable: true })
   order?: number;
 
+  // ─── Mux fields ───
+  @Column({ nullable: true })
+  muxUploadId?: string; // from upload creation
+
+  @Column({ nullable: true })
+  muxAssetId?: string; // from webhook after upload
+
+  @Column({ nullable: true })
+  muxPlaybackId?: string; // used by the player
+
+  @Column({ nullable: true, default: 'waiting' })
+  videoStatus?: string; // waiting | processing | ready | error
+
   /** Relations */
   @Column({ type: 'uuid', nullable: true })
   tutorialId: string;

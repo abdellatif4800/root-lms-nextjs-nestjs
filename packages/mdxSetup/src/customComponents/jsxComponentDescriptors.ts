@@ -2,10 +2,12 @@ import { GenericJsxEditor, JsxComponentDescriptor } from "@mdxeditor/editor";
 import { CustomTextEditor } from "./CustomText";
 import { SimpleSeparatorEditor } from "./HorizontalSeprator";
 import { ImageComponentEditor } from "./CustomImage";
+import { VideoComponentEditor } from "./CustomVideo";
 
 
 
 export const jsxComponentDescriptors: JsxComponentDescriptor[] = [
+
   {
     name: 'CustomText',
     kind: 'flow',
@@ -34,6 +36,18 @@ export const jsxComponentDescriptors: JsxComponentDescriptor[] = [
     ],
     hasChildren: false,
     Editor: ImageComponentEditor
+  }
+  ,
+  {
+    name: 'VideoComponent',
+    kind: 'flow',
+    props: [
+      { name: "playbackId", type: "string" }, // ✅ fixed — was 'src'
+      { name: "title", type: "string" },       // ✅ fixed — was 'alt'
+      { name: "caption", type: "string" },     // ✅ added
+    ],
+    hasChildren: false,
+    Editor: VideoComponentEditor
   }
 ]
 

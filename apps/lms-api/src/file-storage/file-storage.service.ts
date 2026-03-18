@@ -4,11 +4,20 @@ import * as Minio from 'minio';
 import { Readable } from 'stream';
 import slugify from 'slugify';
 import * as vercelBlob from '@vercel/blob';
+import Mux from '@mux/mux-node';
 
 @Injectable()
 export class FileStorageService {
+  private mux: Mux;
+
   constructor() {
-    //  @InjectMinio() private readonly minioService: Minio.Client
+    this.mux = new Mux({
+      tokenId: process.env.MUX_TOKEN_ID,
+      tokenSecret: process.env.MUX_TOKEN_SECRET,
+      // ✅ signing keys go here, not in the method
+      jwtSigningKey: process.env.MUX_SIGNING_KEY_ID,
+      jwtPrivateKey: process.env.MUX_SIGNING_PRIVATE_KEY,
+    });
   }
 
   // vercel blob
@@ -71,73 +80,44 @@ export class FileStorageService {
     return { deleted: true, path: pathAndName };
   }
 
-  //-------------------------------------------------------------------
-  //
-  // async createBuckt(bucketName: string) {
-  //   await this.minioService.makeBucket(bucketName);
-  //   console.log('Bucket created successfully.');
-  // }
-  //
-  // async bucketsList() {
-  //   return await this.minioService.listBuckets();
-  // }
-  //
-  // async makeBucketPublic(bucketName: string) {
-  //   const policy = {
-  //     Version: '2012-10-17',
-  //     Statement: [
-  //       {
-  //         Sid: 'PublicRead',
-  //         Effect: 'Allow',
-  //         Principal: '*', // "*" means anyone (anonymous)
-  //         Action: ['s3:GetObject'], // Allow reading files
-  //         Resource: [`arn:aws:s3:::${bucketName}/*`], // All files in this bucket
-  //       },
-  //     ],
-  //   };
-  //
-  //   await this.minioService.setBucketPolicy(bucketName, JSON.stringify(policy));
-  //   const getPolicy = await this.minioService.getBucketPolicy(bucketName);
-  //
-  //   return getPolicy;
-  //   console.log(`Bucket policy file: ${getPolicy}`);
-  // }
-  //
-  // async listObjectsInBucket(bucketName: string): Promise<any[]> {
-  //   const data: any[] = [];
-  //   const stream = this.minioService.listObjects(bucketName, '', true);
-  //   for await (const obj of stream) {
-  //     data.push(obj);
-  //   }
-  //   return data;
-  // }
-  //
-  // async getFile(filename: string, bucketName: string) {
-  //   return await this.minioService.presignedGetObject(
-  //     bucketName,
-  //     filename,
-  //     3600,
-  //   );
-  // }
-  //
-  // async uploadFile(
-  //   file: Express.Multer.File,
-  //   bucketName: string,
-  //   fileName: string,
-  // ) {
-  //   // const slugFileName = slugify(fileName);
-  //   // const safeFileName = `${slugFileName}.jpg`;
-  //
-  //   await this.minioService.putObject(
-  //     bucketName,
-  //     fileName,
-  //     file.buffer,
-  //     file.size,
-  //     function (err, etag) {
-  //       return console.log(err, etag);
-  //     },
-  //   );
-  //
-  //   return this.getFile(fileName, bucketName);
-  // }
+  // ─── Mux: create a direct upload URL ───
+  async createMuxUploadUrl(tutorialId: string, unitId: string) {
+    const upload = await this.mux.video.uploads.create({
+      cors_origin: process.env.FRONTEND_URL ?? '*',
+      new_asset_settings: {
+        playback_policy: ['public'], // or 'signed' for paid courses
+        passthrough: JSON.stringify({ tutorialId, unitId }), // track which unit this belongs to
+      },
+    });
+
+    return {
+      uploadId: upload.id,
+      uploadUrl: upload.url,
+    };
+  }
+
+  // ─── Mux: get upload status (returns asset_id once upload is processed) ───
+  async getMuxUpload(uploadId: string) {
+    return this.mux.video.uploads.retrieve(uploadId);
+  }
+
+  // ─── Mux: get asset status ───
+  async getMuxAsset(assetId: string) {
+    return this.mux.video.assets.retrieve(assetId);
+  }
+
+  // ─── Mux: delete asset ───
+  async deleteMuxAsset(assetId: string) {
+    await this.mux.video.assets.delete(assetId);
+    return { deleted: true, assetId };
+  }
+
+  // ─── Mux: generate signed playback token (for isPaid tutorials) ───
+  async getMuxSignedToken(playbackId: string): Promise<{ token: string }> {
+    const token = await this.mux.jwt.signPlaybackId(playbackId, {
+      expiration: '12h',
+      type: 'video',
+    });
+    return { token };
+  }
 }

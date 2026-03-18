@@ -6,6 +6,7 @@ import { jsxComponentDescriptors } from './customComponents/jsxComponentDescript
 import { InsertSimpleSeparator } from './customComponents/HorizontalSeprator'
 import { InsertSandpackDropdown, sandpackConfig } from './SandpackConfig'
 import { InsertImageComponent } from './customComponents/CustomImage'
+import { InsertVideoComponent } from './customComponents/CustomVideo'
 
 
 export default function InitializedMDXEditor({
@@ -31,6 +32,7 @@ export default function InitializedMDXEditor({
                 <MDX.InsertTable />
                 <InsertSimpleSeparator />
                 <InsertImageComponent />
+                <InsertVideoComponent />
                 <MDX.CodeToggle />
                 <MDX.ConditionalContents
                   options={[

@@ -34,6 +34,7 @@
     "typescript": "*"
   },
   "dependencies": {
+    "@mux/mux-player-react": "^3.11.5",
     "react-player": "^3.4.0"
   }
 }

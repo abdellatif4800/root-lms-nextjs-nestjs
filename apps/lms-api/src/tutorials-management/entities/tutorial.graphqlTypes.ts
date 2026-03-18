@@ -63,6 +63,13 @@ export class UnitType {
   @Field(() => Int, { nullable: true })
   order?: number;
 
+  // ─── Mux fields ───
+  @Field({ nullable: true })
+  muxPlaybackId?: string;
+
+  @Field({ nullable: true })
+  videoStatus?: string; // 'waiting' | 'processing' | 'ready' | 'error'
+
   @Field()
   publish: boolean;
 

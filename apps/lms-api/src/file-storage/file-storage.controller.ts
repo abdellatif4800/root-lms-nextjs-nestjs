@@ -12,7 +12,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Express } from 'express';
 import { FileStorageService } from './file-storage.service';
-import { log } from 'console';
 
 @Controller('files')
 export class FileStorageController {
@@ -56,44 +55,36 @@ export class FileStorageController {
   ) {
     return this.fileStorageService.getFileVercelblob(folderName, filename);
   }
-  //
-  // //---------------Buckets-----------------------
-  // @Post('createBuckt')
-  // async createBucket(@Body('bucketName') bucketName: string) {
-  //   return this.fileStorageService.createBuckt(bucketName);
-  // }
-  //
-  // @Get('listBuckets')
-  // bucketsList() {
-  //   log(123);
-  //   return this.fileStorageService.bucketsList();
-  // }
-  // @Post('makeBucketPublic/:bucketName')
-  // makeBucketPublic(@Param('bucketName') bucketName: string) {
-  //   return this.fileStorageService.makeBucketPublic(bucketName);
-  // }
-  //
-  // @Post('uploadFile')
-  // @UseInterceptors(FileInterceptor('file'))
-  // uploadFile(
-  //   @UploadedFile() file: Express.Multer.File,
-  //   @Body('bucketName') bucketName: string,
-  //   @Body('fileName') fileName: string,
-  // ) {
-  //   return this.fileStorageService.uploadFile(file, bucketName, fileName);
-  // }
-  //
-  // @Get('listFileInBucket/:bucketName')
-  // listFileInBucjet(@Param('bucketName') bucketName: string) {
-  //   return this.fileStorageService.listObjectsInBucket(bucketName);
-  // }
-  //
-  // //--------------------get file----------------
-  // @Get('fileUrl/:bucketName/:filename')
-  // getFile(
-  //   @Param('filename') filename: string,
-  //   @Param('bucketName') bucketName: string,
-  // ) {
-  //   return this.fileStorageService.getFile(filename, bucketName);
-  // }
+
+  // ─── Mux: Next.js calls this before uploading ───
+  @Post('mux/upload-url')
+  createMuxUploadUrl(
+    @Body('tutorialId') tutorialId: string,
+    @Body('unitId') unitId: string,
+  ) {
+    return this.fileStorageService.createMuxUploadUrl(tutorialId, unitId);
+  }
+
+  // ─── Mux: get asset status (poll until ready) ───
+  @Get('mux/asset/:assetId')
+  getMuxAsset(@Param('assetId') assetId: string) {
+    return this.fileStorageService.getMuxAsset(assetId);
+  }
+
+  @Get('mux/upload/:uploadId')
+  getMuxUpload(@Param('uploadId') uploadId: string) {
+    return this.fileStorageService.getMuxUpload(uploadId);
+  }
+
+  // ─── Mux: delete video ───
+  @Delete('mux/asset/:assetId')
+  deleteMuxAsset(@Param('assetId') assetId: string) {
+    return this.fileStorageService.deleteMuxAsset(assetId);
+  }
+
+  // ─── Mux: signed token for paid tutorials ───
+  @Get('mux/token/:playbackId')
+  getMuxToken(@Param('playbackId') playbackId: string) {
+    return this.fileStorageService.getMuxSignedToken(playbackId);
+  }
 }
