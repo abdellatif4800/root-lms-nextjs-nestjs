@@ -72,7 +72,7 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
     (accessFilter !== null ? 1 : 0);
 
   return (
-    <aside className="w-72 h-full border-r border-surface-800 bg-surface-900 shrink-0 flex flex-col custom-shadow relative z-[100]">
+    <aside className="w-72 h-full border-r border-surface-800 bg-surface-900 shrink-0 flex flex-col  relative z-[100]">
 
       {/* ── Header ── */}
       <header className="px-5 py-4 border-b border-surface-800 flex flex-col gap-4">
