@@ -16,7 +16,11 @@ function configureApp(app: INestApplication) {
   // Note: Don't forget to add your live frontend URL here for production!
   app.enableCors({
     //origin: true,
-    origin: ['http://localhost:3001', 'http://localhost:3000'],
+    origin: [
+      'http://localhost:3001',
+      'http://localhost:3000',
+      'https://root-lms-web.vercel.app',
+    ],
     credentials: true,
   });
 
