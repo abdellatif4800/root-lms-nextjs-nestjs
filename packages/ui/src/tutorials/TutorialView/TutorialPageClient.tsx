@@ -8,7 +8,7 @@ export function TutorialPageClient({
 }: {
   tutorialData: any;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
     <div className="h-full w-full bg-surface-950 flex overflow-hidden font-terminal text-text-primary min-h-0 relative">
@@ -23,10 +23,10 @@ export function TutorialPageClient({
 
       {/* ── UnitsList — overlay on mobile, in-flow on lg+ ── */}
       <div className={`
-        lg:relative lg:translate-x-0 lg:flex lg:shrink-0
-        fixed top-0 left-0 h-full z-50
-        transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        lg:relative lg:flex lg:shrink-0
+        absolute top-0 left-0 h-full z-50
+        transition-all duration-300 ease-in-out
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:-ml-80"}
       `}>
         <UnitsList
           firstUnit={tutorialData?.units?.[0]?.id}
@@ -37,6 +37,7 @@ export function TutorialPageClient({
       {/* ── ContentArea — always full width on mobile ── */}
       <ContentArea
         tutorialData={tutorialData}
+        sidebarOpen={sidebarOpen}
         onOpenUnits={() => setSidebarOpen(true)}
       />
     </div>

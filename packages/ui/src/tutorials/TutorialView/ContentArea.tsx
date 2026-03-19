@@ -17,9 +17,11 @@ import { RootState, useAppSelector } from "@repo/reduxSetup";
 
 export function ContentArea({
   tutorialData,
+  sidebarOpen,
   onOpenUnits,
 }: {
   tutorialData?: any;
+  sidebarOpen?: boolean;
   onOpenUnits?: () => void;
 }) {
   const queryClient = useQueryClient();
@@ -124,24 +126,26 @@ export function ContentArea({
         {/* Divider */}
         <span className="h-4 w-px bg-surface-700 shrink-0" />
 
-        {/* Units toggle — mobile only */}
-        <button
-          onClick={onOpenUnits}
-          className="
-            lg:hidden flex items-center gap-1.5
-            border border-surface-700 bg-surface-950
-            text-text-secondary hover:text-teal-glow hover:border-teal-glow
-            text-[9px] font-digital font-black uppercase tracking-wider
-            px-2.5 py-1.5 transition-colors duration-200 shrink-0
-            [clip-path:polygon(0_0,calc(100%-5px)_0,100%_5px,100%_100%,5px_100%,0_calc(100%-5px))]
-          "
-          aria-label="Open units list"
-        >
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-          </svg>
-          <span>Units</span>
-        </button>
+        {/* Units toggle — visible when sidebar is closed */}
+        {!sidebarOpen && (
+          <button
+            onClick={onOpenUnits}
+            className="
+              flex items-center gap-1.5
+              border border-surface-700 bg-surface-950
+              text-text-secondary hover:text-teal-glow hover:border-teal-glow
+              text-[9px] font-digital font-black uppercase tracking-wider
+              px-2.5 py-1.5 transition-colors duration-200 shrink-0
+              [clip-path:polygon(0_0,calc(100%-5px)_0,100%_5px,100%_100%,5px_100%,0_calc(100%-5px))]
+            "
+            aria-label="Open units list"
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
+              <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+            </svg>
+            <span>Units</span>
+          </button>
+        )}
 
         {/* Current unit breadcrumb — fills remaining space */}
         {data && (

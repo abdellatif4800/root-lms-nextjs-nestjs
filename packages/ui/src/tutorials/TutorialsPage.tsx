@@ -3,6 +3,7 @@ import { TutorialsFilter } from "./TutorialsFilter";
 import { TutorialsList } from "./TutorialsList";
 import { TutorialsHeader } from "./TutorialsHeader";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { getTutorials, useQuery } from "@repo/gql";
 import { setIsPublic, useAppDispatch } from "@repo/reduxSetup";
 import TutorialsListLoading from "./TutorialsListLoading";
@@ -33,8 +34,18 @@ function cleanFilters(raw: Record<string, any>) {
 
 export function TutorialsPage({ isPublic }: { isPublic: boolean }) {
   const dispatch = useAppDispatch();
+  const searchParams = useSearchParams();
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [filterOpen, setFilterOpen] = useState(false);
+
+  useEffect(() => {
+    const filterParam = searchParams.get("filter");
+    if (filterParam === "paid") {
+      setFilters((prev) => ({ ...prev, isPaid: true }));
+    } else if (filterParam === "free") {
+      setFilters((prev) => ({ ...prev, isPaid: false }));
+    }
+  }, [searchParams]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["tutorials", filters],
@@ -100,6 +111,7 @@ export function TutorialsPage({ isPublic }: { isPublic: boolean }) {
               loadMore={handleLoadMore}
               tutorialsLength={tutorialsLength}
               onOpenFilter={() => setFilterOpen(true)}
+              filters={filters}
             />
             <TutorialsList tutorials={visibleTutorials} />
           </>

@@ -96,7 +96,7 @@ function PlanCard({
   onSelect: (lookupKey: string) => void;
 }) {
   const isThisLoading = isLoading && activeLookupKey === plan.lookupKey;
-  
+
   const COLOR_MAP = {
     teal: {
       text: 'text-teal-glow',
@@ -186,8 +186,8 @@ function PlanCard({
           relative w-full py-4 font-digital font-bold text-xs tracking-[0.2em]
           border transition-all duration-300 overflow-hidden
           [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,10px_100%,0_calc(100%-10px))]
-          ${plan.highlight 
-            ? `${c.accent} border-transparent text-black hover:brightness-110` 
+          ${plan.highlight
+            ? `${c.accent} border-transparent text-black hover:brightness-110`
             : `bg-transparent border-surface-700 text-text-secondary ${c.hoverBorder} ${c.text}`
           }
           disabled:opacity-50 disabled:cursor-not-allowed
@@ -259,15 +259,16 @@ export function PricingPage() {
   }
 
   return (
-    <div className="h-screen w-full home-root overflow-hidden p-0 flex flex-col items-center">
+    <div className="min-h-screen w-full home-root p-0 flex flex-col items-center">
       {/* Ambient glow orbs */}
       <div className="home-orb home-orb-teal opacity-20" />
       <div className="home-orb home-orb-emerald opacity-10" />
 
-      <div className="home-content h-full w-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col items-center py-20 px-6">
-        
+      <div className="w-full max-w-7xl mx-auto flex flex-col items-center py-10 md:py-16 px-6 relative z-10">
+
         {/* Header */}
-        <header className="text-center mb-16 max-w-2xl">
+        <header className="text-center mb-10 md:mb-16 max-w-2xl">
+
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="h-px w-12 bg-teal-glow opacity-30" />
             <span className="text-[10px] font-terminal text-teal-glow uppercase tracking-[0.4em]">
@@ -275,19 +276,19 @@ export function PricingPage() {
             </span>
             <div className="h-px w-12 bg-teal-glow opacity-30" />
           </div>
-          
+
           <h1 className="text-4xl md:text-6xl font-digital font-black text-text-primary mb-6 tracking-tight">
             UPGRADE_YOUR_<span className="text-teal-glow text-glow-teal">SYSTEM</span>
           </h1>
-          
+
           <p className="text-xs md:text-sm font-terminal text-text-secondary leading-relaxed uppercase tracking-wider opacity-70">
-            Unlock premium data streams. Access restricted tutorials, 
+            Unlock premium data streams. Access restricted tutorials,
             exclusive roadmaps, and high-level architectural insights.
           </p>
         </header>
 
         {/* Plans Grid */}
-        <div className="flex flex-wrap justify-center gap-8 items-center w-full max-w-5xl">
+        <div className="flex flex-row  justify-center gap-8 items-center w-full max-w-5xl">
           {PLANS.map((plan) => (
             <PlanCard
               key={plan.id}

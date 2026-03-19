@@ -24,18 +24,6 @@ async function fetchSessionStatus(sessionId: string): Promise<SessionStatus> {
   return res.json();
 }
 
-// ─── Animated counter for the redirect countdown ──────────────────────────────
-
-function useCountdown(start: number, onDone: () => void) {
-  const [count, setCount] = useState(start);
-  useEffect(() => {
-    if (count <= 0) { onDone(); return; }
-    const t = setTimeout(() => setCount((c) => c - 1), 1000);
-    return () => clearTimeout(t);
-  }, [count, onDone]);
-  return count;
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function PaymentSuccessPage() {
@@ -51,11 +39,6 @@ export function PaymentSuccessPage() {
   });
 
   const isComplete = data?.status === 'complete';
-
-  const countdown = useCountdown(
-    isComplete ? 5 : 0,
-    () => isComplete && router.push('/tutorials/list'),
-  );
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -396,18 +379,6 @@ export function PaymentSuccessPage() {
               <div className="info-row">
                 <span className="info-label">STATUS</span>
                 <span className="badge-active">● {data.subscriptionStatus.toUpperCase()}</span>
-              </div>
-            </div>
-
-            <div className="countdown-wrap">
-              <span className="countdown-text">
-                REDIRECTING IN {countdown}s
-              </span>
-              <div className="countdown-bar-bg">
-                <div
-                  className="countdown-bar-fill"
-                  style={{ width: `${(countdown / 5) * 100}%` }}
-                />
               </div>
             </div>
 

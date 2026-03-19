@@ -44,7 +44,7 @@ export function UnitsList({
   const progressPct = totalUnits > 0 ? Math.round((completedUnits / totalUnits) * 100) : 0;
 
   return (
-    <aside className="w-80 shrink-0 flex flex-col h-full max-h-full overflow-hidden bg-surface-900 border border-surface-800 [box-shadow:4px_0_0_var(--surface-800)]">
+    <aside className="w-80 shrink-0 flex flex-col h-full max-h-full overflow-hidden bg-surface-900 border border-surface-800">
 
       {/* ── Header ── */}
       <div className="flex flex-col gap-2 px-5 py-4 border-b border-surface-800 shrink-0 relative overflow-hidden">
@@ -62,7 +62,7 @@ export function UnitsList({
           {onClose && (
             <button
               onClick={onClose}
-              className="lg:hidden text-text-secondary hover:text-teal-glow transition-colors p-0.5"
+              className="text-text-secondary hover:text-teal-glow transition-colors p-0.5"
               aria-label="Close units panel"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">

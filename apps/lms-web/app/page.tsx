@@ -76,7 +76,7 @@ export default function Home() {
         <div className={`home-cards-grid grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mx-auto mt-12 ${showCards ? " opacity-100 translate-y-0" : " opacity-0 translate-y-4"} transition-all duration-700 ease-out`}>
 
           {/* Free Tutorials */}
-          <Link href="/tutorials/list" className="no-underline">
+          <Link href="/tutorials/list?filter=free" className="no-underline">
             <div className="home-card home-card-teal">
               <div className="home-card-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"
@@ -116,7 +116,7 @@ export default function Home() {
           </Link>
 
           {/* Paid Tutorials Card */}
-          <Link href="#paid-tutorials" className="no-underline">
+          <Link href="/tutorials/list?filter=paid" className="no-underline">
             <div className="home-card group" style={{ '--card-accent': 'var(--purple-glow)' } as any}>
               <div className="home-card-icon" style={{ color: 'var(--purple-glow)' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"
