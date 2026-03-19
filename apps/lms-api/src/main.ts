@@ -19,6 +19,7 @@ function configureApp(app: INestApplication) {
     origin: [
       'http://localhost:3001',
       'http://localhost:3000',
+      'https://root-lms-dashboar.vercel.app',
       'https://root-lms-web.vercel.app',
     ],
     credentials: true,

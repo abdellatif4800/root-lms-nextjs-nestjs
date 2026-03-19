@@ -364,6 +364,7 @@ export function PaymentSuccessPage() {
             <h1 className="title">ACCESS GRANTED</h1>
             <p className="subtitle">
               Your subscription is now active.<br />
+              <span style={{ color: 'var(--teal)', fontWeight: 'bold' }}>Important: Please logout and login again to refresh your session and access premium content.</span><br />
               Welcome to the terminal.
             </p>
 
