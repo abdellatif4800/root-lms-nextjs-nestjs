@@ -11,8 +11,9 @@ import {
 import { QuizViewer } from "@repo/ui";
 import { useParams, useSearchParams } from "next/navigation";
 import { RootState, useAppSelector } from "@repo/reduxSetup";
+import { Suspense } from "react";
 
-export default function StudentQuizPage() {
+function QuizContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -109,5 +110,19 @@ export default function StudentQuizPage() {
         onComplete={handleComplete} 
       />
     </div>
+  );
+}
+
+export default function StudentQuizPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-surface-950 flex items-center justify-center p-6">
+        <span className="text-[10px] font-terminal text-teal-glow uppercase animate-pulse">
+          // LOADING_QUIZ_ENVIRONMENT...
+        </span>
+      </div>
+    }>
+      <QuizContent />
+    </Suspense>
   );
 }

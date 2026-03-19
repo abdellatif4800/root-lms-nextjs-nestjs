@@ -6,6 +6,7 @@ import {
 
 } from "@repo/gql";
 import { TutorialsPage } from "@repo/ui"
+import { Suspense } from "react";
 
 export default async function TutorialsListPage() {
 
@@ -20,7 +21,9 @@ export default async function TutorialsListPage() {
   return (
 
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <TutorialsPage isPublic={true} />
+      <Suspense fallback={<div>Loading Tutorials...</div>}>
+        <TutorialsPage isPublic={true} />
+      </Suspense>
     </HydrationBoundary>
   );
 }

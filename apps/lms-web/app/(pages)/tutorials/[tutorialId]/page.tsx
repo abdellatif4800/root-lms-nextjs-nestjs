@@ -6,6 +6,7 @@ import {
   getUnitsByTutorialId,
   getAllUnitProgressByTutorialAndUser,
 } from "@repo/gql";
+import { Suspense } from "react";
 
 interface PageProps {
   params: Promise<{ tutorialId: string }>;
@@ -33,7 +34,9 @@ export default async function TutorialPage({ params }: PageProps) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <TutorialPageClient tutorialData={tutorialData} />
+      <Suspense fallback={<div>Loading Tutorial...</div>}>
+        <TutorialPageClient tutorialData={tutorialData} />
+      </Suspense>
     </HydrationBoundary>
   );
 }
