@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AuthComponent } from "@repo/ui"
 import { RootState, setAuthUser, setUnAuthorized, useAppDispatch, useAppSelector } from "@repo/reduxSetup";
-import { useQuery, getMe } from "@repo/gql"
+import { useQuery, getMe, LOGOUT } from "@repo/gql"
 
 export default function MainLayoutClient({
   children,
@@ -26,9 +26,13 @@ export default function MainLayoutClient({
     async function fetchUser() {
       try {
         const { data } = await refetch();
-        if (data?.me) {
+
+        if (data?.me && data.me.role === 'ADMIN') {
+          // ✅ only set auth if role is ADMIN
           dispatch(setAuthUser(data.me));
         } else {
+          // ✅ not admin or no user — clear cookie + redux
+          await LOGOUT();
           dispatch(setUnAuthorized());
         }
       } catch (err) {
