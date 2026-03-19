@@ -175,7 +175,7 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
 
       // Upload to your REST endpoint
       const response = await fetch(
-        `http://localhost:8000/adminApi/files/uploadFile`,
+        `https://root-lms-api.vercel.app/files/uploadFile`,
         {
           method: "POST",
           body: formData,

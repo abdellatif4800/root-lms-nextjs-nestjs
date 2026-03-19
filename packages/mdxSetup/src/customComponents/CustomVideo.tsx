@@ -11,7 +11,7 @@ import { useEffect, useState, useRef } from "react";
 import { SimpleSeparator } from "./HorizontalSeprator";
 import MuxPlayer from '@mux/mux-player-react'
 
-const NEST_API = "http://localhost:8002";
+const NEST_API = "https://root-lms-api.vercel.app";
 
 type VideoStatus = "idle" | "uploading" | "processing" | "ready" | "error";
 
