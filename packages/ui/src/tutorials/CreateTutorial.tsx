@@ -22,7 +22,7 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
   const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
 
   const router = useRouter()
-
+  const { user } = useAppSelector((state: RootState) => state.authSlice);
 
   const { data: tutorialData, isLoading } = useQuery({
     queryKey: ["tutorialById", tutorialId],
@@ -31,33 +31,60 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
   });
 
   const [tutorialDetailes, setTutorialDetails] = useState({
-    tutorialName: tutorialData?.tutorialName,
-    author: tutorialData?.author?.id,
-    category: tutorialData?.category,
-    description: tutorialData?.description,
-    level: tutorialData?.level,
-    thumbnail: tutorialData?.thumbnail,
-    publish: tutorialData?.publish,
+    tutorialName: "",
+    author: user?.sub ?? "",
+    category: "",
+    description: "",
+    level: "",
+    thumbnail: "",
+    publish: false,
   });
 
 
   const [units, setUnits] = useState<
     { id: string, unitTitle: string; order: number; content: string; publish: boolean }[]
-  >(tutorialData?.units.map((u: any) => ({
-    id: u.id, // <--- include id
-    unitTitle: u.unitTitle,
-    order: u.order,
-    content: u.content,
-    publish: u.publish
-  }))
-    || []);
+  >([]);
 
   const [activeUnit, setActiveUnit] = useState<{
     unitTitle: string;
     order: number;
     content: string;
     publish: boolean;
-  } | null>(tutorialData?.units[0]);
+  } | null>(null);
+
+  useEffect(() => {
+    if (tutorialData) {
+      setTutorialDetails({
+        tutorialName: tutorialData.tutorialName,
+        author: tutorialData.author?.id,
+        category: tutorialData.category,
+        description: tutorialData.description,
+        level: tutorialData.level,
+        thumbnail: tutorialData.thumbnail,
+        publish: tutorialData.publish,
+      });
+
+      const formattedUnits = tutorialData.units.map((u: any) => ({
+        id: u.id,
+        unitTitle: u.unitTitle,
+        order: u.order,
+        content: u.content,
+        publish: u.publish
+      }));
+      setUnits(formattedUnits);
+
+      if (formattedUnits.length > 0) {
+        setActiveUnit(formattedUnits[0]);
+      }
+    }
+  }, [tutorialData]);
+
+  // Also default author if user changes
+  useEffect(() => {
+    if (!tutorialId && user?.sub) {
+      setTutorialDetails(prev => ({ ...prev, author: user.sub }));
+    }
+  }, [user, tutorialId]);
 
 
   // 1. Create Mutation
@@ -201,8 +228,7 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
   };
 
   const handleSaveTutorial = async () => {
-    // Shared payload data
-    const ubaseTutorialData = {
+    const payload = {
       authorId: tutorialDetailes.author,
       category: tutorialDetailes.category,
       description: tutorialDetailes.description,
@@ -219,25 +245,10 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
       })),
     };
 
-    //fake data for test 
-    const baseTutorialData = {
-      authorId: "a1000000-0000-0000-0000-000000000001",
-      category: "Backend",
-      description: "A comprehensive guide to mastering modern frontend frameworks from scratch.",
-      level: "Intermediate",
-      thumbnail: "https://example.com/images/react-mastery-thumb.jpg",
-      publish: true,
-      tutorialName: "Mastering React and Beyond",
-      units:
-        units
-    };
-
-
-    // console.log("Submitting:", baseTutorialData);
     if (tutorialId) {
-      submitUpdate({ ...ubaseTutorialData, id: tutorialId });
+      submitUpdate({ ...payload, id: tutorialId });
     } else {
-      submitCreate(baseTutorialData);
+      submitCreate(payload);
     }
   };
 
