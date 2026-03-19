@@ -75,7 +75,7 @@ export function QuizViewer({ quiz, onComplete }: QuizViewerProps) {
 
   if (quizFinished) {
     return (
-      <div className="flex flex-col items-center justify-center p-10 gap-6 bg-surface-900 border border-teal-glow/30 [clip-path:polygon(0_0,calc(100%-20px)_0,100%_20px,100%_100%,20px_100%,0_calc(100%-20px))]">
+      <div className="flex flex-col items-center justify-center p-10 gap-6 border border-teal-glow/30 [clip-path:polygon(0_0,calc(100%-20px)_0,100%_20px,100%_100%,20px_100%,0_calc(100%-20px))]">
         <div className="flex flex-col items-center gap-2">
           <span className="text-[10px] font-terminal text-teal-glow uppercase tracking-[0.3em]">
             // SEQUENCE_COMPLETE
@@ -145,7 +145,7 @@ export function QuizViewer({ quiz, onComplete }: QuizViewerProps) {
       </div>
 
       {/* ── Question Card ── */}
-      <div className="bg-surface-900 border border-surface-800 p-8 relative overflow-hidden [clip-path:polygon(0_0,calc(100%-20px)_0,100%_20px,100%_100%,20px_100%,0_calc(100%-20px))]">
+      <div className="border border-surface-800 p-8 relative overflow-hidden [clip-path:polygon(0_0,calc(100%-20px)_0,100%_20px,100%_100%,20px_100%,0_calc(100%-20px))]">
         {/* Left accent */}
         <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-glow shadow-glow-purple-sm" />
         

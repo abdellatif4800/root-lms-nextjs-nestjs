@@ -10,7 +10,7 @@ import {
   useMutation,
   useQuery,
 } from "@repo/gql";
-import { RootState, useAppSelector } from "@repo/reduxSetup";
+import { RootState, useSelector } from "@repo/reduxSetup";
 import { ForwardRefEditor, type MDXEditorMethods } from "@repo/mdxSetup";
 import { useRouter } from "next/navigation";
 
@@ -20,6 +20,7 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   // We use this to show the image instantly before it finishes uploading to the server
   const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
+  const { user } = useSelector((state: RootState) => state.authSlice);
 
   const router = useRouter()
 
@@ -32,7 +33,7 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
 
   const [tutorialDetailes, setTutorialDetails] = useState({
     tutorialName: tutorialData?.tutorialName,
-    author: tutorialData?.author?.id,
+    author: user.sub,
     category: tutorialData?.category,
     description: tutorialData?.description,
     level: tutorialData?.level,
@@ -69,7 +70,7 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
       // 1. Update Tutorial Meta
       setTutorialDetails({
         tutorialName: created.tutorialName,
-        author: created.authorId,
+        author: user.sub,
         category: created.category,
         description: created.description,
         level: created.level,
@@ -203,7 +204,7 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
   const handleSaveTutorial = async () => {
     // Shared payload data
     const ubaseTutorialData = {
-      authorId: tutorialDetailes.author,
+      authorId: user.sub,
       category: tutorialDetailes.category,
       description: tutorialDetailes.description,
       level: tutorialDetailes.level,
@@ -383,13 +384,13 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
                     value={tutorialDetailes.category}
                     onChange={handleTutorialDetailsChange}
                   />
-                  <InputField
-                    type="text"
-                    name="author"
-                    placeholder="Author_ID"
-                    value={tutorialDetailes.author}
-                    onChange={handleTutorialDetailsChange}
-                  />
+                  {/* <InputField */}
+                  {/*   type="text" */}
+                  {/*   name="author" */}
+                  {/*   placeholder="Author_ID" */}
+                  {/*   value={tutorialDetailes.author} */}
+                  {/*   onChange={handleTutorialDetailsChange} */}
+                  {/* /> */}
                   <InputField
                     type="text"
                     name="level"

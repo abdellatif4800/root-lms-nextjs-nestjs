@@ -18,7 +18,7 @@ export default async function TutorialPage({ params }: PageProps) {
   const queryClient = new QueryClient();
 
   const tutorialId = resolvedParams.tutorialId;
-  const userId = "c3b67ca3-44a1-4f05-a511-980758b24176";
+  const userId = "68bd5bc5-c684-49d2-add3-562c605b1b44";
 
   await queryClient.prefetchQuery({
     queryKey: ["tutorialById"],

@@ -69,7 +69,7 @@ function QuizContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-surface-950 flex items-center justify-center p-6">
+      <div className="min-h-screen flex items-center justify-center p-6">
         <span className="text-[10px] font-terminal text-teal-glow uppercase animate-pulse">
           // INITIALIZING_QUIZ_DATA...
         </span>
@@ -79,7 +79,7 @@ function QuizContent() {
 
   if (error || !quiz) {
     return (
-      <div className="min-h-screen bg-surface-950 flex items-center justify-center p-6">
+      <div className="min-h-screen flex items-center justify-center p-6">
         <div className="border border-red-500/30 bg-red-500/5 px-6 py-4 max-w-sm w-full [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,10px_100%,0_calc(100%-10px))]">
           <p className="text-[10px] font-terminal text-red-400 uppercase tracking-widest">
             <span className="opacity-50 mr-1">{">"}</span>
@@ -91,7 +91,7 @@ function QuizContent() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-950 flex flex-col pt-24 pb-12 px-4 sm:px-6">
+    <div className="min-h-screen flex flex-col pt-24 pb-12 px-4 sm:px-6">
       {/* ── Quiz Header ── */}
       <div className="max-w-2xl mx-auto w-full mb-10">
         <div className="flex flex-col gap-1 border-l-2 border-purple-glow pl-5">

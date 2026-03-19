@@ -6,10 +6,11 @@ import { RootState, useSelector } from "@repo/reduxSetup";
 import { useRouter } from "next/navigation";
 
 export function RoadmapForm({ initialData }: { initialData?: any }) {
+  const { user } = useSelector((state: RootState) => state.authSlice);
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
   const [authorId, setAuthorId] = useState(
-    initialData?.authorId ?? "c3b67ca3-44a1-4f05-a511-980758b24176"
+    user.sub
   );
   const router = useRouter();
 
@@ -73,12 +74,6 @@ export function RoadmapForm({ initialData }: { initialData?: any }) {
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-        />
-        <input
-          className="flex-1 p-2 border border-surface-800 rounded bg-surface-800 text-text-primary"
-          placeholder="Author ID"
-          value={authorId}
-          onChange={(e) => setAuthorId(e.target.value)}
         />
       </div>
       <textarea

@@ -23,7 +23,7 @@ export function TutorialDropdown() {
     queryKey: ['tutorials', query],
     // Cast the response so TypeScript knows it's an array of Tutorials
     queryFn: async () => {
-      const response = await getTutorials({ tutorialName: query, publish: true, isPaud: false });
+      const response = await getTutorials({ tutorialName: query, publish: true, isPaid: false });
       return response as Tutorial[];
     },
     // 3. The React Query v5 way to keep previous data
