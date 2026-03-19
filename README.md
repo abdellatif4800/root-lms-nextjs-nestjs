@@ -2,9 +2,11 @@
 
 > A cyberpunk-themed, full-stack Learning Management System built as a Turborepo monorepo — featuring tutorials, roadmaps, quizzes, and progress tracking with a terminal-aesthetic UI.
 
-**Live Demo for web:** [rootlms.vercel.app](https://rootlms.vercel.app)
+**Live Demo for web:** [root-lms-web.vercel.app](https://root-lms-web.vercel.app)
 
-**Live Demo for dashboard:** [rootlms-dashboard.vercel.app](https://rootlms-dashboard.vercel.app)
+**Live Demo for dashboard:** [root-lms-dashboard.vercel.app](https://root-lms-dashboard.vercel.app)
+
+**API Endpoint:** [root-lms-api.vercel.app](https://root-lms-api.vercel.app)
 
 ---
 
