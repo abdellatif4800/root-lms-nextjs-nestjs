@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { getQuizById, createQuiz, updateQuiz } from "@repo/gql";
-import { QuizForm } from "./quiz.types";
+import { QuizForm, QuestionForm, OptionForm } from "./Quiz.types";
 import { QuizEditor } from "./QuizEditor";
 import { QuizEditorPanel } from "./QuizEditorPanel";
 
@@ -72,11 +72,11 @@ export function QuizEditorRoot({
       const payload = {
         ...data,
         ...(isEdit && { id: quizId }),
-        questions: data.questions.map((q, i) => ({
+        questions: data.questions.map((q: QuestionForm, i: number) => ({
           ...q,
           order: i,
           points: parseInt(String(q.points), 10), // ✅ string → Int
-          options: q.options.map((o, oi) => ({ ...o, order: oi })),
+          options: q.options.map((o: OptionForm, oi: number) => ({ ...o, order: oi })),
         })),
       };
 
