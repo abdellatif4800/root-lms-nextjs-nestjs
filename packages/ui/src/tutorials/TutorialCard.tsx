@@ -176,7 +176,10 @@ export function TutorialCard({ tutorial }: { tutorial: any }) {
 
             {/* Unlock button — paid + public + no active subscription */}
             {showUnlockBtn && (
-              <button className="relative group/btn overflow-hidden border border-purple-glow/60 bg-transparent text-purple-glow text-[9px] font-digital font-black uppercase tracking-wider px-4 py-1.5 hover:text-black transition-colors duration-200 active:scale-95 [clip-path:polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,6px_100%,0_calc(100%-6px))]">
+              <Link 
+                href="/pricing"
+                className="relative group/btn overflow-hidden border border-purple-glow/60 bg-transparent text-purple-glow text-[9px] font-digital font-black uppercase tracking-wider px-4 py-1.5 hover:text-black transition-colors duration-200 active:scale-95 [clip-path:polygon(0_0,calc(100%-6px)_0,100%_6px,100%_100%,6px_100%,0_calc(100%-6px))]"
+              >
                 <span className="absolute inset-0 bg-purple-glow -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-200 z-0" />
                 <span className="relative z-10 flex items-center gap-1">
                   <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -185,7 +188,7 @@ export function TutorialCard({ tutorial }: { tutorial: any }) {
                   </svg>
                   Unlock
                 </span>
-              </button>
+              </Link>
             )}
           </div>
         </div>
