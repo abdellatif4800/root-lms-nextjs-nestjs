@@ -55,7 +55,6 @@ export class UsersResolver {
 
     try {
       const payload = await this.usersService.getUserFromToken(token);
-      log(payload);
 
       return {
         sub: payload.sub,

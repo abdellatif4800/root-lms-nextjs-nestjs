@@ -8,7 +8,11 @@ import { UpdateUserInput } from './dto/update-user.input';
 import * as bcrypt from 'bcryptjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
-import { UserAuthPayload, UserRole } from '../common/models/users.models';
+import {
+  AdminAuthPayload,
+  UserAuthPayload,
+  UserRole,
+} from '../common/models/users.models';
 import { log } from 'console';
 import { Repository } from 'typeorm';
 import { FindUserInput } from './dto/find-user.input';
@@ -20,7 +24,7 @@ export class UsersService {
     @InjectRepository(Users)
     private usersRepo: Repository<Users>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async create(createUserInput: CreateUserInput) {
     const existingUser = await this.usersRepo.findOne({
@@ -53,10 +57,8 @@ export class UsersService {
     const targetUser = await this.usersRepo.findOne({
       where: {
         email: findUser.email,
-        role: UserRole.USER,
       },
     });
-
     if (!targetUser) throw new UnauthorizedException('no use with this email');
 
     const isPasswordMatch = await bcrypt.compare(
@@ -64,16 +66,37 @@ export class UsersService {
       targetUser.password,
     );
 
-    const payload: UserAuthPayload = {
-      sub: targetUser.id,
-      username: targetUser.username,
-      role: UserRole.USER,
-      email: targetUser.email,
-      subscriptionStatus: targetUser.subscriptionStatus,
-    };
+    if (!isPasswordMatch)
+      throw new UnauthorizedException('password is incorrect');
 
-    if (isPasswordMatch)
+    if (isPasswordMatch && targetUser.isBlocked)
+      throw new UnauthorizedException('user is blocked, contact support');
+
+    if (isPasswordMatch) {
+      let payload: UserAuthPayload | AdminAuthPayload;
+      if (targetUser.role === UserRole.USER) {
+        payload = {
+          sub: targetUser.id,
+          username: targetUser.username,
+          role: UserRole.USER,
+          email: targetUser.email,
+          subscriptionStatus: targetUser.subscriptionStatus,
+        };
+      } else if (targetUser.role === UserRole.ADMIN) {
+        payload = {
+          sub: targetUser.id,
+          username: targetUser.username,
+          role: UserRole.ADMIN,
+          email: targetUser.email,
+        };
+      } else {
+        throw new UnauthorizedException('unknown user role');
+      }
+
+      console.log('Generated JWT Payload:', payload); // Debug log for payload
+
       return { access_token: await this.jwtService.signAsync(payload) };
+    }
   }
 
   async getUserFromToken(token: string) {
