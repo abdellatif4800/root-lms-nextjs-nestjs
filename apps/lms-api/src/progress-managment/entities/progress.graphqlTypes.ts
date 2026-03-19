@@ -1,9 +1,40 @@
-import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Float, Int } from '@nestjs/graphql';
 import { UsersType } from '../../users-managment/entities/users.graphqlTypes';
 import {
   TutorialType,
   UnitType,
 } from '../../tutorials-management/entities/tutorial.graphqlTypes';
+import { QuizType } from '../../quizzes-management/entities/quizzes.graphqlTypes';
+
+@ObjectType()
+export class QuizProgressType {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => ID)
+  userId: string;
+
+  @Field(() => ID)
+  quizId: string;
+
+  @Field(() => UsersType, { nullable: true })
+  user?: UsersType;
+
+  @Field(() => QuizType, { nullable: true })
+  quiz?: QuizType;
+
+  @Field(() => Int)
+  score: number;
+
+  @Field(() => Boolean)
+  isCompleted: boolean;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
 
 @ObjectType()
 export class TutorialWithProgressType {

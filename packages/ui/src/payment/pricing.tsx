@@ -1,9 +1,9 @@
 'use client';
 
 import { getMe } from '@repo/gql';
-import { RootState, useAppSelector } from '@repo/reduxSetup';
+import { RootState, useAppSelector, useAppDispatch, toggleAuthModal } from '@repo/reduxSetup';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -16,6 +16,7 @@ type Plan = {
   features: string[];
   highlight: boolean;
   badge?: string;
+  color: 'teal' | 'emerald' | 'purple';
 };
 
 // ─── API call ─────────────────────────────────────────────────────────────────
@@ -52,6 +53,7 @@ const PLANS: Plan[] = [
     price: 9,
     interval: 'mo',
     highlight: false,
+    color: 'teal',
     features: [
       'Access all free tutorials',
       'Roadmap viewer',
@@ -67,6 +69,7 @@ const PLANS: Plan[] = [
     interval: 'mo',
     highlight: true,
     badge: 'MOST POPULAR',
+    color: 'purple',
     features: [
       'Everything in Plus',
       'All paid tutorials',
@@ -87,53 +90,124 @@ function PlanCard({
   onSelect,
 }: {
   plan: Plan;
-  userId: string;
+  userId?: string;
   isLoading: boolean;
   activeLookupKey: string | null;
   onSelect: (lookupKey: string) => void;
 }) {
   const isThisLoading = isLoading && activeLookupKey === plan.lookupKey;
+  
+  const COLOR_MAP = {
+    teal: {
+      text: 'text-teal-glow',
+      border: 'border-teal-glow/50',
+      hoverBorder: 'hover:border-teal-glow',
+      shadow: 'shadow-glow-teal',
+      bg: 'bg-teal-glow/5',
+      accent: 'bg-teal-glow',
+      glow: 'text-glow-teal',
+    },
+    emerald: {
+      text: 'text-emerald-glow',
+      border: 'border-emerald-glow/50',
+      hoverBorder: 'hover:border-emerald-glow',
+      shadow: 'shadow-glow-emerald',
+      bg: 'bg-emerald-glow/5',
+      accent: 'bg-emerald-glow',
+      glow: 'text-glow-emerald',
+    },
+    purple: {
+      text: 'text-purple-glow',
+      border: 'border-purple-glow/50',
+      hoverBorder: 'hover:border-purple-glow',
+      shadow: 'shadow-glow-purple',
+      bg: 'bg-purple-glow/5',
+      accent: 'bg-purple-glow',
+      glow: 'text-glow-purple',
+    }
+  };
+
+  const c = COLOR_MAP[plan.color];
 
   return (
     <div
-      className={`plan-card ${plan.highlight ? 'plan-card--highlight' : ''}`}
+      className={`
+        group relative flex flex-col p-8 w-full max-w-[340px]
+        bg-surface-900 border border-surface-800
+        ${plan.highlight ? c.border : 'hover:border-surface-700'}
+        ${c.hoverBorder}
+        transition-all duration-300
+        [clip-path:polygon(0_0,calc(100%-20px)_0,100%_20px,100%_100%,20px_100%,0_calc(100%-20px))]
+        ${plan.highlight ? 'scale-105 z-10 shadow-card-lg' : 'shadow-card'}
+      `}
     >
-      {plan.badge && <div className="plan-badge">{plan.badge}</div>}
+      {/* Badge */}
+      {plan.badge && (
+        <div className={`absolute top-0 right-10 px-3 py-1 text-[9px] font-digital font-bold ${c.accent} text-black z-20`}>
+          {plan.badge}
+        </div>
+      )}
 
-      <div className="plan-header">
-        <span className="plan-label">// PLAN</span>
-        <h2 className="plan-name">{plan.name}</h2>
+      {/* Top Accent Bar */}
+      <div className={`absolute top-0 left-0 right-0 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left ${c.accent}`} />
+
+      {/* Header */}
+      <div className="mb-8">
+        <span className="text-[10px] font-terminal text-text-secondary opacity-50 uppercase tracking-[0.2em]">
+          {"//"} {plan.id}_PLAN
+        </span>
+        <h2 className={`text-3xl font-digital font-black mt-2 ${c.text} ${c.glow}`}>
+          {plan.name}
+        </h2>
       </div>
 
-      <div className="plan-price">
-        <span className="plan-currency">$</span>
-        <span className="plan-amount">{plan.price}</span>
-        <span className="plan-interval">/{plan.interval}</span>
+      {/* Price */}
+      <div className="flex items-baseline gap-1 mb-8 pb-8 border-b border-surface-800">
+        <span className="text-xl font-digital text-text-secondary">$</span>
+        <span className="text-5xl font-digital font-black text-text-primary">{plan.price}</span>
+        <span className="text-sm font-terminal text-text-secondary opacity-50 ml-2">/{plan.interval}</span>
       </div>
 
-      <ul className="plan-features">
+      {/* Features */}
+      <ul className="flex-1 flex flex-col gap-4 mb-10">
         {plan.features.map((f) => (
-          <li key={f} className="plan-feature">
-            <span className="feature-icon">▸</span>
+          <li key={f} className="flex items-start gap-3 text-xs font-terminal text-text-secondary group-hover:text-text-primary transition-colors">
+            <span className={`${c.text} mt-0.5`}>▸</span>
             {f}
           </li>
         ))}
       </ul>
 
+      {/* Action Button */}
       <button
-        className={`plan-btn ${plan.highlight ? 'plan-btn--highlight' : ''}`}
         disabled={isLoading}
         onClick={() => onSelect(plan.lookupKey)}
+        className={`
+          relative w-full py-4 font-digital font-bold text-xs tracking-[0.2em]
+          border transition-all duration-300 overflow-hidden
+          [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,10px_100%,0_calc(100%-10px))]
+          ${plan.highlight 
+            ? `${c.accent} border-transparent text-black hover:brightness-110` 
+            : `bg-transparent border-surface-700 text-text-secondary ${c.hoverBorder} ${c.text}`
+          }
+          disabled:opacity-50 disabled:cursor-not-allowed
+        `}
       >
-        {isThisLoading ? (
-          <span className="btn-loading">
-            <span className="spinner" />
-            REDIRECTING...
-          </span>
-        ) : (
-          'SUBSCRIBE_NOW'
-        )}
+        <div className={`absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 -z-10 ${plan.highlight ? '' : c.bg}`} />
+        <span className="relative z-10 flex items-center justify-center gap-3">
+          {isThisLoading ? (
+            <>
+              <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              EXECUTING...
+            </>
+          ) : (
+            'INITIALIZE_ACCESS'
+          )}
+        </span>
       </button>
+
+      {/* Corner bracket */}
+      <div className={`absolute bottom-0 right-0 w-6 h-6 border-b border-r transition-colors duration-300 ${plan.highlight ? c.border : 'border-surface-800'}`} />
     </div>
   );
 }
@@ -142,8 +216,13 @@ function PlanCard({
 
 export function PricingPage() {
   const { user, isAuth } = useAppSelector((state: RootState) => state.authSlice);
-  const userId = user?.sub
-  console.log(user);
+  const userId = user?.sub;
+  const dispatch = useAppDispatch();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [activeLookupKey, setActiveLookupKey] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -151,7 +230,7 @@ export function PricingPage() {
   const mutation = useMutation({
     mutationFn: createCheckoutSession,
     onSuccess: (data) => {
-      window.location.href = data.url; // redirect to Stripe hosted checkout
+      window.location.href = data.url;
     },
     onError: (err: Error) => {
       setErrorMsg(err.message);
@@ -160,323 +239,55 @@ export function PricingPage() {
   });
 
   const handleSelect = (lookupKey: string) => {
+    if (!isAuth) {
+      dispatch(toggleAuthModal());
+      return;
+    }
     setErrorMsg(null);
     setActiveLookupKey(lookupKey);
-    mutation.mutate({ lookupKey, userId });
+    mutation.mutate({ lookupKey, userId: userId! });
   };
 
+  if (!mounted) {
+    return (
+      <div className="h-screen w-full home-root flex items-center justify-center">
+        <div className="text-teal-glow font-terminal animate-pulse uppercase tracking-[0.4em]">
+          INITIALIZING_PRICING_MODULE...
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
+    <div className="h-screen w-full home-root overflow-hidden p-0 flex flex-col items-center">
+      {/* Ambient glow orbs */}
+      <div className="home-orb home-orb-teal opacity-20" />
+      <div className="home-orb home-orb-emerald opacity-10" />
 
-        :root {
-          --teal:    #00f5d4;
-          --emerald: #00e676;
-          --purple:  #b388ff;
-          --bg:      #050a0e;
-          --surface: #0d1b24;
-          --surface2:#122030;
-          --border:  #1a3040;
-          --text:    #c8d8e0;
-          --muted:   #4a6070;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        .pricing-root {
-          min-height: 100vh;
-          background: var(--bg);
-          font-family: 'JetBrains Mono', monospace;
-          color: var(--text);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 80px 24px 60px;
-          position: relative;
-          overflow: hidden;
-        }
-
-        /* grid bg */
-        .pricing-root::before {
-          content: '';
-          position: fixed;
-          inset: 0;
-          background-image:
-            linear-gradient(rgba(0,245,212,.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,245,212,.03) 1px, transparent 1px);
-          background-size: 40px 40px;
-          pointer-events: none;
-        }
-
-        /* scanline */
-        .pricing-root::after {
-          content: '';
-          position: fixed;
-          inset: 0;
-          background: repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            rgba(0,0,0,.08) 2px,
-            rgba(0,0,0,.08) 4px
-          );
-          pointer-events: none;
-        }
-
-        /* ── Header ─────────────────────────── */
-        .pricing-header {
-          text-align: center;
-          margin-bottom: 64px;
-          position: relative;
-          z-index: 1;
-        }
-
-        .pricing-eyebrow {
-          font-size: 11px;
-          letter-spacing: .2em;
-          color: var(--teal);
-          margin-bottom: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-        }
-
-        .pricing-eyebrow::before,
-        .pricing-eyebrow::after {
-          content: '';
-          width: 40px;
-          height: 1px;
-          background: var(--teal);
-          opacity: .5;
-        }
-
-        .pricing-title {
-          font-family: 'Orbitron', sans-serif;
-          font-size: clamp(32px, 5vw, 56px);
-          font-weight: 900;
-          line-height: 1.1;
-          background: linear-gradient(135deg, var(--teal) 0%, var(--emerald) 60%, var(--purple) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          margin-bottom: 16px;
-        }
-
-        .pricing-subtitle {
-          font-size: 13px;
-          color: var(--muted);
-          max-width: 420px;
-          line-height: 1.7;
-        }
-
-        /* ── Cards grid ──────────────────────── */
-        .plans-grid {
-          display: flex;
-          gap: 24px;
-          flex-wrap: wrap;
-          justify-content: center;
-          position: relative;
-          z-index: 1;
-        }
-
-        .plan-card {
-          width: 300px;
-          background: var(--surface);
-          border: 1px solid var(--border);
-          clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
-          padding: 32px 28px;
-          position: relative;
-          transition: border-color .25s, box-shadow .25s;
-        }
-
-        .plan-card:hover {
-          border-color: var(--teal);
-          box-shadow: 0 0 24px rgba(0,245,212,.1);
-        }
-
-        .plan-card--highlight {
-          border-color: var(--teal);
-          background: var(--surface2);
-          box-shadow: 0 0 32px rgba(0,245,212,.12);
-        }
-
-        .plan-badge {
-          position: absolute;
-          top: -1px;
-          right: 24px;
-          background: var(--teal);
-          color: var(--bg);
-          font-family: 'Orbitron', sans-serif;
-          font-size: 9px;
-          font-weight: 700;
-          letter-spacing: .12em;
-          padding: 4px 10px;
-        }
-
-        .plan-header {
-          margin-bottom: 24px;
-        }
-
-        .plan-label {
-          font-size: 10px;
-          color: var(--muted);
-          letter-spacing: .15em;
-        }
-
-        .plan-name {
-          font-family: 'Orbitron', sans-serif;
-          font-size: 28px;
-          font-weight: 900;
-          color: #fff;
-          margin-top: 4px;
-        }
-
-        .plan-card--highlight .plan-name {
-          color: var(--teal);
-        }
-
-        .plan-price {
-          display: flex;
-          align-items: baseline;
-          gap: 2px;
-          margin-bottom: 28px;
-          border-bottom: 1px solid var(--border);
-          padding-bottom: 24px;
-        }
-
-        .plan-currency {
-          font-family: 'Orbitron', sans-serif;
-          font-size: 18px;
-          color: var(--muted);
-        }
-
-        .plan-amount {
-          font-family: 'Orbitron', sans-serif;
-          font-size: 48px;
-          font-weight: 900;
-          color: #fff;
-          line-height: 1;
-        }
-
-        .plan-interval {
-          font-size: 13px;
-          color: var(--muted);
-          margin-left: 4px;
-        }
-
-        .plan-features {
-          list-style: none;
-          margin-bottom: 32px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .plan-feature {
-          font-size: 12px;
-          color: var(--text);
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          line-height: 1.4;
-        }
-
-        .feature-icon {
-          color: var(--teal);
-          font-size: 10px;
-          flex-shrink: 0;
-        }
-
-        .plan-btn {
-          width: 100%;
-          padding: 13px;
-          background: transparent;
-          border: 1px solid var(--muted);
-          color: var(--text);
-          font-family: 'Orbitron', sans-serif;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: .12em;
-          cursor: pointer;
-          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
-          transition: all .2s;
-        }
-
-        .plan-btn:hover:not(:disabled) {
-          border-color: var(--teal);
-          color: var(--teal);
-          box-shadow: 0 0 16px rgba(0,245,212,.15);
-        }
-
-        .plan-btn--highlight {
-          background: var(--teal);
-          border-color: var(--teal);
-          color: var(--bg);
-        }
-
-        .plan-btn--highlight:hover:not(:disabled) {
-          background: var(--emerald);
-          border-color: var(--emerald);
-          color: var(--bg);
-          box-shadow: 0 0 20px rgba(0,230,118,.3);
-        }
-
-        .plan-btn:disabled {
-          opacity: .6;
-          cursor: not-allowed;
-        }
-
-        .btn-loading {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-        }
-
-        .spinner {
-          width: 12px;
-          height: 12px;
-          border: 2px solid currentColor;
-          border-top-color: transparent;
-          border-radius: 50%;
-          animation: spin .7s linear infinite;
-          display: inline-block;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ── Error ───────────────────────────── */
-        .pricing-error {
-          margin-top: 24px;
-          padding: 12px 20px;
-          background: rgba(255,60,60,.08);
-          border: 1px solid rgba(255,60,60,.3);
-          color: #ff6b6b;
-          font-size: 12px;
-          letter-spacing: .05em;
-          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
-          position: relative;
-          z-index: 1;
-        }
-
-        .pricing-error::before {
-          content: 'ERR ▸ ';
-          opacity: .6;
-        }
-      `}</style>
-
-      <div className="pricing-root">
-        <header className="pricing-header">
-          <p className="pricing-eyebrow">ROOT_LMS // SUBSCRIPTION</p>
-          <h1 className="pricing-title">CHOOSE YOUR PLAN</h1>
-          <p className="pricing-subtitle">
-            Unlock the full terminal. Access every paid tutorial, roadmap, and resource.
+      <div className="home-content h-full w-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex flex-col items-center py-20 px-6">
+        
+        {/* Header */}
+        <header className="text-center mb-16 max-w-2xl">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-px w-12 bg-teal-glow opacity-30" />
+            <span className="text-[10px] font-terminal text-teal-glow uppercase tracking-[0.4em]">
+              ROOT_LMS // SUBSCRIPTION_MODELS
+            </span>
+            <div className="h-px w-12 bg-teal-glow opacity-30" />
+          </div>
+          
+          <h1 className="text-4xl md:text-6xl font-digital font-black text-text-primary mb-6 tracking-tight">
+            UPGRADE_YOUR_<span className="text-teal-glow text-glow-teal">SYSTEM</span>
+          </h1>
+          
+          <p className="text-xs md:text-sm font-terminal text-text-secondary leading-relaxed uppercase tracking-wider opacity-70">
+            Unlock premium data streams. Access restricted tutorials, 
+            exclusive roadmaps, and high-level architectural insights.
           </p>
         </header>
 
-        <div className="plans-grid">
+        {/* Plans Grid */}
+        <div className="flex flex-wrap justify-center gap-8 items-center w-full max-w-5xl">
           {PLANS.map((plan) => (
             <PlanCard
               key={plan.id}
@@ -489,11 +300,15 @@ export function PricingPage() {
           ))}
         </div>
 
+        {/* Error Message */}
         {errorMsg && (
-          <div className="pricing-error">{errorMsg}</div>
+          <div className="mt-12 p-4 border border-red-500/30 bg-red-500/5 text-red-500 text-[10px] font-terminal uppercase tracking-widest [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,10px_100%,0_calc(100%-10px))]">
+            <span className="opacity-50 mr-2">ERR ▸</span>
+            {errorMsg}
+          </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 

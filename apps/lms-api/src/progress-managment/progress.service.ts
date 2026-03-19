@@ -7,7 +7,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { UnitProgress } from './entities/progress.entity';
+import { QuizProgress } from './entities/quiz-progress.entity';
 import {
+  CreateQuizProgressInput,
   CreateTutorialProgressInput,
   CreateUnitProgressInput,
 } from './dto/create-progress.input';
@@ -23,9 +25,43 @@ export class ProgressService {
   constructor(
     @InjectRepository(UnitProgress)
     private unitProgressRepo: Repository<UnitProgress>,
+    @InjectRepository(QuizProgress)
+    private quizProgressRepo: Repository<QuizProgress>,
     @Inject(forwardRef(() => TutorialsService))
     private tutorialsService: TutorialsService,
   ) {}
+
+  async createQuizProgress(input: CreateQuizProgressInput) {
+    const existing = await this.quizProgressRepo.findOne({
+      where: {
+        userId: input.userId,
+        quizId: input.quizId,
+      },
+    });
+
+    if (existing) {
+      return await this.quizProgressRepo.save({
+        ...existing,
+        ...input,
+        isCompleted: input.isCompleted ?? existing.isCompleted,
+      });
+    }
+
+    const newProgress = this.quizProgressRepo.create({
+      ...input,
+      isCompleted: input.isCompleted || false,
+    });
+
+    return await this.quizProgressRepo.save(newProgress);
+  }
+
+  async findQuizProgressByUserId(userId: string) {
+    return await this.quizProgressRepo.find({
+      where: { userId },
+      relations: ['user', 'quiz'],
+      order: { updatedAt: 'DESC' },
+    });
+  }
 
   async createUnitProgress(createUnitProgressInput: CreateUnitProgressInput) {
     const existing = await this.unitProgressRepo.findOne({

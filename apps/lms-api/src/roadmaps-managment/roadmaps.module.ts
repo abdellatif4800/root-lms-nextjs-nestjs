@@ -13,5 +13,6 @@ export * from './entities/roadmap.entity';
     TypeOrmModule.forFeature([Roadmap, RoadmapNode, RoadmapEdge]),
     forwardRef(() => TutorialsModule),
   ],
+  exports: [RoadmapsService]
 })
 export class RoadmapsModule {}

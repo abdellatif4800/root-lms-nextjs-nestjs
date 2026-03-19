@@ -7,20 +7,21 @@
     "dev": "NEXT_DISABLE_TURBOPACK=1 next dev -p 3000",
     "build": "next build",
     "start": "next start",
-   "lint": "eslint",
+    "lint": "eslint",
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@repo/gql": "workspace:*",
+    "@repo/mdxSetup": "workspace:*",
     "@repo/reactFlowSetup": "workspace:*",
     "@repo/reduxSetup": "workspace:*",
-    "@repo/mdxSetup": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/ui": "workspace:*",
     "next": "16.0.10",
     "next-themes": "^0.4.6",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.71.2"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.4.6",

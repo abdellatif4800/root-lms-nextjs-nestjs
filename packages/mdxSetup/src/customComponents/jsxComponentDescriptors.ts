@@ -3,6 +3,7 @@ import { CustomTextEditor } from "./CustomText";
 import { SimpleSeparatorEditor } from "./HorizontalSeprator";
 import { ImageComponentEditor } from "./CustomImage";
 import { VideoComponentEditor } from "./CustomVideo";
+import { QuizComponentEditor } from "./QuizComponent";
 
 
 
@@ -48,6 +49,16 @@ export const jsxComponentDescriptors: JsxComponentDescriptor[] = [
     ],
     hasChildren: false,
     Editor: VideoComponentEditor
+  },
+  {
+    name: 'QuizComponent',
+    kind: 'flow',
+    props: [
+      { name: "quizId", type: "string" },
+      { name: "title", type: "string" },
+    ],
+    hasChildren: false,
+    Editor: QuizComponentEditor
   }
 ]
 

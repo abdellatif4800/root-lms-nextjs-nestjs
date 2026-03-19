@@ -1,10 +1,19 @@
 "use client";
-import { getUnitById, useQuery } from "@repo/gql";
-import { useSearchParams, useRouter } from "next/navigation";
+import {
+  getUnitById,
+  useQuery,
+  useMutation,
+  useQueryClient,
+  createUnitProgress,
+  getAllUnitProgressByTutorialAndUser,
+  CreateProgressInput,
+} from "@repo/gql";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { type MDXRemoteSerializeResult } from "next-mdx-remote";
 import { MDXContent, serializeMDX } from "@repo/mdxSetup";
 import Link from "next/link";
+import { RootState, useAppSelector } from "@repo/reduxSetup";
 
 export function ContentArea({
   tutorialData,
@@ -13,15 +22,39 @@ export function ContentArea({
   tutorialData?: any;
   onOpenUnits?: () => void;
 }) {
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const params = useParams();
+
+  const tutorialId = params.tutorialId as string;
   const unitIdParam = searchParams.get("unitId");
   const currentUnitId = unitIdParam || tutorialData?.units?.[0]?.id;
+
+  // ── Read userId from Redux auth state ──
+  const { user } = useAppSelector((state: RootState) => state.authSlice);
+  const userId = user?.sub ?? "";
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["unitById", currentUnitId],
     queryFn: () => getUnitById(currentUnitId!),
     enabled: !!currentUnitId,
+  });
+
+  const { data: progressData } = useQuery({
+    queryKey: ["unitProgress", userId, tutorialId],
+    queryFn: () => getAllUnitProgressByTutorialAndUser(userId, tutorialId),
+    enabled: !!userId && !!tutorialId,
+  });
+
+  const mutation = useMutation({
+    mutationFn: (input: CreateProgressInput) => createUnitProgress(input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["unitProgress", userId, tutorialId] });
+    },
+    onError: (err) => {
+      console.error("Error saving progress:", err);
+    },
   });
 
   const [mdxSource, setMdxSource] = useState<MDXRemoteSerializeResult | null>(null);
@@ -34,6 +67,10 @@ export function ContentArea({
   }, [data?.content]);
 
   const contentLoading = isLoading || mdxLoading;
+
+  const currentUnitProgress = progressData?.find((p: any) => p.unit.id === currentUnitId);
+  const isCompleted = currentUnitProgress?.isCompleted;
+  const isPending = mutation.isPending;
 
   return (
     <main className="flex-1 flex flex-col h-full min-h-0 relative border border-surface-800 overflow-hidden">
@@ -112,6 +149,28 @@ export function ContentArea({
             <span className="text-teal-glow/40 mr-1">{">"}</span>
             {data.unitTitle}
           </span>
+        )}
+
+        {/* ── Complete Toggle ── */}
+        {userId && data && (
+          <button
+            disabled={isPending}
+            onClick={() => mutation.mutate({ userId, unitId: data.id, isCompleted: !isCompleted })}
+            className={`
+              ml-auto flex items-center gap-1.5
+              border text-[9px] font-digital font-black uppercase tracking-wider
+              px-3 py-1.5 transition-all duration-200 shrink-0
+              [clip-path:polygon(0_0,calc(100%-5px)_0,100%_5px,100%_100%,5px_100%,0_calc(100%-5px))]
+              ${isCompleted
+                ? "bg-emerald-glow/20 border-emerald-glow text-emerald-glow shadow-glow-emerald-sm"
+                : "bg-surface-950 border-surface-700 text-text-secondary hover:text-teal-glow hover:border-teal-glow"
+              }
+              ${isPending ? "animate-pulse opacity-50" : ""}
+            `}
+          >
+            <span className="text-[10px]">{isCompleted ? "✓" : "○"}</span>
+            <span className="hidden sm:inline">{isCompleted ? "Completed" : "Mark Complete"}</span>
+          </button>
         )}
       </div>
 

@@ -5,6 +5,7 @@ export * from "./InitializedMDXEditor"
 export * from "./customComponents/HorizontalSeprator"
 export * from "./customComponents/CustomImage"
 export * from "./customComponents/CustomVideo"
+export * from "./customComponents/QuizComponent"
 
 export { MDXRemote } from "next-mdx-remote/rsc";
 

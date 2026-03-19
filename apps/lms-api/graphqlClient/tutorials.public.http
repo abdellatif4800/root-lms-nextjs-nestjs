@@ -1,6 +1,6 @@
 ### list tutorials
 
-GRAPHQL https://vercel-nest-gql-lms.vercel.app/graphql HTTP/1.1
+GRAPHQL https://root-lms-api.vercel.app/graphql HTTP/1.1
 Accept: application/json
 
 query Tutorial($Filters: FilterTutorialInput!) {

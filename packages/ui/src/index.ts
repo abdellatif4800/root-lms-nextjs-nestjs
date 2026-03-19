@@ -38,3 +38,11 @@ export * from './progress/ProgressPage'
 // payment
 export * from './payment/success'
 export * from './payment/pricing'
+
+
+// quizzes
+export * from './quizzes/QuizEditor'
+export * from './quizzes/Quizeditorroot'
+export * from './quizzes/QuizEditorPanel'
+export * from './quizzes/QuizList'
+export * from './quizzes/QuizViewer'

@@ -2,20 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-const STATS = [
-  { label: "Tutorials", value: 248, suffix: "", color: "teal", icon: BookIcon },
-  { label: "Roadmaps", value: 12, suffix: "", color: "emerald", icon: MapIcon },
-  { label: "Published", value: 194, suffix: "", color: "purple", icon: CheckIcon },
-  { label: "Drafts", value: 54, suffix: "", color: "teal", icon: EditIcon },
-];
-
-const QUICK_ACTIONS = [
-  { label: "New Tutorial", href: "/tutorials/tutorialEditor?editOrCreate=create", color: "teal", icon: BookIcon },
-  { label: "New Roadmap", href: "/roadmaps/roadmapEditor?editOrCreate=create", color: "emerald", icon: MapIcon },
-  { label: "View Published", href: "/tutorials/list", color: "purple", icon: ListIcon },
-];
+import { useQuery, getSystemStats } from "@repo/gql";
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 function BookIcon({ size = 16 }: { size?: number }) {
@@ -57,9 +44,23 @@ function ListIcon({ size = 16 }: { size?: number }) {
     </svg>
   );
 }
+function ClipboardIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+      <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+    </svg>
+  );
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+const QUICK_ACTIONS = [
+  { label: "New Tutorial", href: "/tutorials/tutorialEditor?editOrCreate=create", color: "teal", icon: BookIcon },
+  { label: "New Roadmap", href: "/roadmaps/roadmapEditor?editOrCreate=create", color: "emerald", icon: MapIcon },
+  { label: "View Published", href: "/tutorials/list", color: "purple", icon: ListIcon },
+];
 
 // ─── Color helpers ─────────────────────────────────────────────────────────────
-// Tailwind arbitrary classes per color — avoids all inline style color refs
 const COLOR_MAP: Record<string, {
   text: string;
   border: string;
@@ -101,34 +102,51 @@ const COLOR_MAP: Record<string, {
 // ─── Animated Counter ─────────────────────────────────────────────────────────
 function AnimatedCounter({ target, duration = 1200 }: { target: number; duration?: number }) {
   const [count, setCount] = useState(0);
-  const started = useRef(false);
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    let animationFrameId: number;
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !started.current) {
-        started.current = true;
+      if (entry.isIntersecting) {
         const start = performance.now();
+        const initialCount = count;
         const tick = (now: number) => {
           const p = Math.min((now - start) / duration, 1);
           const ease = 1 - Math.pow(1 - p, 3);
-          setCount(Math.floor(ease * target));
-          if (p < 1) requestAnimationFrame(tick);
-          else setCount(target);
+          setCount(Math.floor(initialCount + ease * (target - initialCount)));
+          if (p < 1) {
+            animationFrameId = requestAnimationFrame(tick);
+          } else {
+            setCount(target);
+          }
         };
-        requestAnimationFrame(tick);
+        animationFrameId = requestAnimationFrame(tick);
         observer.disconnect();
       }
     }, { threshold: 0.1 });
+
     if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
+
+    return () => {
+      observer.disconnect();
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
   }, [target, duration]);
 
   return <span ref={ref}>{count}</span>;
 }
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+type Stat = {
+  label: string;
+  value: number;
+  suffix: string;
+  color: string;
+  icon: (props: { size?: number }) => React.JSX.Element;
+};
+
 // ─── Stat Card ────────────────────────────────────────────────────────────────
-function StatCard({ stat, index }: { stat: typeof STATS[0]; index: number }) {
+function StatCard({ stat, index }: { stat: Stat; index: number }) {
   const c = COLOR_MAP[stat.color];
   const Icon = stat.icon;
 
@@ -145,13 +163,9 @@ function StatCard({ stat, index }: { stat: typeof STATS[0]; index: number }) {
       `}
       style={{ animationDelay: `${1600 + index * 80}ms` }}
     >
-      {/* Hover inset glow */}
       <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none ${c.gradientBg}`} />
-
-      {/* Bottom accent bar */}
       <div className={`absolute bottom-0 left-0 right-0 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left ${c.accentBar}`} />
 
-      {/* Top row */}
       <div className="flex items-start justify-between relative z-10">
         <span className="text-[8px] font-terminal uppercase tracking-[0.3em] text-text-secondary opacity-50">
           {"//"} {stat.label}
@@ -161,7 +175,6 @@ function StatCard({ stat, index }: { stat: typeof STATS[0]; index: number }) {
         </span>
       </div>
 
-      {/* Value */}
       <div className="relative z-10">
         <span className={`text-2xl sm:text-3xl font-digital font-black leading-none ${c.text} text-glow-teal`}>
           <AnimatedCounter target={stat.value} duration={1400} />
@@ -169,12 +182,10 @@ function StatCard({ stat, index }: { stat: typeof STATS[0]; index: number }) {
         </span>
       </div>
 
-      {/* Label */}
       <span className="text-[9px] font-digital font-black text-text-secondary uppercase tracking-wider relative z-10">
         {stat.label}
       </span>
 
-      {/* Corner bracket */}
       <div className={`absolute top-0 right-0 w-4 h-4 border-t border-r transition-colors duration-300 ${c.border}`} />
     </div>
   );
@@ -184,7 +195,6 @@ function StatCard({ stat, index }: { stat: typeof STATS[0]; index: number }) {
 function QuickActions() {
   return (
     <div className="flex flex-col gap-3">
-      {/* Header */}
       <div
         className="flex items-center gap-2 opacity-0 animate-[fadeSlideIn_0.3s_ease_forwards]"
         style={{ animationDelay: "1650ms" }}
@@ -195,7 +205,6 @@ function QuickActions() {
         </span>
       </div>
 
-      {/* Action links */}
       {QUICK_ACTIONS.map((action, i) => {
         const c = COLOR_MAP[action.color];
         const Icon = action.icon;
@@ -214,20 +223,13 @@ function QuickActions() {
             `}
             style={{ animationDelay: `${1700 + i * 80}ms` }}
           >
-            {/* Slide fill */}
             <div className={`absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 z-0 ${c.bg}`} />
-
-            {/* Icon */}
             <span className={`relative z-10 transition-colors duration-200 ${c.text}`}>
               <Icon size={15} />
             </span>
-
-            {/* Label */}
             <span className="relative z-10 text-[10px] font-digital font-black uppercase tracking-wider text-text-secondary group-hover:text-text-primary transition-colors duration-200">
               {action.label}
             </span>
-
-            {/* Arrow */}
             <span className={`relative z-10 ml-auto text-[10px] font-digital translate-x-0 group-hover:translate-x-1 transition-all duration-200 opacity-0 group-hover:opacity-100 ${c.text}`}>
               →
             </span>
@@ -240,14 +242,27 @@ function QuickActions() {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function Page() {
-  const [, setBooted] = useState(false);
+  const { data: systemStats, isLoading } = useQuery({
+    queryKey: ["systemStats"],
+    queryFn: getSystemStats,
+  });
+
+  console.log("System Stats:", systemStats);
+
+  const STATS = [
+    { label: "Tutorials", value: systemStats?.tutorials.total ?? 0, suffix: "", color: "teal", icon: BookIcon },
+    { label: "Roadmaps", value: systemStats?.roadmapsCount ?? 0, suffix: "", color: "emerald", icon: MapIcon },
+    { label: "Quizzes", value: systemStats?.quizzesCount ?? 0, suffix: "", color: "purple", icon: ClipboardIcon },
+    { label: "Published", value: systemStats?.tutorials.published ?? 0, suffix: "", color: "emerald", icon: CheckIcon },
+    { label: "Drafts", value: systemStats?.tutorials.draft ?? 0, suffix: "", color: "teal", icon: EditIcon },
+  ];
 
   return (
     <div className="h-full w-full overflow-y-auto custom-scrollbar font-terminal">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 pb-12">
 
-        {/* ── STAT CARDS — 1 col xs, 2 col sm, 4 col lg ── */}
-        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* ── STAT CARDS ── */}
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
           {STATS.map((stat, i) => (
             <StatCard key={stat.label} stat={stat} index={i} />
           ))}

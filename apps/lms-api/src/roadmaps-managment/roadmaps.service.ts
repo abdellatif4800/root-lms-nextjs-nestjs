@@ -102,6 +102,10 @@ export class RoadmapsService {
     });
   }
 
+  async getCounts() {
+    return await this.roadmapRepo.count();
+  }
+
   // ─── Paste this method into RoadmapsService ───────────────────────────────────
 
   async updateRoadmap(input: UpdateRoadmapInput): Promise<Roadmap | null> {

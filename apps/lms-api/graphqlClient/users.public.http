@@ -13,16 +13,16 @@ mutation Users($userData: CreateUserInput!) {
 
 {
   "userData": {
-    "email": "asd1243",
-    "password": "asd",
-    "username": "asd"
+    "email": "admin101@rootlms.dev",
+    "password": "pass123",
+    "username": "admin"
   }
 }
 
 
 ### sigin
 
-GRAPHQL https://vercel-nest-gql-lms.vercel.app/graphql HTTP/1.1
+GRAPHQL http://localhost:8002/graphql HTTP/1.1
 Accept: application/json
 
 mutation Users($userData: FindUserInput!) {
@@ -33,8 +33,8 @@ mutation Users($userData: FindUserInput!) {
 
 {
   "userData": {
-    "email": "asd1243",
-    "password": "asd"
+    "email": "admin101@mail.com",
+    "password": "pass123"
   }
 }
 

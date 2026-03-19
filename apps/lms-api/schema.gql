@@ -7,6 +7,41 @@ type AuthResponse {
   user: UsersType
 }
 
+input CreateOptionInput {
+  id: String
+  isCorrect: Boolean!
+  order: Int
+  text: String!
+}
+
+input CreateQuestionInput {
+  correctBooleanAnswer: String
+  id: String
+  modelAnswer: String
+  options: [CreateOptionInput]
+  order: Int
+  points: Int! = 1
+  text: String!
+  type: QuestionType!
+}
+
+input CreateQuizInput {
+  description: String
+  passMark: Int! = 70
+  publish: Boolean! = false
+  questions: [CreateQuestionInput]
+  shuffleQuestions: Boolean! = false
+  timeLimit: Int! = 0
+  title: String!
+}
+
+input CreateQuizProgressInput {
+  isCompleted: Boolean
+  quizId: String!
+  score: Int!
+  userId: String!
+}
+
 input CreateRoadmapInput {
   authorId: ID!
   description: String
@@ -74,13 +109,18 @@ input FindUserInput {
 type Mutation {
   addRoadmapEdge(roadmapId: ID!, sourceNodeId: ID!, targetNodeId: ID!): RoadmapType!
   addRoadmapNode(clientId: String!, positionX: Float!, positionY: Float!, roadmapId: ID!, tutorialId: ID!): RoadmapType!
+  createQuiz(input: CreateQuizInput!): QuizType!
+  createQuizProgress(input: CreateQuizProgressInput!): QuizProgressType!
   createRoadmap(input: CreateRoadmapInput!): RoadmapType!
   createTutorial(input: CreateTutorialInput!): TutorialType!
   createUnitProgress(createUnitProgressInput: CreateUnitProgressInput!): UnitProgressType!
   logout: Boolean!
   registerUser(createUserInput: CreateUserInput!): UsersType!
+  removeQuiz(id: ID!): Boolean!
   removeTutorial(id: ID!): TutorialType!
   removeUser(id: Int!): UsersType!
+  toggleQuizPublish(id: ID!): QuizType!
+  updateQuiz(input: UpdateQuizInput!): QuizType!
   updateRoadmap(input: UpdateRoadmapInput!): RoadmapType!
   updateTutorial(updateTutorialInput: UpdateTutorialInput!): TutorialType!
   updateUnitProgress(updateUnitProgressInput: UpdateUnitProgressInput!): UnitProgressType!
@@ -101,7 +141,11 @@ type PayloadType {
 type Query {
   """Required by GraphQL spec (do not use)"""
   _adminQueryRoot: Boolean!
+  allQuizzes: [QuizType!]!
+  getSystemStats: SystemStatsType!
   me: PayloadType!
+  quizById(id: ID!): QuizType!
+  quizProgressByUser(userId: ID!): [QuizProgressType!]!
   roadmap(id: ID!): RoadmapType!
   roadmaps: [RoadmapType!]!
   tutorialById(id: ID!): TutorialType!
@@ -112,6 +156,60 @@ type Query {
   unitProgressByTutorialAndUser(tutorialId: ID!, userId: ID!): [UnitProgressType!]!
   unitProgressByUser(userId: ID!): [UnitProgressType!]!
   users: [UsersType!]!
+}
+
+type QuestionOptionType {
+  id: ID!
+  isCorrect: Boolean!
+  order: Int
+  questionId: String!
+  text: String!
+}
+
+"""Type of quiz question"""
+enum QuestionType {
+  ESSAY
+  MCQ
+  TRUE_OR_FALSE
+}
+
+type QuestionType_ {
+  correctBooleanAnswer: String
+  createdAt: DateTime!
+  id: ID!
+  modelAnswer: String
+  options: [QuestionOptionType]
+  order: Int
+  points: Int!
+  quizId: String!
+  text: String!
+  type: QuestionType!
+  updatedAt: DateTime!
+}
+
+type QuizProgressType {
+  createdAt: DateTime!
+  id: ID!
+  isCompleted: Boolean!
+  quiz: QuizType
+  quizId: ID!
+  score: Int!
+  updatedAt: DateTime!
+  user: UsersType
+  userId: ID!
+}
+
+type QuizType {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  passMark: Int!
+  publish: Boolean!
+  questions: [QuestionType_]
+  shuffleQuestions: Boolean!
+  timeLimit: Int!
+  title: String!
+  updatedAt: DateTime!
 }
 
 input RoadmapEdgeInput {
@@ -152,6 +250,18 @@ type RoadmapType {
   nodes: [RoadmapNodeType]
   title: String!
   updatedAt: DateTime!
+}
+
+type SystemStatsType {
+  quizzesCount: Int!
+  roadmapsCount: Int!
+  tutorials: TutorialStats!
+}
+
+type TutorialStats {
+  draft: Int!
+  published: Int!
+  total: Int!
 }
 
 type TutorialType {
@@ -206,6 +316,17 @@ type UnitProgressType {
   unitId: ID!
   user: UsersType
   userId: ID!
+}
+
+input UpdateQuizInput {
+  description: String
+  id: ID!
+  passMark: Int = 70
+  publish: Boolean = false
+  questions: [CreateQuestionInput!]
+  shuffleQuestions: Boolean = false
+  timeLimit: Int = 0
+  title: String
 }
 
 input UpdateRoadmapAuthorInput {

@@ -2,6 +2,7 @@ import { Resolver, Query, Mutation, Args, ID, Context } from '@nestjs/graphql';
 import { ProgressService } from './progress.service';
 import { UnitProgress } from './entities/progress.entity';
 import {
+  CreateQuizProgressInput,
   CreateTutorialProgressInput,
   CreateUnitProgressInput,
 } from './dto/create-progress.input';
@@ -10,6 +11,7 @@ import {
   UpdateUnitProgressInput,
 } from './dto/update-progress.input';
 import {
+  QuizProgressType,
   TutorialWithProgressType,
   UnitProgressType,
 } from './entities/progress.graphqlTypes';
@@ -19,6 +21,19 @@ import { Request, Response } from 'express';
 @Resolver(() => TutorialWithProgressType)
 export class ProgressResolver {
   constructor(private readonly progressService: ProgressService) {}
+
+  @Mutation(() => QuizProgressType)
+  createQuizProgress(
+    @Args('input')
+    input: CreateQuizProgressInput,
+  ) {
+    return this.progressService.createQuizProgress(input);
+  }
+
+  @Query(() => [QuizProgressType], { name: 'quizProgressByUser' })
+  findQuizProgressByUserId(@Args('userId', { type: () => ID }) userId: string) {
+    return this.progressService.findQuizProgressByUserId(userId);
+  }
 
   @Mutation(() => UnitProgressType)
   createUnitProgress(

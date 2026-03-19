@@ -1,4 +1,19 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, Int } from '@nestjs/graphql';
+
+@InputType()
+export class CreateQuizProgressInput {
+  @Field()
+  userId: string;
+
+  @Field()
+  quizId: string;
+
+  @Field(() => Int)
+  score: number;
+
+  @Field({ nullable: true })
+  isCompleted?: boolean;
+}
 
 @InputType()
 export class CreateTutorialProgressInput {

@@ -1,18 +1,18 @@
 'use client'
 
 import { AuthInput } from "./AuthInput";
-import { publicApiClient, SIGNIN, useMutation, useQuery, getMe } from "@repo/gql"
-import { RootState, setAuthUser, toggleAuthModal, useAppDispatch, useAppSelector, useDispatch } from "@repo/reduxSetup";
+import { publicApiClient, SIGNIN, useMutation, useQuery, getMe, LOGOUT } from "@repo/gql"
+import { RootState, setAuthUser, setIsPublic, setUnAuthorized, toggleAuthModal, useAppDispatch, useAppSelector, useDispatch } from "@repo/reduxSetup";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function LoginForm() {
+export function LoginForm({ isPublic }: { isPublic: boolean }) {
   const dispatch = useAppDispatch()
   const { redirect } = useAppSelector((state: RootState) => state.authSlice);
 
   const router = useRouter()
 
-  const [email, setEmail] = useState("test@mail.com");
+  const [email, setEmail] = useState(isPublic ? "test@mail.com" : "admin101@mail.com");
   const [password, setPassword] = useState("pass123");
 
   const meQuery = useQuery({
@@ -25,6 +25,13 @@ export function LoginForm() {
     mutationFn: (data: { email: string, password: string }) => SIGNIN(data),
     onSuccess: async (data) => {
       const user = await meQuery.refetch();
+      // ✅ admin login check — logout + block if not ADMIN
+      if (isPublic === false && user.data?.me?.role !== "ADMIN") {
+        await LOGOUT();                  // clear cookie on NestJS
+        dispatch(setUnAuthorized());     // clear redux
+        return;                          // stop here — don't proceed
+      }
+
       dispatch(toggleAuthModal())
       dispatch(setAuthUser(user.data.me))
       if (redirect === "user-progress-page") {

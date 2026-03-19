@@ -7,6 +7,7 @@ import { InsertSimpleSeparator } from './customComponents/HorizontalSeprator'
 import { InsertSandpackDropdown, sandpackConfig } from './SandpackConfig'
 import { InsertImageComponent } from './customComponents/CustomImage'
 import { InsertVideoComponent } from './customComponents/CustomVideo'
+import { InsertQuizComponent } from './customComponents/QuizComponent'
 
 
 export default function InitializedMDXEditor({
@@ -33,6 +34,7 @@ export default function InitializedMDXEditor({
                 <InsertSimpleSeparator />
                 <InsertImageComponent />
                 <InsertVideoComponent />
+                <InsertQuizComponent />
                 <MDX.CodeToggle />
                 <MDX.ConditionalContents
                   options={[

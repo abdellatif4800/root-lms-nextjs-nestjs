@@ -32,13 +32,14 @@ export function AuthComponent({ isPublic }: { isPublic: boolean }) {
               {isLogin ? 'AUTH_SEQUENCE_V1' : 'NEW_USER_PROTOCOL'}
             </span>
           </div>
-          {(isPublic || !isRequired) &&
+          {(isPublic && !isRequired) &&
             <button
               onClick={() => dispatch(toggleAuthModal())}
               className="text-text-secondary hover:text-red-500 font-mono text-xs transition-colors shrink-0 ml-2"
             >
               [ X ]
-            </button>}
+            </button>
+          }
         </div>
 
         {/* --- Tabs (Login / Register) --- */}
@@ -53,23 +54,27 @@ export function AuthComponent({ isPublic }: { isPublic: boolean }) {
           >
             Login_Seq
           </button>
-          <button
-            onClick={() => setIsLogin(false)}
-            className={`flex-1 py-3 text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all ${!isLogin
-              ? 'bg-surface-900 text-purple-glow border-b-2 border-purple-glow'
-              : 'bg-surface-950 text-text-secondary hover:text-white border-b-2 border-transparent'
-              }`}
-          >
-            Register_Seq
-          </button>
+          {isPublic && (
+
+            <button
+              onClick={() => setIsLogin(false)}
+              className={`flex-1 py-3 text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all ${!isLogin
+                ? 'bg-surface-900 text-purple-glow border-b-2 border-purple-glow'
+                : 'bg-surface-950 text-text-secondary hover:text-white border-b-2 border-transparent'
+                }`}
+            >
+              Register_Seq
+            </button>
+          )}
         </div>
 
         {/* --- Form Body --- */}
         {/* 5. Scaled padding (p-5 sm:p-8) and added overflow-y-auto for internal scrolling */}
         <div className="p-5 sm:p-8 relative z-20 flex-1 bg-surface-900/50 overflow-y-auto custom-scrollbar">
           {isLogin ? (
-            <LoginForm />
+            <LoginForm isPublic={isPublic} />
           ) : (
+
             <RegisterForm />
           )}
         </div>

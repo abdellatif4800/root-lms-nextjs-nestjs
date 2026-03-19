@@ -13,6 +13,8 @@ import { FileStorageModule } from './file-storage/file-storage.module';
 import { ProgressModule } from './progress-managment/progress.module';
 import { RoadmapsModule } from './roadmaps-managment/roadmaps.module';
 import { PaymentManagementModule } from './payment-management/payment-management.module';
+import { QuizzesManagementModule } from './quizzes-management/quizzes-management.module';
+import { SystemStatsResolver } from './common/system-stats.resolver';
 
 @Module({
   imports: [
@@ -93,8 +95,12 @@ import { PaymentManagementModule } from './payment-management/payment-management
     //-----------------------------------
 
     PaymentManagementModule,
+
+    //-----------------------------------
+
+    QuizzesManagementModule,
   ],
   controllers: [ApiController],
-  providers: [ApiService],
+  providers: [ApiService, SystemStatsResolver],
 })
-export class ApiModule {}
+export class ApiModule { }

@@ -83,28 +83,90 @@ function UnitBadge({ unit, index }: { unit: any; index: number }) {
   );
 }
 
-export function ProgressPageContent({ unitProgressByUser }: any) {
+function QuizProgressCard({ item, index }: { item: any; index: number }) {
+  const isComplete = item.isCompleted || item.score >= (item.quiz?.passMark || 70);
+  const accentColor = isComplete ? "var(--emerald-glow)" : "var(--purple-glow)";
+  const shadowColor = isComplete ? "var(--shadow-emerald)" : "var(--shadow-purple)";
+
+  return (
+    <div
+      className="
+        group relative
+        bg-surface-900 border border-surface-800
+        hover:border-purple-glow/50 hover:bg-surface-800/60
+        transition-all duration-300
+        opacity-0 animate-[fadeSlideIn_0.4s_ease_forwards]
+      "
+      style={{
+        animationDelay: `${index * 80}ms`,
+        boxShadow: "4px 4px 0px var(--surface-800)",
+        clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px))",
+      }}
+    >
+      <div className="absolute top-0 left-0 bottom-0 w-0.5" style={{ background: accentColor, boxShadow: `0 0 8px ${shadowColor}` }} />
+      
+      <div className="p-8 flex flex-col gap-4">
+        <div className="flex justify-between items-start">
+          <div className="flex flex-col gap-1">
+            <span className="text-[8px] font-terminal uppercase tracking-[0.3em] font-bold" style={{ color: accentColor }}>
+              {isComplete ? "ASSESSMENT_PASSED" : "ASSESSMENT_FAILED"}
+            </span>
+            <h3 className="text-sm font-digital font-black text-text-primary uppercase tracking-wide truncate max-w-[200px]">
+              {item.quiz?.title || "Unknown Quiz"}
+            </h3>
+          </div>
+          <div className="flex flex-col items-end gap-0.5">
+            <span className="text-2xl font-digital font-black leading-none" style={{ color: accentColor, textShadow: `0 0 14px ${shadowColor}` }}>
+              {item.score}%
+            </span>
+            <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-40">Score</span>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center pt-3 border-t border-surface-800">
+          <span className="text-[8px] font-terminal text-text-secondary uppercase opacity-50">
+            Last Attempt: {new Date(item.updatedAt).toLocaleDateString()}
+          </span>
+          <Link
+            href={`/quizzes/${item.quizId}`}
+            className="text-[9px] font-digital font-black text-purple-glow uppercase tracking-widest hover:text-white transition-colors"
+          >
+            [ RE_ATTEMPT ]
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ProgressPageContent({ unitProgressByUser, quizProgressByUser }: any) {
+  const [activeTab, setActiveTab] = useState<"tutorials" | "quizzes">("tutorials");
   const dispatch = useDispatch();
 
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId")
 
   useEffect(() => {
-    if (userId === undefined) {
+    if (!userId) {
       dispatch(toggleAuthModal())
       dispatch(setRequired())
       dispatch(setRedirect('user-progress-page'))
     }
-  }, []);
+  }, [userId, dispatch]);
 
-  const data = unitProgressByUser
+  const tutorialsData = unitProgressByUser
     ? (Array.isArray(unitProgressByUser) ? unitProgressByUser : [unitProgressByUser])
     : [];
 
-  const totalCompleted = data.filter((item: any) => item?.isCompleted).length;
+  const quizzesData = quizProgressByUser
+    ? (Array.isArray(quizProgressByUser) ? quizProgressByUser : [quizProgressByUser])
+    : [];
 
-  const avgProgress = data.length > 0
-    ? Math.round(data.reduce((acc: number, item: any) => acc + (item?.percentage || 0), 0) / data.length)
+  const totalTutorialsCompleted = tutorialsData.filter((item: any) => item?.isCompleted).length;
+  const totalQuizzesPassed = quizzesData.filter((item: any) => item?.isCompleted).length;
+
+  const avgProgress = tutorialsData.length > 0
+    ? Math.round(tutorialsData.reduce((acc: number, item: any) => acc + (item?.percentage || 0), 0) / tutorialsData.length)
     : 0;
 
   return (
@@ -129,7 +191,7 @@ export function ProgressPageContent({ unitProgressByUser }: any) {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-6">
 
           {/* Title block */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-8">
             <div className="flex flex-col gap-0.5">
               <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.35em] opacity-50">
                 // SYS://NEURAL_PROGRESS
@@ -138,37 +200,52 @@ export function ProgressPageContent({ unitProgressByUser }: any) {
                 Training_Matrix
               </h1>
             </div>
+
+            {/* Tab Switcher */}
+            <div className="flex bg-surface-950 border border-surface-700 p-1">
+              <button
+                onClick={() => setActiveTab("tutorials")}
+                className={`px-4 py-1.5 text-[9px] font-digital font-black uppercase tracking-widest transition-all ${activeTab === "tutorials" ? "bg-teal-glow text-black" : "text-text-secondary hover:text-white"}`}
+              >
+                Tutorials
+              </button>
+              <button
+                onClick={() => setActiveTab("quizzes")}
+                className={`px-4 py-1.5 text-[9px] font-digital font-black uppercase tracking-widest transition-all ${activeTab === "quizzes" ? "bg-purple-glow text-black" : "text-text-secondary hover:text-white"}`}
+              >
+                Quizzes
+              </button>
+            </div>
           </div>
 
           {/* Stats row */}
           <div className="flex items-center gap-6">
-            {/* Avg progress */}
-            <div className="flex flex-col items-center gap-0.5">
-              <span
-                className="text-xl font-digital font-black text-teal-glow"
-                style={{ textShadow: "0 0 10px var(--shadow-teal)" }}
-              >
-                {avgProgress}%
-              </span>
-              <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-50">
-                Avg_Load
-              </span>
-            </div>
-
-            <div className="w-px h-8 bg-surface-700" />
-
-            {/* Completed */}
-            <div className="flex flex-col items-center gap-0.5">
-              <span
-                className="text-xl font-digital font-black text-emerald-glow"
-                style={{ textShadow: "0 0 10px var(--shadow-emerald)" }}
-              >
-                {totalCompleted}/{data.length}
-              </span>
-              <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-50">
-                Decrypted
-              </span>
-            </div>
+            {activeTab === "tutorials" ? (
+              <>
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-xl font-digital font-black text-teal-glow" style={{ textShadow: "0 0 10px var(--shadow-teal)" }}>
+                    {avgProgress}%
+                  </span>
+                  <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-50">Avg_Load</span>
+                </div>
+                <div className="w-px h-8 bg-surface-700" />
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-xl font-digital font-black text-emerald-glow" style={{ textShadow: "0 0 10px var(--shadow-emerald)" }}>
+                    {totalTutorialsCompleted}/{tutorialsData.length}
+                  </span>
+                  <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-50">Decrypted</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-xl font-digital font-black text-purple-glow" style={{ textShadow: "0 0 10px var(--shadow-purple)" }}>
+                    {totalQuizzesPassed}/{quizzesData.length}
+                  </span>
+                  <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-50">Quizzes_Passed</span>
+                </div>
+              </>
+            )}
 
             <div className="w-px h-8 bg-surface-700" />
 
@@ -188,187 +265,113 @@ export function ProgressPageContent({ unitProgressByUser }: any) {
 
       {/* ── SCROLLABLE CONTENT ── */}
       <div className="relative z-10 flex-1 min-h-0 overflow-y-auto custom-scrollbar p-8">
-        <div className="flex flex-col gap-5 max-w-7xl mx-auto pb-12">
-          {data.map((item: any, i: number) => {
-            const isComplete = item.isCompleted || item.percentage === 100;
-            const accentColor = isComplete ? "var(--emerald-glow)" : "var(--teal-glow)";
-            const shadowColor = isComplete ? "var(--shadow-emerald)" : "var(--shadow-teal)";
+        <div className="max-w-7xl mx-auto pb-12">
+          {activeTab === "tutorials" ? (
+            <div className="flex flex-col gap-5">
+              {tutorialsData.map((item: any, i: number) => {
+                const isComplete = item.isCompleted || item.percentage === 100;
+                const accentColor = isComplete ? "var(--emerald-glow)" : "var(--teal-glow)";
+                const shadowColor = isComplete ? "var(--shadow-emerald)" : "var(--shadow-teal)";
 
-            return (
-              <div
-                key={item.id}
-                className="
-                  group relative
-                  bg-surface-900 border border-surface-800
-                  hover:border-teal-glow/50 hover:bg-surface-800/60
-                  transition-all duration-300
-                  opacity-0 animate-[fadeSlideIn_0.4s_ease_forwards]
-                "
-                style={{
-                  animationDelay: `${i * 80}ms`,
-                  boxShadow: "4px 4px 0px var(--surface-800)",
-                  clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px))",
-                }}
-              >
-                {/* Hover inset glow */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                  style={{ background: "linear-gradient(135deg, rgba(45,212,191,0.035) 0%, transparent 55%)" }}
-                />
+                return (
+                  <div
+                    key={item.id}
+                    className="
+                      group relative
+                      bg-surface-900 border border-surface-800
+                      hover:border-teal-glow/50 hover:bg-surface-800/60
+                      transition-all duration-300
+                      opacity-0 animate-[fadeSlideIn_0.4s_ease_forwards]
+                    "
+                    style={{
+                      animationDelay: `${i * 80}ms`,
+                      boxShadow: "4px 4px 0px var(--surface-800)",
+                      clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px))",
+                    }}
+                  >
+                    {/* Content same as before... */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(45,212,191,0.035) 0%, transparent 55%)" }} />
+                    <div className="absolute top-0 left-0 bottom-0 w-0.5" style={{ background: accentColor, boxShadow: `0 0 8px ${shadowColor}`, opacity: isComplete ? 1 : 0.5 }} />
+                    <div className="absolute bottom-0 left-0 right-0 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left" style={{ background: accentColor, boxShadow: `0 0 8px ${shadowColor}` }} />
 
-                {/* Left accent bar */}
-                <div
-                  className="absolute top-0 left-0 bottom-0 w-0.5"
-                  style={{
-                    background: accentColor,
-                    boxShadow: `0 0 8px ${shadowColor}`,
-                    opacity: isComplete ? 1 : 0.5,
-                  }}
-                />
-
-                {/* Bottom sweep bar */}
-                <div
-                  className="absolute bottom-0 left-0 right-0 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left"
-                  style={{ background: accentColor, boxShadow: `0 0 8px ${shadowColor}` }}
-                />
-
-                <div className="p-10 flex flex-col gap-4">
-
-                  {/* ── Header Row ── */}
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                      {/* Status tag */}
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="w-1 h-1"
-                          style={{
-                            background: accentColor,
-                            boxShadow: `0 0 5px ${shadowColor}`,
-                            animation: !isComplete ? "homeStatusPulse 2s ease-in-out infinite" : undefined,
-                          }}
-                        />
-                        <span
-                          className="text-[8px] font-terminal uppercase tracking-[0.3em] font-bold"
-                          style={{ color: accentColor }}
-                        >
-                          {isComplete ? "Fully_Decrypted" : "In_Progress"}
-                        </span>
+                    <div className="p-10 flex flex-col gap-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="w-1 h-1" style={{ background: accentColor, boxShadow: `0 0 5px ${shadowColor}`, animation: !isComplete ? "homeStatusPulse 2s ease-in-out infinite" : undefined }} />
+                            <span className="text-[8px] font-terminal uppercase tracking-[0.3em] font-bold" style={{ color: accentColor }}>
+                              {isComplete ? "Fully_Decrypted" : "In_Progress"}
+                            </span>
+                          </div>
+                          <h3 className="text-sm font-digital font-black text-text-primary uppercase tracking-wide leading-snug group-hover:text-teal-glow transition-colors duration-200 truncate">
+                            {item.tutorial.tutorialName}
+                          </h3>
+                        </div>
+                        <div className="shrink-0 flex flex-col items-end gap-0.5">
+                          <span className="text-2xl font-digital font-black leading-none" style={{ color: accentColor, textShadow: `0 0 14px ${shadowColor}` }}>
+                            {Math.floor(item.percentage)}%
+                          </span>
+                          <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-40">completion</span>
+                        </div>
                       </div>
-                      {/* Title */}
-                      <h3
-                        className="text-sm font-digital font-black text-text-primary uppercase tracking-wide leading-snug group-hover:text-teal-glow transition-colors duration-200 truncate"
-                      >
-                        {item.tutorial.tutorialName}
-                      </h3>
-                    </div>
 
-                    {/* Percentage readout */}
-                    <div className="shrink-0 flex flex-col items-end gap-0.5">
-                      <span
-                        className="text-2xl font-digital font-black leading-none"
-                        style={{
-                          color: accentColor,
-                          textShadow: `0 0 14px ${shadowColor}`,
-                        }}
-                      >
-                        {Math.floor(item.percentage)}%
-                      </span>
-                      <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-40">
-                        completion
-                      </span>
+                      <div className="flex flex-col gap-1.5">
+                        <AnimatedBar percentage={item.percentage} />
+                        <div className="flex justify-between text-[7px] font-terminal text-text-secondary opacity-30 uppercase tracking-wider px-px">
+                          <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+                        </div>
+                      </div>
+
+                      {item.tutorial.units?.length > 0 && (
+                        <div className="flex flex-col gap-2">
+                          <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-40">// units ({item.tutorial.units.length})</span>
+                          <div className="flex flex-row flex-wrap gap-2">
+                            {item.tutorial.units.map((unit: any, idx: number) => (
+                              <UnitBadge key={unit.id} unit={unit} index={idx} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between pt-3 border-t border-surface-800 gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-wider opacity-40">Units:</span>
+                            <span className="text-[9px] font-digital font-black text-purple-glow">{item.tutorial.units?.length ?? 0}</span>
+                          </div>
+                          <div className="w-px h-3 bg-surface-700" />
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-wider opacity-40">ID:</span>
+                            <span className="text-[9px] font-digital font-black text-text-secondary opacity-50 truncate max-w-[80px]">{item.tutorial.id?.slice(0, 8)}…</span>
+                          </div>
+                        </div>
+                        <Link href={{ pathname: `/tutorials/${item.tutorial.id}` }} className="relative group/btn overflow-hidden shrink-0 border px-5 py-2 text-[9px] font-digital font-black uppercase tracking-[0.2em] transition-colors duration-200 active:scale-95" style={{ borderColor: accentColor, color: accentColor, clipPath: "polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px))" }}>
+                          <span className="absolute inset-0 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-200 z-0" style={{ background: accentColor }} />
+                          <span className="relative z-10 group-hover/btn:text-black transition-colors duration-200">{isComplete ? "Review_Session" : "Resume_Session"}<span className="ml-1.5 group-hover/btn:translate-x-1 inline-block transition-transform duration-200">→</span></span>
+                        </Link>
+                      </div>
                     </div>
+                    <div className="absolute top-0 right-0 w-5 h-5 border-t border-r border-surface-700 group-hover:border-teal-glow/50 transition-colors duration-300" />
+                    <div className="absolute bottom-0 left-0 w-5 h-5 border-b border-l border-surface-700 group-hover:border-teal-glow/30 transition-colors duration-300 opacity-0 group-hover:opacity-100" />
+                    <div className="absolute top-2 right-8 text-[8px] font-digital text-text-secondary opacity-15 font-black">{String(i + 1).padStart(2, "0")}</div>
                   </div>
-
-                  {/* ── Progress Bar ── */}
-                  <div className="flex flex-col gap-1.5">
-                    <AnimatedBar percentage={item.percentage} />
-                    {/* Tick labels */}
-                    <div className="flex justify-between text-[7px] font-terminal text-text-secondary opacity-30 uppercase tracking-wider px-px">
-                      <span>0</span>
-                      <span>25</span>
-                      <span>50</span>
-                      <span>75</span>
-                      <span>100</span>
-                    </div>
-                  </div>
-
-                  {/* ── Units Grid ── */}
-                  {item.tutorial.units?.length > 0 && (
-                    <div className="flex flex-col gap-2">
-                      <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-40">
-                        // units ({item.tutorial.units.length})
-                      </span>
-                      <div className="flex flex-row flex-wrap gap-2">
-                        {item.tutorial.units.map((unit: any, idx: number) => (
-                          <UnitBadge key={unit.id} unit={unit} index={idx} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ── Footer Row ── */}
-                  <div className="flex items-center justify-between pt-3 border-t border-surface-800 gap-4">
-                    {/* Mini stat pills */}
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-wider opacity-40">
-                          Units:
-                        </span>
-                        <span className="text-[9px] font-digital font-black text-purple-glow">
-                          {item.tutorial.units?.length ?? 0}
-                        </span>
-                      </div>
-                      <div className="w-px h-3 bg-surface-700" />
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-wider opacity-40">
-                          ID:
-                        </span>
-                        <span className="text-[9px] font-digital font-black text-text-secondary opacity-50 truncate max-w-[80px]">
-                          {item.tutorial.id?.slice(0, 8)}…
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* CTA */}
-                    <Link
-                      href={{ pathname: `/tutorials/${item.tutorial.id}` }}
-                      className="
-                        relative group/btn overflow-hidden shrink-0
-                        border px-5 py-2
-                        text-[9px] font-digital font-black uppercase tracking-[0.2em]
-                        transition-colors duration-200 active:scale-95
-                      "
-                      style={{
-                        borderColor: accentColor,
-                        color: accentColor,
-                        clipPath: "polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px))",
-                      }}
-                    >
-                      <span
-                        className="absolute inset-0 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-200 z-0"
-                        style={{ background: accentColor }}
-                      />
-                      <span className="relative z-10 group-hover/btn:text-black transition-colors duration-200">
-                        {isComplete ? "Review_Session" : "Resume_Session"}
-                        <span className="ml-1.5 group-hover/btn:translate-x-1 inline-block transition-transform duration-200">→</span>
-                      </span>
-                    </Link>
-                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {quizzesData.map((item: any, i: number) => (
+                <QuizProgressCard key={item.id} item={item} index={i} />
+              ))}
+              {quizzesData.length === 0 && (
+                <div className="col-span-full py-20 text-center border border-dashed border-surface-800">
+                  <span className="text-[10px] font-terminal text-text-secondary uppercase tracking-[0.4em] opacity-40">
+                    // NO_ASSESSMENT_DATA_FOUND
+                  </span>
                 </div>
-
-                {/* Corner bracket decorations */}
-                <div className="absolute top-0 right-0 w-5 h-5 border-t border-r border-surface-700 group-hover:border-teal-glow/50 transition-colors duration-300" />
-                <div className="absolute bottom-0 left-0 w-5 h-5 border-b border-l border-surface-700 group-hover:border-teal-glow/30 transition-colors duration-300 opacity-0 group-hover:opacity-100" />
-
-                {/* Index number */}
-                <div
-                  className="absolute top-2 right-8 text-[8px] font-digital text-text-secondary opacity-15 font-black"
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </div>
-              </div>
-            );
-          })}
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -398,7 +401,7 @@ export function ProgressPageContent({ unitProgressByUser }: any) {
           <div className="w-px h-3 bg-surface-700" />
           <div className="flex items-center gap-2">
             <span className="text-text-secondary uppercase tracking-wider opacity-50">MODULES:</span>
-            <span className="text-teal-glow font-bold">{data.length}</span>
+            <span className="text-teal-glow font-bold">{activeTab === "tutorials" ? tutorialsData.length : quizzesData.length}</span>
           </div>
         </div>
 

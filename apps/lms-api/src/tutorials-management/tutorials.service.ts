@@ -129,6 +129,13 @@ export class TutorialsService {
     return unit;
   }
 
+  async getCounts() {
+    const total = await this.tutorialRepo.count();
+    const published = await this.tutorialRepo.count({ where: { publish: true } });
+    const draft = await this.tutorialRepo.count({ where: { publish: false } });
+    return { total, published, draft };
+  }
+
   async update(id: string, updateTutorialInput: UpdateTutorialInput) {
     const tutorial: any = await this.tutorialRepo.preload({
       ...updateTutorialInput,

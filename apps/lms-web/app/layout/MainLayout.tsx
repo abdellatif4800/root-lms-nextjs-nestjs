@@ -50,7 +50,7 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
           (pathname === "/tutorials/list" || !pathname.startsWith("/tutorials/")) && (
             <div className="w-full flex justify-center mb-3 sm:mb-6 shrink-0 relative z-30">
               <div
-                className="w-full lg:w-[70%] pb-3 sm:pb-4 border-b border-surface-800 flex items-center justify-center"
+                className="w-[95%] lg:w-[90%] max-w-7xl pb-3 sm:pb-4 border-b border-surface-800 flex items-center justify-center"
                 style={{ borderImage: "linear-gradient(90deg, transparent, var(--nav-border), transparent) 1" }}
               >
                 <Navbar />

@@ -29,7 +29,6 @@ export default function MainLayoutClient({
     async function fetchUser() {
       try {
         const { data } = await meQuery.refetch();
-
         if (!data?.me) {
           dispatch(setUnAuthorized());
           return;

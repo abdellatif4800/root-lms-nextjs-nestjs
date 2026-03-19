@@ -9,6 +9,54 @@ export interface CreateProgressInput {
   isCompleted: boolean;
 }
 
+export interface CreateQuizProgressInput {
+  userId: string;
+  quizId: string;
+  score: number;
+  isCompleted?: boolean;
+}
+
+export async function createQuizProgress(input: CreateQuizProgressInput) {
+  return request(
+    publicApi,
+    gql`
+      mutation CreateQuizProgress($input: CreateQuizProgressInput!) {
+        createQuizProgress(input: $input) {
+          id
+          userId
+          quizId
+          score
+          isCompleted
+        }
+      }
+    `,
+    { input }
+  ).then((res: any) => res.createQuizProgress);
+}
+
+export async function getQuizProgressByUser(userId: string) {
+  return request(
+    publicApi,
+    gql`
+      query GetQuizProgressByUser($userId: ID!) {
+        quizProgressByUser(userId: $userId) {
+          id
+          userId
+          quizId
+          score
+          isCompleted
+          updatedAt
+          quiz {
+            id
+            title
+          }
+        }
+      }
+    `,
+    { userId }
+  ).then((res: any) => res.quizProgressByUser);
+}
+
 export async function getTutoialsInProgressByUser(userId: string) {
   return request(publicApi, gql`
 

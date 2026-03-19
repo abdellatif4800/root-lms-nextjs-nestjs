@@ -63,6 +63,13 @@ const ADMIN_LINKS: AdminLink[] = [
       { name: 'Published/Draft', href: '/roadmaps/list' },
     ]
   },
+  {
+    name: 'Quizzes', href: '#', icon: Icons.menu,
+    subRoutes: [
+      { name: 'Create/Edit', href: '/quizzes/quizEditor', query: { editOrCreate: 'create' } },
+      { name: 'Quiz Database', href: '/quizzes/list' },
+    ]
+  }
 ]
 
 export default function Sidebar() {

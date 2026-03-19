@@ -19,7 +19,7 @@ export const Navbar = () => {
   ];
 
   return (
-    <nav className="p-2 w-full flex flex-col font-digital tracking-widest">
+    <nav className="p-2 w-full max-w-7xl mx-auto flex flex-col font-digital tracking-widest">
 
       {/* ── Main row ── */}
       <div className="flex flex-row items-center justify-between">
@@ -35,7 +35,7 @@ export const Navbar = () => {
         </Link>
 
         {/* Desktop nav links */}
-        <div className="hidden md:flex items-center gap-6 lg:gap-10">
+        <div className="hidden md:flex items-center gap-6 lg:gap-12 xl:gap-16">
           {navItems.map(({ label, href }) => {
             const isActive = pathname === href;
             return (

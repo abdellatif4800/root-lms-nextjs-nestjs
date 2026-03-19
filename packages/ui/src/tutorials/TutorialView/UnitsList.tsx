@@ -1,13 +1,9 @@
 "use client";
 
 import {
-  CreateProgressInput,
-  createUnitProgress,
   getAllUnitProgressByTutorialAndUser,
   getUnitsByTutorialId,
-  useMutation,
   useQuery,
-  useQueryClient,
 } from "@repo/gql";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
@@ -20,8 +16,6 @@ export function UnitsList({
   firstUnit?: string;
   onClose?: () => void;
 }) {
-  const queryClient = useQueryClient();
-
   // ── Read userId from Redux auth state (populated at login) ──
   const { user } = useAppSelector((state: RootState) => state.authSlice);
   const userId = user?.sub ?? "";
@@ -36,7 +30,6 @@ export function UnitsList({
   const { data: progressData, isLoading: progressLoading, error: progressError } = useQuery({
     queryKey: ["unitProgress", userId, tutorialId],
     queryFn: () => getAllUnitProgressByTutorialAndUser(userId, tutorialId),
-    // ── Guard: don't fire until we have a real userId ──
     enabled: !!userId && !!tutorialId,
   });
 
@@ -44,16 +37,6 @@ export function UnitsList({
     queryKey: ["tutorialById"],
     queryFn: () => getUnitsByTutorialId(tutorialId),
     enabled: !!tutorialId,
-  });
-
-  const mutation = useMutation({
-    mutationFn: (input: CreateProgressInput) => createUnitProgress(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["unitProgress", userId, tutorialId] });
-    },
-    onError: (err) => {
-      console.error("Error saving:", err);
-    },
   });
 
   const totalUnits = tutorialData?.units?.length || 0;
@@ -132,7 +115,6 @@ export function UnitsList({
               const isActive = currentUnitId === unit.id;
               const progress = progressData?.find((p: any) => p.unit.id === unit.id);
               const isCompleted = progress?.isCompleted;
-              const isPending = mutation.isPending && (mutation.variables as any)?.unitId === unit.id;
 
               return (
                 <div
@@ -166,31 +148,11 @@ export function UnitsList({
                     </span>
                   </Link>
 
-                  {/* Complete toggle — only shown when logged in */}
-                  {userId ? (
-                    <button
-                      title={isCompleted ? "Mark as Incomplete" : "Mark as Complete"}
-                      disabled={isPending}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        mutation.mutate({ userId, unitId: unit.id, isCompleted: !isCompleted });
-                      }}
-                      className={`
-                        shrink-0 w-5 h-5 flex items-center justify-center
-                        border transition-all duration-150 text-[8px] font-digital
-                        disabled:opacity-40 disabled:cursor-not-allowed
-                        ${isCompleted
-                          ? "bg-emerald-glow/20 border-emerald-glow text-emerald-glow [box-shadow:0_0_6px_var(--shadow-emerald)]"
-                          : "border-surface-600 text-surface-500 hover:border-teal-glow hover:text-teal-glow"
-                        }
-                        ${isPending ? "animate-pulse" : ""}
-                      `}
-                    >
-                      {isPending ? "·" : isCompleted ? "✓" : "○"}
-                    </button>
-                  ) : (
-                    // Placeholder to keep layout stable when not logged in
-                    <span className="shrink-0 w-5 h-5" />
+                  {/* Visual indicator — checkmark for completed units */}
+                  {isCompleted && (
+                    <span className="shrink-0 w-5 h-5 flex items-center justify-center text-[10px] text-emerald-glow font-bold">
+                      ✓
+                    </span>
                   )}
                 </div>
               );
