@@ -3,28 +3,23 @@ import { TutorialCard } from "./TutorialCard";
 
 export function TutorialsList({ tutorials }: any) {
   return (
-    <div className="flex-1 overflow-y-auto custom-scrollbar relative">
-
-      {/* Grid — full width always, 4 cols on xl */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4 relative z-10 p-4 sm:p-5">
-        {tutorials.map((tutorial: any, i: number) => (
+    <div className="relative p-6 flex-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        {tutorials.map((tutorial: any) => (
           <div
             key={tutorial.id}
-            className="opacity-0 animate-[fadeSlideIn_0.35s_ease_forwards]"
-            style={{ animationDelay: `${i * 40}ms` }}
           >
             <TutorialCard tutorial={tutorial} />
           </div>
         ))}
       </div>
 
-      {/* Empty state */}
       {tutorials.length === 0 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
-          <span className="text-[10px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-40">
-            // NO_RECORDS_FOUND
+        <div className="py-20 flex flex-col items-center justify-center gap-4 text-center">
+          <span className="text-xl font-black uppercase text-ink opacity-30">
+            No Records Found
           </span>
-          <span className="text-xs font-digital text-teal-glow opacity-20 animate-pulse">_</span>
+          <p className="text-xs text-dust">Try adjusting your filters to find more content.</p>
         </div>
       )}
     </div>

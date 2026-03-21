@@ -14,7 +14,7 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
     <div className={`
       ${sansFont.variable} ${monoFont.variable}
       h-screen w-full bg-background flex flex-col items-center
-       overflow-hidden font-sans text-ink relative
+      p-2 sm:p-4 md:p-6 overflow-hidden font-sans text-ink relative
     `}>
 
       {/* Blueprint Drawing Grid */}
@@ -42,8 +42,8 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
           )}
 
         {/* Main page content area with vertical scroll */}
-        <main className="w-full flex-1 overflow-y-auto custom-scrollbar relative z-10 scroll-smooth">
-          <div className="relative z-10">
+        <main className="w-full  flex-1 overflow-y-auto custom-scrollbar relative z-10 scroll-smooth">
+          <div className="relative z-10 h-full flex flex-col">
             {children}
           </div>
         </main>

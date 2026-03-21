@@ -48,6 +48,9 @@
   /* Hard "Wireframe" Shadows */
   --shadow-wire: 4px 4px 0px 0px rgba(19, 21, 22, 1);
   --shadow-wire-teal: 4px 4px 0px 0px rgba(13, 148, 136, 1);
+
+  /* Animations */
+  --animate-spin-slow: spin 3s linear infinite;
 }
 
 /* ========================================= 
@@ -96,4 +99,18 @@ h1, h2, h3, .tech-label {
   .badge-tape {
     @apply bg-ink text-background px-2 py-0.5 font-mono text-[10px] uppercase tracking-tighter;
   }
+}
+
+/* ========================================= 
+    5. KEYFRAMES 
+========================================= */
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }

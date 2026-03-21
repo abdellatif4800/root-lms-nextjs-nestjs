@@ -26,8 +26,8 @@ export const Navbar = () => {
 
         {/* Logo */}
         <Link href="/" className="group flex items-center shrink-0 border-2 border-ink px-3 py-1 bg-surface hover:bg-ink hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(19,21,22,1)]">
-          <span className="text-xl font-black">
-            LMS.v1
+          <span className="text-xl text-teal-primary">
+            <span className=" mr-2">&gt;./</span>
           </span>
         </Link>
 
@@ -55,7 +55,6 @@ export const Navbar = () => {
 
         {/* Actions */}
         <div className="flex flex-row items-center gap-4">
-          <ThemeToggle />
 
           {isAuth ? (
             <UserMenu />

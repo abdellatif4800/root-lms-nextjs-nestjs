@@ -1,98 +1,33 @@
 export default function TutorialsListError({ error }: { error: any }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 overflow-auto bg-surface-950">
-      <div className="scanline-overlay opacity-[0.025]" />
-
-      <div className="relative max-w-lg w-full border border-red-500/40 bg-surface-900 shadow-card [clip-path:polygon(0_0,calc(100%-16px)_0,100%_16px,100%_100%,16px_100%,0_calc(100%-16px))] [box-shadow:4px_4px_0px_var(--surface-800),0_0_30px_rgba(239,68,68,0.06)]">
-
-        {/* Top bar */}
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-red-500/20 bg-red-500/5">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 bg-red-500 [box-shadow:0_0_6px_rgba(239,68,68,0.8)] animate-pulse" />
-            <span className="text-[8px] font-terminal uppercase tracking-[0.3em] text-red-500/70">
-              SYSTEM://ERROR &nbsp;|&nbsp; FATAL
-            </span>
+    <div className="flex-1 flex flex-col items-center justify-center p-8">
+      <div className="wire-card max-w-lg w-full p-8 flex flex-col gap-6 border-teal-primary/30 shadow-wire-teal">
+        
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 border-2 border-ink bg-teal-primary/10 flex items-center justify-center">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+             </svg>
           </div>
-          <span className="hidden sm:block text-[8px] font-terminal text-text-secondary opacity-40">
-            {new Date().toISOString()}
-          </span>
+          <div>
+            <h2 className="text-2xl font-black uppercase text-ink">Action_Failed</h2>
+            <p className="font-mono text-[10px] text-dust uppercase">Ref_Code: ERR_FETCH_09</p>
+          </div>
         </div>
 
-        {/* Body */}
-        <div className="p-4 sm:p-6 flex flex-col gap-4 sm:gap-5">
+        <div className="p-4 border-2 border-ink border-dashed font-mono text-xs text-ink/80">
+           {">"} ERROR: {error.message || "Failed to retrieve modules from the server."}
+        </div>
 
-          {/* Icon + Title */}
-          <div className="flex items-start gap-3 sm:gap-4">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-500/10 border border-red-500/50 flex items-center justify-center shrink-0 [clip-path:polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,8px_100%,0_calc(100%-8px))]">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                fill="none" stroke="rgb(239,68,68)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                <line x1="12" y1="9" x2="12" y2="13" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-digital font-black uppercase tracking-wider text-red-400 leading-none mb-1">
-                System_Error
-              </h2>
-              <p className="text-[9px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-60">
-                // DATA_FETCH_FAILED &nbsp;·&nbsp; MODULE_UNAVAILABLE
-              </p>
-            </div>
-          </div>
-
-          {/* Terminal log */}
-          <div className="border border-surface-800 bg-surface-950 p-3 sm:p-4 overflow-auto max-h-36 custom-scrollbar">
-            <div className="flex flex-col gap-1.5">
-              <LogLine color="red" label="ERR">
-                {error.message || "Unable to load tutorial modules"}
-              </LogLine>
-              <LogLine color="dim" label="STATUS">CONNECTION_FAILED</LogLine>
-              <LogLine color="dim" label="CODE">{error.code || "ECONNREFUSED"}</LogLine>
-              <LogLine color="dim" label="TRACE">
-                {error.stack?.split("\n")[1]?.trim() || "tutorials/list → getTutorials()"}
-              </LogLine>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              onClick={() => window.location.reload()}
-              className="flex-1 relative overflow-hidden group/retry border border-emerald-glow/50 bg-transparent text-emerald-glow text-[9px] font-digital font-black uppercase tracking-wider py-2.5 transition-colors duration-200 hover:text-black [clip-path:polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,8px_100%,0_calc(100%-8px))]"
-            >
-              <span className="absolute inset-0 bg-emerald-glow -translate-x-full group-hover/retry:translate-x-0 transition-transform duration-200 z-0" />
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                <span className="opacity-60 group-hover/retry:opacity-100">↺</span>
-                Retry_Connection
-              </span>
-            </button>
-
-            <button
-              onClick={() => window.history.back()}
-              className="flex-1 relative overflow-hidden group/back border border-surface-700 bg-transparent text-text-secondary text-[9px] font-digital font-black uppercase tracking-wider py-2.5 transition-colors duration-200 hover:text-black [clip-path:polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,8px_100%,0_calc(100%-8px))]"
-            >
-              <span className="absolute inset-0 bg-text-secondary -translate-x-full group-hover/back:translate-x-0 transition-transform duration-200 z-0" />
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                <span className="opacity-60 group-hover/back:opacity-100">←</span>
-                Return_to_Hub
-              </span>
-            </button>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <button onClick={() => window.location.reload()} className="btn-wire-teal py-3 text-xs">
+            Retry_Request
+          </button>
+          <button onClick={() => window.history.back()} className="btn-wire py-3 text-xs">
+            Return_to_Base
+          </button>
         </div>
       </div>
     </div>
-  );
-}
-
-function LogLine({ color, label, children }: { color: "red" | "dim"; label: string; children: React.ReactNode }) {
-  return (
-    <p className="text-[10px] font-terminal leading-relaxed break-all flex gap-2">
-      <span className={`shrink-0 ${color === "red" ? "text-red-500" : "text-text-secondary opacity-40"}`}>{">"}</span>
-      <span className={`shrink-0 font-black uppercase w-14 ${color === "red" ? "text-red-400" : "text-text-secondary opacity-50"}`}>
-        [{label}]
-      </span>
-      <span className={color === "red" ? "text-red-300" : "text-text-secondary opacity-60"}>{children}</span>
-    </p>
   );
 }

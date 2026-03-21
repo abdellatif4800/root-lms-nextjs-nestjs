@@ -8,7 +8,7 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
   const [categories, setCategories] = useState<string[]>([]);
   const [levels, setLevels] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<"PUBLISHED" | "DRAFT" | null>("PUBLISHED");
-  const [accessFilter, setAccessFilter] = useState<boolean | null>(null); // null = all, false = free, true = paid
+  const [accessFilter, setAccessFilter] = useState<boolean | null>(null);
 
   const { isPublic } = useAppSelector((state: RootState) => state.tutorialSlice);
 
@@ -46,11 +46,7 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
     if (categories.length > 0) filters.categories = categories;
     if (levels.length > 0) filters.levels = levels;
     if (publishValue !== undefined) filters.publish = publishValue;
-
-    // isPaid: true = paid, false = free, null = don't filter
     if (accessFilter !== null) filters.isPaid = accessFilter;
-
-    if (status === null && !isPublic) filters.__showAll = true;
 
     loadFilterdData(filters);
   };
@@ -60,223 +56,134 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
     setCategories([]);
     setLevels([]);
     setStatusFilter("PUBLISHED");
-    setAccessFilter(false);
-    loadFilterdData({ publish: true, isPaid: false });
+    setAccessFilter(null);
+    loadFilterdData({ publish: true });
   };
 
-  const activeFilterCount =
-    categories.length +
-    levels.length +
-    (tutorialName ? 1 : 0) +
-    (statusFilter !== "PUBLISHED" ? 1 : 0) +
-    (accessFilter !== null ? 1 : 0);
-
   return (
-    <aside className="w-72 h-full border-r border-surface-800 bg-surface-900 shrink-0 flex flex-col  relative z-[100]">
+    <aside className="w-80 h-full border-r-2 border-ink bg-surface shrink-0 flex flex-col relative z-[100] ">
 
       {/* ── Header ── */}
-      <header className="px-5 py-4 border-b border-surface-800 flex flex-col gap-4">
+      <header className="px-6 py-6 border-b-2 border-ink flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="block w-0.5 h-5 bg-purple-glow shadow-glow-purple-sm" />
-            <h2 className="text-sm font-digital font-bold text-purple-glow tracking-wider uppercase leading-none">
-              System_Filters
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-black text-ink uppercase tracking-tighter">
+              Adjust_View
             </h2>
           </div>
-          <div className="flex items-center gap-2">
-            {activeFilterCount > 0 && (
-              <span className="text-[8px] font-digital font-black text-black bg-teal-glow px-1.5 py-0.5 min-w-[18px] text-center">
-                {activeFilterCount}
-              </span>
-            )}
-            <button
-              onClick={onClose}
-              className="text-text-secondary hover:text-teal-glow transition-colors"
-              aria-label="Close filters"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 border-2 border-ink flex items-center justify-center hover:bg-ink hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(19,21,22,1)]"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        {/* Action buttons */}
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={handleApply}
-            className="flex-1 relative overflow-hidden group/apply border border-teal-glow/50 bg-transparent text-teal-glow text-[9px] font-digital font-black uppercase tracking-wider py-2 transition-colors duration-200 hover:text-black"
-          >
-            <span className="absolute inset-0 bg-teal-glow -translate-x-full group-hover/apply:translate-x-0 transition-transform duration-200 z-0" />
-            <span className="relative z-10">[ Apply ]</span>
+        <div className="flex gap-3 p-2">
+          <button onClick={handleApply} className="btn-wire-teal flex-1 text-[10px] py-2">
+            Apply
           </button>
-
-          <button
-            type="button"
-            onClick={handleReset}
-            className="flex-1 relative overflow-hidden group/reset border border-red-500/40 bg-transparent text-red-500 text-[9px] font-digital font-black uppercase tracking-wider py-2 transition-colors duration-200 hover:text-black"
-          >
-            <span className="absolute inset-0 bg-red-500 -translate-x-full group-hover/reset:translate-x-0 transition-transform duration-200 z-0" />
-            <span className="relative z-10">[ Reset ]</span>
+          <button onClick={handleReset} className="btn-wire flex-1 text-[10px] py-2">
+            Reset
           </button>
         </div>
       </header>
 
-      {/* ── Scrollable filter body ── */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-5 py-5 flex flex-col gap-7">
+      {/* ── Scrollable Body ── */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-8 flex flex-col gap-10">
 
-        {/* Module Status (admin only) */}
-        {!isPublic && (
-          <FilterSection label="Module_Status" accent="emerald">
-            <div className="flex gap-2">
-              {(["PUBLISHED", "DRAFT"] as const).map((s) => {
-                const isActive = statusFilter === s;
-                const isPublishedBtn = s === "PUBLISHED";
-                return (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => handleStatusChange(s)}
-                    className={`
-                      flex-1 py-2 text-[9px] font-digital font-black uppercase tracking-wider
-                      border transition-all duration-200
-                      ${isActive && isPublishedBtn ? "bg-emerald-glow text-black border-emerald-glow shadow-glow-emerald-sm" : ""}
-                      ${isActive && !isPublishedBtn ? "bg-surface-700 text-white border-surface-600" : ""}
-                      ${!isActive && isPublishedBtn ? "bg-transparent text-emerald-glow border-emerald-glow/30 hover:border-emerald-glow hover:bg-emerald-glow/10" : ""}
-                      ${!isActive && !isPublishedBtn ? "bg-transparent text-text-secondary border-surface-700 hover:border-surface-500 hover:text-white" : ""}
-                    `}
-                  >
-                    {isActive ? `[✓] ${isPublishedBtn ? "Live" : "Draft"}` : isPublishedBtn ? "Live" : "Draft"}
-                  </button>
-                );
-              })}
-            </div>
-            {statusFilter === null && (
-              <p className="text-[8px] font-terminal text-text-secondary opacity-40 uppercase tracking-wider text-center">
-                // showing all statuses
-              </p>
-            )}
-          </FilterSection>
-        )}
-
-        {/* Access Type — FREE / PAID */}
-        <FilterSection label="Access_Type" accent="teal">
-          <div className="flex gap-2">
-            {([
-              { label: "FREE", value: false },
-              { label: "PAID", value: true },
-            ] as const).map(({ label, value }) => {
+        {/* Access Type */}
+        <FilterSection label="Access Type">
+          <div className="grid grid-cols-2 gap-2">
+            {[{ label: "FREE", value: false }, { label: "PAID", value: true }].map(({ label, value }) => {
               const isActive = accessFilter === value;
-              const isFree = value === false;
               return (
                 <button
                   key={label}
-                  type="button"
                   onClick={() => handleAccessChange(value)}
-                  className={`
-                    flex-1 py-2 text-[9px] font-digital font-black uppercase tracking-wider
-                    border transition-all duration-200
-                    ${isActive && isFree ? "bg-teal-glow   text-black border-teal-glow   shadow-glow-teal-sm" : ""}
-                    ${isActive && !isFree ? "bg-purple-glow text-black border-purple-glow shadow-glow-purple-sm" : ""}
-                    ${!isActive && isFree ? "bg-transparent text-teal-glow   border-teal-glow/30   hover:border-teal-glow   hover:bg-teal-glow/10" : ""}
-                    ${!isActive && !isFree ? "bg-transparent text-purple-glow border-purple-glow/30 hover:border-purple-glow hover:bg-purple-glow/10" : ""}
-                  `}
+                  className={`py-2 text-[10px] font-bold border-2 transition-all ${isActive ? "bg-teal-primary text-background border-ink" : "bg-background border-ink/10 hover:border-ink"}`}
                 >
-                  {isActive ? `[✓] ${label}` : label}
+                  {label}
                 </button>
               );
             })}
           </div>
-          {accessFilter === null && (
-            <p className="text-[8px] font-terminal text-text-secondary opacity-40 uppercase tracking-wider text-center">
-              // showing all access types
-            </p>
-          )}
         </FilterSection>
 
         {/* Search */}
-        <FilterSection label="Query_Protocol" accent="teal">
-          <div className="border border-surface-700 bg-surface-950 flex items-center gap-2 px-3 py-2.5 focus-within:border-teal-glow transition-colors">
-            <span className="text-teal-glow/50 text-xs font-terminal">{">"}</span>
+        <FilterSection label="Search Title">
+          <div className="border-2 border-ink bg-background px-3 py-2 flex items-center gap-2">
             <input
               type="text"
-              placeholder="Search_Modules..."
+              placeholder="Module Name..."
               value={tutorialName}
               onChange={(e) => setTutorialName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleApply()}
-              className="bg-transparent border-none outline-none w-full placeholder:text-surface-700 text-teal-glow font-terminal text-[11px] p-0 focus:ring-0"
+              className="bg-transparent border-none outline-none w-full text-xs font-bold placeholder:text-dust/50 focus:ring-0 p-0"
             />
-            <span className="text-teal-glow animate-pulse text-xs">_</span>
           </div>
         </FilterSection>
 
         {/* Categories */}
-        <FilterSection label="Sector_Category" accent="teal">
-          <div className="flex flex-col gap-0.5">
-            {["Frontend", "Backend", "DevOps", "Systems", "Security"].map((topic) => (
-              <CheckRow key={topic} label={topic} checked={categories.includes(topic)} onChange={() => handleCategoryChange(topic)} color="teal" />
+        <FilterSection label="Topics">
+          <div className="flex flex-col gap-1">
+            {["Frontend", "Backend", "DevOps", "Systems"].map((topic) => (
+              <CheckRow key={topic} label={topic} checked={categories.includes(topic)} onChange={() => handleCategoryChange(topic)} />
             ))}
           </div>
         </FilterSection>
 
-        {/* Access Level */}
-        <FilterSection label="Access_Level" accent="purple">
-          <div className="flex flex-col gap-0.5">
-            {["Beginner", "Intermediate", "Advanced", "Expert"].map((lvl) => (
-              <CheckRow key={lvl} label={lvl} checked={levels.includes(lvl)} onChange={() => handleLevelsChange(lvl)} color="purple" />
-            ))}
-          </div>
-        </FilterSection>
+        {/* Status (Admin) */}
+        {!isPublic && (
+          <FilterSection label="Draft Status">
+            <div className="flex gap-2">
+              {(["PUBLISHED", "DRAFT"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => handleStatusChange(s)}
+                  className={`flex-1 py-2 text-[10px] font-bold border-2 ${statusFilter === s ? "bg-teal-primary text-background border-ink" : "bg-background border-ink/10"}`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </FilterSection>
+        )}
+      </div>
 
-        {/* Timeline */}
-        <FilterSection label="Timeline_Range" accent="teal" topBorder>
-          <div className="flex flex-col gap-2">
-            <div className="relative">
-              <span className="absolute left-0 top-0 bottom-0 flex items-center px-2.5 text-[9px] font-terminal text-text-secondary opacity-40 pointer-events-none">FROM</span>
-              <input type="date" className="w-full bg-surface-950 border border-surface-700 text-text-secondary text-[10px] font-terminal pl-12 pr-2 py-2 focus:border-teal-glow focus:outline-none" />
-            </div>
-            <div className="relative">
-              <span className="absolute left-0 top-0 bottom-0 flex items-center px-2.5 text-[9px] font-terminal text-text-secondary opacity-40 pointer-events-none">TO</span>
-              <input type="date" className="w-full bg-surface-950 border border-surface-700 text-text-secondary text-[10px] font-terminal pl-12 pr-2 py-2 focus:border-teal-glow focus:outline-none" />
-            </div>
-          </div>
-        </FilterSection>
+      {/* Footer annotation */}
+      <div className="p-4 border-t-2 border-ink/5 text-center">
+        <span className="font-mono text-[8px] uppercase text-dust opacity-30">Rendered in Browser Sketch Engine</span>
       </div>
     </aside>
   );
 }
 
-/* ── Sub-components ── */
-
-function FilterSection({ label, children, topBorder = false }: { label: string; accent?: string; children: React.ReactNode; topBorder?: boolean }) {
+function FilterSection({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className={`flex flex-col gap-2.5 ${topBorder ? "pt-5 border-t border-surface-800" : ""}`}>
+    <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        <span className="w-3 h-px bg-text-secondary opacity-40" />
-        <span className="text-[9px] font-terminal font-bold text-text-secondary uppercase tracking-[0.25em]">{label}</span>
+        <h3 className="text-[10px] font-black uppercase text-ink tracking-widest">{label}</h3>
+        <div className="flex-1 h-px bg-ink/10" />
       </div>
       {children}
     </div>
   );
 }
 
-function CheckRow({ label, checked, onChange, color }: { label: string; checked: boolean; onChange: () => void; color: "teal" | "purple" }) {
-  const isTeal = color === "teal";
+function CheckRow({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return (
-    <label className="flex items-center gap-3 px-2 py-1.5 cursor-pointer group hover:bg-surface-800 transition-colors">
-      <span className={`w-3.5 h-3.5 shrink-0 border flex items-center justify-center transition-colors duration-150 ${checked ? isTeal ? "bg-teal-glow border-teal-glow" : "bg-purple-glow border-purple-glow" : "bg-surface-950 border-surface-600"}`}>
+    <label className="flex items-center gap-3 py-1 cursor-pointer group">
+      <div className={`w-4 h-4 border-2 border-ink transition-all flex items-center justify-center ${checked ? "bg-teal-primary shadow-[1px_1px_0px_0px_rgba(19,21,22,1)]" : "bg-background"}`}>
         {checked && (
-          <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-            <path d="M1.5 4L3 5.5L6.5 2" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M20 6L9 17L4 12" /></svg>
         )}
-      </span>
+      </div>
       <input type="checkbox" className="sr-only" checked={checked} onChange={onChange} />
-      <span className={`text-[10px] font-terminal font-bold uppercase tracking-wider leading-none transition-colors duration-150 ${checked ? isTeal ? "text-teal-glow" : "text-purple-glow" : ""}`}>
-        {!checked ? <span className="text-text-secondary group-hover:text-text-primary transition-colors">{label}</span> : label}
+      <span className={`text-xs font-bold uppercase transition-colors ${checked ? "text-ink" : "text-dust group-hover:text-ink"}`}>
+        {label}
       </span>
-      {checked && <span className={`ml-auto w-1 h-1 shrink-0 ${isTeal ? "bg-teal-glow" : "bg-purple-glow"}`} />}
     </label>
   );
 }

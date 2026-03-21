@@ -31,17 +31,17 @@ export function TutorialCard({ tutorial }: { tutorial: any }) {
   const hasAccess = isAuth && user?.subscriptionStatus === "active";
   const showActionBtn = !isPublic || !displayData.isPaid || hasAccess;
 
+
   return (
     <div className="wire-card group relative h-full flex flex-col overflow-hidden">
-      
+
       {/* Thumbnail with "Sketch" border */}
-      <div className="relative h-44 w-full overflow-hidden border-b-2 border-ink">
-        <img
-          src={displayData.thumbnail}
-          alt={displayData.title}
-          className="w-full h-full object-cover grayscale opacity-50 contrast-125 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
-        />
-        
+      <div className="relative h-32 w-full overflow-hidden border-b-2 border-ink">        <img
+        src={displayData.thumbnail}
+        alt={displayData.title}
+        className="w-full h-full object-cover grayscale opacity-50 contrast-125 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+      />
+
         {/* Technical Label */}
         <div className="absolute top-2 left-2">
           <span className="badge-tape">
@@ -51,7 +51,7 @@ export function TutorialCard({ tutorial }: { tutorial: any }) {
 
         {/* Diagonal "Price" tape for premium */}
         {displayData.isPaid && !hasAccess && (
-          <div className="absolute top-4 -right-10 bg-teal-primary text-background font-mono text-[10px] px-10 py-1 rotate-45 border-y border-ink uppercase font-bold">
+          <div className="absolute top-2 -right-10 bg-teal-primary text-background font-mono text-[10px] px-10 py-1 rotate-45 border-y border-ink uppercase font-bold">
             Premium
           </div>
         )}
@@ -59,7 +59,7 @@ export function TutorialCard({ tutorial }: { tutorial: any }) {
 
       {/* Card Content */}
       <div className="p-6 flex flex-col flex-1 gap-4">
-        
+
         <div className="flex items-center justify-between font-mono text-[10px] text-teal-primary uppercase font-bold tracking-tighter">
           <span>{displayData.category}</span>
           <span className="opacity-30">REF: {displayData.id.slice(0, 4)}</span>
