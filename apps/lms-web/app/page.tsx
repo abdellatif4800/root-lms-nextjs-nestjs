@@ -31,22 +31,24 @@ export default function Home() {
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-12 flex flex-col items-center gap-12 sm:gap-20">
 
-        {/* Hero Section - The "Draft" Header */}
+        {/* Hero Section */}
         <header className="w-full flex flex-col items-center gap-6 pt-12 text-center relative">
 
-
+          <div className="inline-block border-2 border-ink px-4 py-1 font-mono text-xs uppercase tracking-[0.2em] bg-surface/50 rotate-[-1deg] translate-x-4">
+            Welcome to the Library
+          </div>
 
           <div className="relative">
             <h1 className="text-5xl sm:text-8xl font-black tracking-tighter leading-none [letter-spacing:-0.05em] uppercase text-teal-primary">
-              <span className="text-teal-primary mr-2">&gt;./</span>
-              Root_LMS
+              <span className=" mr-2">&gt;./</span>
+              Root_lms
             </h1>
             <div className="absolute -right-8 -top-4 w-12 h-12 border-2 border-dashed border-teal-primary rounded-full opacity-40 animate-spin-slow hidden sm:block" />
           </div>
 
           <p className="max-w-xl text-lg text-dust font-medium leading-relaxed font-sans">
-            A simplified space for developers to grow. <br className="hidden sm:block" />
-            Pick a path, start a lesson, and track your progress.
+            A simple space designed for you to grow your skills. <br className="hidden sm:block" />
+            Pick a course, start a lesson, and track your progress.
           </p>
 
           {/* Weird "Sketch" arrow utility */}
@@ -54,7 +56,7 @@ export default function Home() {
             <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M7 17L17 7M17 7H7M17 7V17" />
             </svg>
-            <span className="font-mono text-[10px] uppercase">Get_Started_Here</span>
+            <span className="font-mono text-[10px] uppercase">Start_Browsing</span>
           </div>
         </header>
 
@@ -65,7 +67,7 @@ export default function Home() {
           <Link href="/tutorials/list?filter=free" className="wire-card group p-8 flex flex-col items-start gap-8 relative overflow-hidden">
             {/* Draft annotations */}
             <div className="absolute top-0 right-0 border-l-2 border-b-2 border-ink px-3 py-1 font-mono text-[8px] opacity-20 group-hover:opacity-100 transition-opacity">
-              Ref_001.pdf
+              Manual_01.pdf
             </div>
 
             <div className="w-16 h-16 border-2 border-dashed border-ink flex items-center justify-center text-teal-primary group-hover:border-teal-primary transition-colors">
@@ -74,19 +76,19 @@ export default function Home() {
 
             <div className="space-y-2">
               <h2 className="text-2xl font-black uppercase">Free Lessons</h2>
-              <p className="text-sm text-dust leading-snug">Open access tutorials for everyone. No account required to start.</p>
+              <p className="text-sm text-dust leading-snug">Public courses for everyone. Jump in and start learning right away.</p>
             </div>
 
             <div className="mt-auto w-full flex items-center justify-between">
-              <span className="btn-wire text-xs px-4 py-2">Start Learning</span>
-              <span className="font-mono text-xs opacity-30"># FREE_L</span>
+              <span className="btn-wire text-xs px-4 py-2">View Lessons</span>
+              <span className="font-mono text-xs opacity-30">FREE_CONTENT</span>
             </div>
           </Link>
 
           {/* Card: Learning Paths */}
           <Link href="/roadmaps" className="wire-card group p-8 flex flex-col items-start gap-8 border-teal-primary/20 shadow-wire-teal hover:border-ink hover:shadow-wire">
             <div className="absolute top-0 right-0 border-l-2 border-b-2 border-teal-primary px-3 py-1 font-mono text-[8px] text-teal-primary opacity-40">
-              Path_Guide_v2
+              Guide_Book
             </div>
 
             <div className="w-16 h-16 border-2 border-ink flex items-center justify-center text-teal-primary bg-background/50 group-hover:bg-teal-primary group-hover:text-background transition-all">
@@ -94,13 +96,13 @@ export default function Home() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-black uppercase">Learning Paths</h2>
-              <p className="text-sm text-dust leading-snug">Structured guides to help you master specific skills from start to finish.</p>
+              <h2 className="text-2xl font-black uppercase">Study Paths</h2>
+              <p className="text-sm text-dust leading-snug">Step-by-step guides to help you reach your goals from start to finish.</p>
             </div>
 
             <div className="mt-auto w-full flex items-center justify-between">
-              <span className="btn-wire-teal text-xs px-4 py-2">See All Paths</span>
-              <span className="font-mono text-xs opacity-30 text-teal-primary"># PATHS_02</span>
+              <span className="btn-wire-teal text-xs px-4 py-2">See Paths</span>
+              <span className="font-mono text-xs opacity-30 text-teal-primary">GUIDED_STUDY</span>
             </div>
           </Link>
 
@@ -114,13 +116,13 @@ export default function Home() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-black uppercase">Expert Courses</h2>
-              <p className="text-sm text-dust leading-snug">Deep dives into professional tools and advanced production systems.</p>
+              <h2 className="text-2xl font-black uppercase">Premium</h2>
+              <p className="text-sm text-dust leading-snug">Expert-led courses and advanced material for professional growth.</p>
             </div>
 
             <div className="mt-auto w-full flex items-center justify-between">
               <span className="btn-wire text-xs px-4 py-2">See Premium</span>
-              <span className="font-mono text-xs opacity-30"># CORE_03</span>
+              <span className="font-mono text-xs opacity-30">PRO_CONTENT</span>
             </div>
           </Link>
         </section>
@@ -129,15 +131,15 @@ export default function Home() {
         <section className="w-full grid grid-cols-1 sm:grid-cols-3 gap-0 border-2 border-ink bg-surface shadow-wire">
           <div className="flex flex-col gap-1 p-8 border-r-2 border-b-2 sm:border-b-0 border-ink">
             <span className="text-4xl font-mono font-black">{systemStats?.tutorials?.total ?? '00'}</span>
-            <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest">Modules Available</span>
+            <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest">Lessons Available</span>
           </div>
           <div className="flex flex-col gap-1 p-8 border-r-2 border-b-2 sm:border-b-0 border-ink">
             <span className="text-4xl font-mono font-black">{systemStats?.roadmapsCount ?? '00'}</span>
-            <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest">Career Paths</span>
+            <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest">Study Paths</span>
           </div>
           <div className="flex flex-col gap-1 p-8">
             <span className="text-4xl font-mono font-black">{systemStats?.quizzesCount ?? '00'}</span>
-            <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest">Skill Assessments</span>
+            <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest">Quizzes Passed</span>
           </div>
         </section>
 
@@ -145,13 +147,13 @@ export default function Home() {
         {paidTutorials && paidTutorials.length > 0 && (
           <section className="w-full pb-20">
             <div className="flex items-center gap-6 mb-12">
-              <h2 className="text-2xl font-black uppercase whitespace-nowrap">Featured Lessons</h2>
+              <h2 className="text-2xl font-black uppercase whitespace-nowrap">Latest Lessons</h2>
               <div className="flex-1 h-px bg-ink/20" />
-              <div className="font-mono text-[10px] text-dust border border-ink px-2 py-1">RESOURCES_LISTING.v1</div>
+              <div className="font-mono text-[10px] text-dust border border-ink px-2 py-1">COLLECTION_V1</div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {paidTutorials.slice(0, 4).map((tutorial: any) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+              {paidTutorials.slice(0, 5).map((tutorial: any) => (
                 <div key={tutorial.id} className="relative transition-transform hover:-translate-y-2">
                   <TutorialCard tutorial={tutorial} />
                 </div>

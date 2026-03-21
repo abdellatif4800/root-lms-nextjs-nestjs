@@ -26,10 +26,10 @@ export function TutorialsHeader({ hasMore, loadMore, tutorialsLength, onOpenFilt
 
           <div className="flex flex-col min-w-0">
             <h1 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter text-teal-primary leading-none truncate">
-              Lesson_Library
+              Lessons
             </h1>
             <span className="text-[10px] font-mono text-dust uppercase font-bold mt-1 opacity-60">
-              Total Modules Found: {tutorialsLength}
+              {tutorialsLength} lessons found
             </span>
           </div>
         </div>
@@ -38,7 +38,7 @@ export function TutorialsHeader({ hasMore, loadMore, tutorialsLength, onOpenFilt
         <div className="flex items-center gap-4">
           {hasMore && (
             <button onClick={loadMore} className="btn-wire-teal px-6 py-2.5 text-xs">
-              Load_Next_Batch
+              See more lessons
             </button>
           )}
         </div>
@@ -46,17 +46,18 @@ export function TutorialsHeader({ hasMore, loadMore, tutorialsLength, onOpenFilt
 
       {/* Active Filter Tape */}
       {activeFilters.length > 0 && (
-        <div className="flex flex-wrap items-center gap-3 pt-4 border-t-2 border-ink/5 py-2">
+        <div className="flex flex-wrap items-center gap-3 py-4 border-t-2 border-ink/5">
           <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest mr-2">
-            Filters:
+            Applied:
           </span>
           {activeFilters.map(([key, value]: [string, any]) => {
             let displayValue = Array.isArray(value) ? value.join(' + ') : String(value);
             if (key === 'isPaid') displayValue = value === true ? 'PAID' : 'FREE';
+            if (key === 'tutorialName') displayValue = `"${value}"`;
 
             return (
               <span key={key} className="badge-tape flex items-center gap-2 border border-background/20">
-                <span className="opacity-40">{key}:</span>
+                <span className="opacity-40">{key === 'tutorialName' ? 'Search' : key}:</span>
                 {displayValue}
               </span>
             );

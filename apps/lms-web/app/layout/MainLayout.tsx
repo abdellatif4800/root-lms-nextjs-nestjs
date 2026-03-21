@@ -10,11 +10,13 @@ const monoFont = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" })
 export const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
+  const isTutorialView = pathname.startsWith("/tutorials/") && pathname !== "/tutorials/list";
+
   return (
     <div className={`
       ${sansFont.variable} ${monoFont.variable}
       h-screen w-full bg-background flex flex-col items-center
-      p-2 sm:p-4 md:p-6 overflow-hidden font-sans text-ink relative
+      ${isTutorialView ? "p-0" : "p-2 sm:p-4 md:p-6"} overflow-hidden font-sans text-ink relative
     `}>
 
       {/* Blueprint Drawing Grid */}
@@ -42,8 +44,8 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
           )}
 
         {/* Main page content area with vertical scroll */}
-        <main className="w-full  flex-1 overflow-y-auto custom-scrollbar relative z-10 scroll-smooth">
-          <div className="relative z-10 h-full flex flex-col">
+        <main className={`w-full flex-1 ${isTutorialView ? "overflow-hidden" : "overflow-y-auto custom-scrollbar"} relative z-10 scroll-smooth`}>
+          <div className={`relative z-10 h-full flex flex-col ${isTutorialView ? "" : ""}`}>
             {children}
           </div>
         </main>

@@ -64,12 +64,13 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
     <aside className="w-80 h-full border-r-2 border-ink bg-surface shrink-0 flex flex-col relative z-[100] ">
 
       {/* ── Header ── */}
-      <header className="px-6 py-6 border-b-2 border-ink flex flex-col gap-6">
+      <header className="px-6 py-6 border-b-2 border-ink flex flex-col gap-6 pt-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-black text-ink uppercase tracking-tighter">
-              Adjust_View
+              Filter Lessons
             </h2>
+            <span className="font-mono text-[10px] text-teal-primary opacity-40">OPTIONS</span>
           </div>
           <button
             onClick={onClose}
@@ -81,12 +82,12 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
           </button>
         </div>
 
-        <div className="flex gap-3 p-2">
+        <div className="flex gap-3 py-3">
           <button onClick={handleApply} className="btn-wire-teal flex-1 text-[10px] py-2">
-            Apply
+            Show Results
           </button>
           <button onClick={handleReset} className="btn-wire flex-1 text-[10px] py-2">
-            Reset
+            Reset All
           </button>
         </div>
       </header>
@@ -95,7 +96,7 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
       <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-8 flex flex-col gap-10">
 
         {/* Access Type */}
-        <FilterSection label="Access Type">
+        <FilterSection label="Price">
           <div className="grid grid-cols-2 gap-2">
             {[{ label: "FREE", value: false }, { label: "PAID", value: true }].map(({ label, value }) => {
               const isActive = accessFilter === value;
@@ -113,11 +114,11 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
         </FilterSection>
 
         {/* Search */}
-        <FilterSection label="Search Title">
+        <FilterSection label="Search by Name">
           <div className="border-2 border-ink bg-background px-3 py-2 flex items-center gap-2">
             <input
               type="text"
-              placeholder="Module Name..."
+              placeholder="Type lesson name..."
               value={tutorialName}
               onChange={(e) => setTutorialName(e.target.value)}
               className="bg-transparent border-none outline-none w-full text-xs font-bold placeholder:text-dust/50 focus:ring-0 p-0"
@@ -136,7 +137,7 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
 
         {/* Status (Admin) */}
         {!isPublic && (
-          <FilterSection label="Draft Status">
+          <FilterSection label="Lesson Status">
             <div className="flex gap-2">
               {(["PUBLISHED", "DRAFT"] as const).map((s) => (
                 <button
@@ -144,7 +145,7 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
                   onClick={() => handleStatusChange(s)}
                   className={`flex-1 py-2 text-[10px] font-bold border-2 ${statusFilter === s ? "bg-teal-primary text-background border-ink" : "bg-background border-ink/10"}`}
                 >
-                  {s}
+                  {s === "PUBLISHED" ? "LIVE" : "DRAFT"}
                 </button>
               ))}
             </div>
@@ -154,7 +155,7 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
 
       {/* Footer annotation */}
       <div className="p-4 border-t-2 border-ink/5 text-center">
-        <span className="font-mono text-[8px] uppercase text-dust opacity-30">Rendered in Browser Sketch Engine</span>
+        <span className="font-mono text-[8px] uppercase text-dust opacity-30">Selection Panel V1</span>
       </div>
     </aside>
   );

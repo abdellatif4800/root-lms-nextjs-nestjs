@@ -8,15 +8,15 @@ export function TutorialPageClient({
 }: {
   tutorialData: any;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="h-full w-full bg-surface-950 flex overflow-hidden font-terminal text-text-primary min-h-0 relative">
+    <div className="h-full w-full flex overflow-hidden font-sans text-ink min-h-0 relative">
 
       {/* ── Backdrop (mobile only) ── */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
