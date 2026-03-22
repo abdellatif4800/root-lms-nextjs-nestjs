@@ -23,12 +23,14 @@ export default async function QuizPage({ searchParams }: PageProps) {
   }
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <QuizEditorRoot
-        editOrCreate={params.editOrCreate as "edit" | "create"}
-        quizId={params.quizId}
-      />
-    </HydrationBoundary>
+    <div className="w-full h-screen flex flex-col bg-surface-950 overflow-hidden">
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <QuizEditorRoot
+          editOrCreate={params.editOrCreate as "edit" | "create"}
+          quizId={params.quizId}
+        />
+      </HydrationBoundary>
+    </div>
   );
 }
 

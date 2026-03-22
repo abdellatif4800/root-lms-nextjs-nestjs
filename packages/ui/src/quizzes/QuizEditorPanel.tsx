@@ -1,10 +1,11 @@
 "use client";
 
 import { UseFormReturn } from "react-hook-form";
-import { QuizForm } from "./Quiz.types";
+import { QuizForm, QuestionType, defaultQuestion } from "./Quiz.types";
 
 interface QuizEditorPanelProps {
   form: UseFormReturn<QuizForm>;
+  appendQuestion: (data: any) => void;
   isEdit: boolean;
   isSubmitting: boolean;
   onSubmit: () => void;
@@ -12,6 +13,7 @@ interface QuizEditorPanelProps {
 
 export function QuizEditorPanel({
   form,
+  appendQuestion,
   isEdit,
   isSubmitting,
   onSubmit,
@@ -26,121 +28,135 @@ export function QuizEditorPanel({
   const publish = watch("publish");
 
   return (
-    <aside
-      className="w-72 shrink-0 flex flex-col gap-5 p-5 border rounded-md h-fit sticky top-6"
-      style={{ background: "#060a0f", borderColor: "#1e2a38" }}
-    >
-      {/* ── Header ── */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="block w-0.5 h-5 bg-teal-glow" />
-          <h2 className="text-sm font-digital font-bold text-teal-glow tracking-wider uppercase leading-none">
-            {isEdit ? "Edit_Quiz" : "New_Quiz"}
-          </h2>
+    <aside className="w-80 shrink-0 h-full flex flex-col bg-surface border-r-2 border-ink overflow-hidden font-sans">
+      {/* Sidebar Header */}
+      <div className="p-4 border-b-2 border-ink bg-background/30 space-y-4">
+        <div className="flex flex-col gap-2">
+           <span className="badge-tape w-fit">Quiz Controls</span>
+           <h2 className="text-xl font-black uppercase tracking-tighter">
+             {isEdit ? "Edit Blueprint" : "New Blueprint"}
+           </h2>
         </div>
 
-        {/* Publish toggle */}
+        <div className="flex items-center justify-between">
+           <span className="text-[10px] font-mono font-black text-dust uppercase tracking-widest">Visibility_Status:</span>
+           <button
+             type="button"
+             onClick={() => setValue("publish", !publish)}
+             className={`text-[9px] font-mono font-black px-3 py-1 border-2 transition-all uppercase tracking-widest ${publish ? 'border-teal-primary text-teal-primary bg-teal-primary/5' : 'border-ink/20 text-dust hover:border-ink/40'}`}
+           >
+             {publish ? "[✓] LIVE_SYNC" : "[DRAFT_ONLY]"}
+           </button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-8">
+        {/* Module Palette (Add Question) */}
+        <div className="space-y-4">
+          <h3 className="text-[10px] font-mono font-black uppercase text-dust tracking-widest flex items-center gap-2">
+            <span className="w-2 h-2 bg-teal-primary" />
+            Module Palette
+          </h3>
+          <div className="grid grid-cols-1 gap-2">
+            {([
+              { type: "MCQ", label: "Multiple Choice", color: "#38bdf8" },
+              { type: "TRUE_OR_FALSE", label: "True / False", color: "#34d399" },
+              { type: "ESSAY", label: "Essay / Long Form", color: "#a855f7" },
+            ] as { type: QuestionType; label: string; color: string }[]).map(({ type, label, color }) => (
+              <button
+                key={type} 
+                type="button"
+                onClick={() => appendQuestion(defaultQuestion(type))}
+                className="group flex items-center justify-between border-2 p-3 hover:bg-background/50 transition-all text-left"
+                style={{ borderColor: `${color}44` }}
+              >
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-mono font-black uppercase" style={{ color }}>{type}</span>
+                  <span className="text-[8px] font-mono font-bold text-dust uppercase">{label}</span>
+                </div>
+                <span className="text-xl opacity-20 group-hover:opacity-100 transition-opacity" style={{ color }}>+</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Quiz Metadata */}
+        <div className="space-y-6 pt-6 border-t-2 border-ink/5">
+          <h3 className="text-[10px] font-mono font-black uppercase text-dust tracking-widest">Global Configuration</h3>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-[9px] font-mono font-black text-dust uppercase tracking-widest pl-1">Title_String</label>
+              <input
+                {...register("title", { required: true })}
+                placeholder="ENTER_QUIZ_TITLE..."
+                className={`w-full bg-background border-2 px-3 py-2 text-xs font-bold font-mono outline-none focus:ring-2 focus:ring-teal-primary/20 ${errors.title ? 'border-red-500' : 'border-ink'}`}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[9px] font-mono font-black text-dust uppercase tracking-widest pl-1">Blueprint_Description</label>
+              <textarea
+                {...register("description")}
+                placeholder="OPTIONAL_SPEC_DESCRIPTION..."
+                rows={3}
+                className="w-full bg-background border-2 border-ink px-3 py-2 text-xs font-bold font-mono outline-none focus:ring-2 focus:ring-teal-primary/20 resize-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <label className="text-[8px] font-mono font-black text-dust uppercase tracking-widest pl-1">Pass_Mark (%)</label>
+                <input
+                  type="number"
+                  {...register("passMark", { min: 0, max: 100, valueAsNumber: true })}
+                  className="w-full bg-background border-2 border-ink px-3 py-2 text-xs font-bold font-mono outline-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[8px] font-mono font-black text-dust uppercase tracking-widest pl-1">Time_Limit (m)</label>
+                <input
+                  type="number"
+                  {...register("timeLimit", { min: 0, valueAsNumber: true })}
+                  className="w-full bg-background border-2 border-ink px-3 py-2 text-xs font-bold font-mono outline-none"
+                />
+              </div>
+            </div>
+
+            <label className="flex items-center gap-3 cursor-pointer group py-2">
+              <input
+                type="checkbox"
+                {...register("shuffleQuestions")}
+                className="w-4 h-4 accent-teal-primary border-2 border-ink"
+              />
+              <span className="text-[9px] font-mono font-black text-dust uppercase tracking-widest group-hover:text-ink transition-colors">
+                Shuffle_Question_Order
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Footer */}
+      <div className="p-4 border-t-2 border-ink bg-background/30">
         <button
           type="button"
-          onClick={() => setValue("publish", !publish)}
-          className="text-[9px] font-digital font-black px-2 py-1 border transition-all"
-          style={{
-            borderColor: publish ? "#34d399" : "#475569",
-            color: publish ? "#34d399" : "#475569",
-            background: publish ? "#34d39911" : "transparent",
-          }}
+          onClick={onSubmit}
+          disabled={isSubmitting}
+          className="w-full btn-wire-teal py-4 text-[10px] font-black tracking-widest uppercase"
         >
-          {publish ? "[✓] Live" : "Draft"}
+          {isSubmitting
+            ? "[ SYNCHRONIZING... ]"
+            : isEdit
+              ? "[ UPDATE_BLUEPRINT ]"
+              : "[ INITIALIZE_BLUEPRINT ]"}
         </button>
-      </div>
-
-      {/* ── Title ── */}
-      <div className="flex flex-col gap-1">
-        <label className="text-[9px] font-terminal text-text-secondary uppercase tracking-widest">
-          Title
-        </label>
-        <input
-          {...register("title", { required: true })}
-          placeholder="Quiz title..."
-          className="bg-transparent border px-2 py-1.5 text-sm text-white outline-none rounded"
-          style={{ borderColor: errors.title ? "#f87171" : "#1e2a38" }}
-        />
-        {errors.title && (
-          <span className="text-[9px] text-red-400 font-terminal">Required</span>
+        {Object.keys(errors).length > 0 && (
+           <p className="text-[8px] font-mono font-black text-red-500 uppercase mt-2 text-center">
+             System_Error: Required fields missing.
+           </p>
         )}
       </div>
-
-      {/* ── Description ── */}
-      <div className="flex flex-col gap-1">
-        <label className="text-[9px] font-terminal text-text-secondary uppercase tracking-widest">
-          Description
-        </label>
-        <textarea
-          {...register("description")}
-          placeholder="Optional description..."
-          rows={3}
-          className="bg-transparent border px-2 py-1.5 text-sm text-white outline-none rounded resize-none"
-          style={{ borderColor: "#1e2a38" }}
-        />
-      </div>
-
-      {/* ── Pass Mark ── */}
-      <div className="flex flex-col gap-1">
-        <label className="text-[9px] font-terminal text-text-secondary uppercase tracking-widest">
-          Pass Mark (%)
-        </label>
-        <input
-          type="number"
-          {...register("passMark", { min: 0, max: 100, valueAsNumber: true })}
-          className="bg-transparent border px-2 py-1.5 text-sm text-white outline-none rounded"
-          style={{ borderColor: "#1e2a38" }}
-        />
-      </div>
-
-      {/* ── Time Limit ── */}
-      <div className="flex flex-col gap-1">
-        <label className="text-[9px] font-terminal text-text-secondary uppercase tracking-widest">
-          Time Limit (min — 0 = none)
-        </label>
-        <input
-          type="number"
-          {...register("timeLimit", { min: 0, valueAsNumber: true })}
-          className="bg-transparent border px-2 py-1.5 text-sm text-white outline-none rounded"
-          style={{ borderColor: "#1e2a38" }}
-        />
-      </div>
-
-      {/* ── Shuffle ── */}
-      <label className="flex items-center gap-3 cursor-pointer group">
-        <input
-          type="checkbox"
-          {...register("shuffleQuestions")}
-          className="w-3 h-3 accent-teal-500"
-        />
-        <span className="text-[10px] font-terminal text-text-secondary uppercase tracking-widest group-hover:text-white transition-colors">
-          Shuffle Questions
-        </span>
-      </label>
-
-      {/* ── Divider ── */}
-      <div className="border-t" style={{ borderColor: "#1e2a38" }} />
-
-      {/* ── Submit ── */}
-      <button
-        type="button"
-        onClick={onSubmit}
-        disabled={isSubmitting}
-        className="relative overflow-hidden group border border-teal-glow/50 bg-transparent text-teal-glow text-[9px] font-digital font-black uppercase tracking-wider py-3 transition-colors hover:text-black disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        <span className="absolute inset-0 bg-teal-glow -translate-x-full group-hover:translate-x-0 transition-transform duration-200 z-0" />
-        <span className="relative z-10">
-          {isSubmitting
-            ? "[ Saving... ]"
-            : isEdit
-              ? "[ Update_Quiz ]"
-              : "[ Create_Quiz ]"}
-        </span>
-      </button>
     </aside>
   );
 }

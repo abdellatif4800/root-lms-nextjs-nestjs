@@ -1,3 +1,4 @@
+import "./styles.css"
 export * from "./Mdxactions"
 export * from "./Mdxcontent"
 export * from "./ForwardRefEditor"
@@ -10,4 +11,3 @@ export * from "./customComponents/QuizComponent"
 export { MDXRemote } from "next-mdx-remote/rsc";
 
 export { type MDXEditorMethods } from '@mdxeditor/editor'
-
