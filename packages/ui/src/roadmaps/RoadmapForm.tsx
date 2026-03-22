@@ -9,12 +9,9 @@ export function RoadmapForm({ initialData }: { initialData?: any }) {
   const { user } = useSelector((state: RootState) => state.authSlice);
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
-  const [authorId, setAuthorId] = useState(
-    user.sub
-  );
+  const [authorId, setAuthorId] = useState(user?.sub);
   const router = useRouter();
 
-  // Sync fields if initialData arrives after mount (SSR hydration edge case)
   useEffect(() => {
     if (!initialData) return;
     if (initialData.title) setTitle(initialData.title);
@@ -27,10 +24,9 @@ export function RoadmapForm({ initialData }: { initialData?: any }) {
 
   const mutation = useMutation({
     mutationFn: createFullRoadmap,
-    onSuccess: () => router.push("/"),
+    onSuccess: () => router.push("/roadmaps/list"),
     onError: (error) => {
       console.error(error);
-      alert("Failed to create roadmap.");
     },
   });
 
@@ -52,36 +48,67 @@ export function RoadmapForm({ initialData }: { initialData?: any }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-5xl p-4 bg-surface-900 text-text-primary rounded-md shadow-md flex flex-col gap-4"
+      className="w-full max-w-5xl p-8 bg-surface border-2 border-ink shadow-wire relative flex flex-col gap-8"
     >
-      <div className="flex flex-col md:flex-row gap-4 items-center">
+      {/* Drafting Corner Decor */}
+      <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-ink opacity-20" />
+
+      <div className="flex flex-row   items-center justify-between border-b-2 border-ink pb-6">
+        <h2 className="text-2xl font-mono font-black text-ink uppercase tracking-tighter">
+          Configure Path
+        </h2>
+
         <button
           type="submit"
           disabled={mutation.isPending}
-          className="btn-primary w-full md:w-fit mt-2"
+          className="btn-wire-teal px-8 py-3 text-[10px] font-black tracking-widest min-w-[160px]"
         >
-          {mutation.isPending ? "Saving..." : initialData ? "Save Changes" : "Create Roadmap"}
+          {mutation.isPending ? "[ PROCESSING... ]" : initialData ? "[ SAVE_CHANGES ]" : "[ INITIALIZE_PATH ]"}
         </button>
-        {mutation.isError && (
-          <p className="text-red-400 font-semibold mt-2 md:mt-0">
-            Error saving roadmap
-          </p>
-        )}
       </div>
-      <div className="flex flex-row gap-4 items-center">
-        <input
-          className="flex-1 p-2 border border-surface-800 rounded bg-surface-800 text-text-primary"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+
+      {mutation.isError && (
+        <div className="p-3 bg-red-500/10 border-2 border-red-500 text-red-500 text-[10px] font-mono font-black uppercase text-center">
+          Error: Failed to synchronize architectural data.
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-6">
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-mono font-black text-ink uppercase tracking-widest pl-1 opacity-60">
+            Roadmap_Title
+          </label>
+          <input
+            className="w-full bg-background border-2 border-ink text-ink text-sm font-bold p-3 focus:outline-none focus:ring-2 focus:ring-teal-primary/20 placeholder:text-dust/40 transition-all font-mono"
+            placeholder="ENTER_TITLE_STRING..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-mono font-black text-ink uppercase tracking-widest pl-1 opacity-60">
+            Architectural_Description
+          </label>
+          <textarea
+            className="w-full bg-background border-2 border-ink text-ink text-sm font-bold p-3 focus:outline-none focus:ring-2 focus:ring-teal-primary/20 placeholder:text-dust/40 transition-all font-mono h-32 resize-none"
+            placeholder="ENTER_DETAILED_DESCRIPTION..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
       </div>
-      <textarea
-        className="p-2 border border-surface-800 rounded bg-surface-800 text-text-primary h-20"
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+
+      <div className="flex items-center gap-4 text-[9px] font-mono font-bold text-dust uppercase tracking-widest">
+        <span className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-ink" />
+          Nodes: {reduxNodes.length}
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-ink" />
+          Links: {reduxEdges.length}
+        </span>
+      </div>
     </form>
   );
 }
