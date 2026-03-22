@@ -1,5 +1,4 @@
 import { GenericJsxEditor, JsxComponentDescriptor } from "@mdxeditor/editor";
-import { CustomTextEditor } from "./CustomText";
 import { SimpleSeparatorEditor } from "./HorizontalSeprator";
 import { ImageComponentEditor } from "./CustomImage";
 import { VideoComponentEditor } from "./CustomVideo";
