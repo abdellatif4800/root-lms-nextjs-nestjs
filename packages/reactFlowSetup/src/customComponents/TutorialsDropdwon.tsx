@@ -1,10 +1,9 @@
 'use client'
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useDispatch } from "@repo/reduxSetup";
 import { addTutorialNode } from "@repo/reduxSetup";
 import { getTutorials, useQuery } from "@repo/gql";
 
-// 1. Define the shape of your tutorial data
 export interface Tutorial {
   id: string;
   tutorialName: string;
@@ -17,20 +16,17 @@ export function TutorialDropdown() {
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // 2. Tell useQuery what type of data to expect
   const { data, isLoading } = useQuery({
     queryKey: ['tutorials', query],
-    // Cast the response so TypeScript knows it's an array of Tutorials
     queryFn: async () => {
-      const response = await getTutorials({ tutorialName: query, publish: true, isPaid: false });
+      const response = await getTutorials({ tutorialName: query, publish: true });
       return response as Tutorial[];
     },
-    // 3. The React Query v5 way to keep previous data
     placeholderData: (previousData) => previousData,
   });
 
-  // Default to an empty array to map over safely
   const tutorials: Tutorial[] = data || [];
 
   const handleSelect = (tutorialId: string) => {
@@ -41,34 +37,48 @@ export function TutorialDropdown() {
       tutorial,
       position: { x: 200, y: 200 },
     }));
-    setQuery(""); // clear input
-    setOpen(false); // close dropdown
+    setQuery("");
+    setOpen(false);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="relative w-full">
+    <div className="relative w-full" ref={containerRef}>
       <input
         type="text"
         value={query}
         onFocus={() => setOpen(true)}
         onChange={e => setQuery(e.target.value)}
-        placeholder="Search tutorials..."
-        className="w-full p-2 rounded border border-surface-800 bg-surface-800 text-text-primary"
+        placeholder="Find module by name..."
+        className="w-full bg-background border-2 border-ink p-2 text-xs font-bold uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-teal-primary/20 placeholder:text-dust/30"
       />
 
       {open && (
-        <ul className="absolute w-full max-h-40 overflow-y-auto border border-surface-700 bg-surface-900 rounded mt-1 z-50 shadow-lg">
-          {isLoading && <li className="p-2 text-xs text-text-secondary">Loading...</li>}
+        <ul className="absolute w-full max-h-60 overflow-y-auto border-2 border-ink bg-surface mt-1 z-[100] shadow-wire custom-scrollbar divide-y-2 divide-ink/5">
+          {isLoading && <li className="p-3 text-[10px] font-bold text-dust uppercase animate-pulse">Scanning...</li>}
           {!isLoading && tutorials.length === 0 && (
-            <li className="p-2 text-xs text-text-secondary">No tutorials found</li>
+            <li className="p-3 text-[10px] font-bold text-dust uppercase">No matches found</li>
           )}
           {!isLoading && tutorials.map(t => (
             <li
               key={t.id}
               onClick={() => handleSelect(t.id)}
-              className="p-2 cursor-pointer hover:bg-teal-glow/20"
+              className="p-3 cursor-pointer hover:bg-background flex flex-col gap-1 transition-colors group"
             >
-              {t.tutorialName} ({t.level})
+              <span className="text-[10px] font-black text-ink uppercase group-hover:text-teal-primary">{t.tutorialName}</span>
+              <div className="flex items-center justify-between">
+                <span className="text-[8px] font-mono text-dust uppercase">{t.level || 'Beginner'}</span>
+                <span className="text-[8px] font-mono text-dust opacity-0 group-hover:opacity-100">+ INSERT</span>
+              </div>
             </li>
           ))}
         </ul>

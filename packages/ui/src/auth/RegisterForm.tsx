@@ -5,19 +5,14 @@ import { AuthInput } from "./AuthInput";
 import { useMutation, REGISTER } from "@repo/gql";
 
 export function RegisterForm() {
-  // 1. Create state variables for the three inputs
   const [username, setUsername] = useState("user101");
   const [email, setEmail] = useState("test@mail.com");
   const [password, setPassword] = useState("pass123");
-
-  // 2. Add a loading state for better UX
   const [isLoading, setIsLoading] = useState(false);
 
-  /* Example mutation setup:*/
   const mutation = useMutation({
     mutationFn: (data: { username: string, email: string, password: string }) => REGISTER(data),
-    onSuccess: (data) => {
-      // Handle success (e.g., auto-login, show success message, or close modal)
+    onSuccess: () => {
       setIsLoading(false);
     },
     onError: (err) => {
@@ -27,39 +22,36 @@ export function RegisterForm() {
   })
 
   const handleRegister = async () => {
-    setIsLoading(true); // Disable the button immediately
-
+    setIsLoading(true);
     mutation.mutate({ username, email, password });
-
     setTimeout(() => setIsLoading(false), 2000);
   }
 
   return (
-    <form className="flex flex-col h-full justify-between" onSubmit={(e) => e.preventDefault()}>
+    <form className="flex flex-col h-full justify-between font-sans" onSubmit={(e) => e.preventDefault()}>
       <div>
-        <div className="mb-6 p-3 border-l-2 border-purple-glow bg-purple-glow/5 text-purple-glow text-xs font-mono">
-          {'>'} Create new node identity.
+        <div className="mb-8 p-4 border-2 border-ink border-dashed text-ink text-xs font-bold bg-surface/30">
+          Create an account to start your learning journey.
         </div>
 
-        {/* Hook up the state and onChange handlers */}
         <AuthInput
-          label="Designation (Username)"
+          label="Display Name"
           type="text"
-          placeholder="ASSIGN_HANDLE..."
+          placeholder="e.g. Alex"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
         <AuthInput
-          label="Contact_Frequency (Email)"
+          label="Email Address"
           type="email"
-          placeholder="LINK_ADDRESS..."
+          placeholder="e.g. name@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <AuthInput
-          label="Security_Key"
+          label="Choose Password"
           type="password"
-          placeholder="SET_SECRET..."
+          placeholder="Create a secure password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -67,17 +59,13 @@ export function RegisterForm() {
 
       <button
         className={`
-          mt-4 w-full bg-transparent border border-purple-glow text-purple-glow font-black uppercase tracking-[0.2em] py-3 text-xs
-          transition-all shadow-[4px_4px_0px_rgba(0,0,0,0.3)]
-          ${isLoading
-            ? 'opacity-60 cursor-not-allowed' // Disabled styles
-            : 'hover:bg-purple-glow hover:text-surface-950 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none' // Active styles
-          }
+          mt-4 w-full py-4 text-xs font-black uppercase tracking-widest transition-all
+          ${isLoading ? 'btn-wire opacity-50 cursor-not-allowed' : 'btn-wire-teal'}
         `}
         onClick={handleRegister}
         disabled={isLoading}
       >
-        {isLoading ? "[ ENCRYPTING... ]" : "[ Execute_Registration ]"}
+        {isLoading ? "Creating Account..." : "Register Now"}
       </button>
     </form>
   )

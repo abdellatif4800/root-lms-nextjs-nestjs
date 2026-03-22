@@ -1,7 +1,6 @@
 import { Handle, Position, type Node, type NodeProps } from '@xyflow/react';
 import { useRouter } from "next/navigation";
 
-// 1. Extend Record<string, unknown> to satisfy XYFlow's strict data constraints
 export interface SimpleTutorialNodeData extends Record<string, unknown> {
   tutorial: {
     id: string;
@@ -12,7 +11,6 @@ export interface SimpleTutorialNodeData extends Record<string, unknown> {
   };
 }
 
-// 2. Create a complete Node type that combines your custom data with standard Node properties
 export type CustomTutorialNode = Node<SimpleTutorialNodeData, 'tutorial'>;
 
 export function TutorialNode({ data, selected }: NodeProps<CustomTutorialNode>) {
@@ -21,80 +19,47 @@ export function TutorialNode({ data, selected }: NodeProps<CustomTutorialNode>) 
 
   return (
     <div
-      className="w-[280px] flex flex-col bg-surface-900 border border-surface-800 relative overflow-hidden cursor-pointer group transition-all duration-200"
-      style={{
-        boxShadow: selected
-          ? "0 0 0 1px var(--teal-glow), 4px 4px 0px var(--surface-700), 0 0 20px rgba(45,212,191,0.15)"
-          : "4px 4px 0px var(--surface-800)",
-        borderColor: selected ? "var(--teal-glow)" : undefined,
-        clipPath: "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))",
-      }}
-      onClick={() => router.push(`/tutorials/${tutorial.id}`)}
+      className={`
+        w-[280px] flex flex-col bg-surface border-2 transition-all duration-200 cursor-pointer group
+        ${selected ? 'border-teal-primary shadow-wire-teal -translate-y-1' : 'border-ink shadow-wire'}
+      `}
     >
-      {/* Top accent bar */}
-      <div
-        className="absolute top-0 left-0 right-0 h-0.5 transition-all duration-200"
-        style={{
-          background: selected ? "var(--teal-glow)" : "var(--surface-700)",
-          boxShadow: selected ? "0 0 8px var(--shadow-teal)" : "none",
-        }}
-      />
-
-      {/* Hover inset glow */}
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{ background: "linear-gradient(135deg, rgba(45,212,191,0.04) 0%, transparent 60%)" }}
-      />
-
-      {/* Corner bracket top-right */}
-      <div
-        className="absolute top-0 right-0 w-4 h-4 border-t border-r pointer-events-none transition-colors duration-200"
-        style={{ borderColor: selected ? "var(--teal-glow)" : "var(--surface-700)" }}
-      />
-
       {/* ── Header ── */}
-      <div className="px-3 pt-3 pb-2 border-b border-surface-800 flex items-start justify-between gap-2">
-        <div className="flex flex-col gap-1 min-w-0 flex-1">
-          {/* System tag */}
-          <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-40 leading-none">
-            // TUTORIAL_NODE
+      <div className="px-4 py-4 border-b-2 border-ink flex flex-col gap-2 bg-background/50">
+        <div className="flex items-center justify-between">
+          <span className="text-[8px] font-mono font-black text-dust uppercase tracking-[0.2em]">
+            Step_{tutorial.id.slice(0, 3)}
           </span>
-          {/* Title */}
-          <h3 className="text-[11px] font-digital font-black text-text-primary uppercase tracking-wide leading-snug line-clamp-2 group-hover:text-teal-glow transition-colors duration-200">
-            {tutorial.tutorialName}
-          </h3>
+          <span className="badge-tape scale-75 origin-right">
+            {tutorial.level || "BEGINNER"}
+          </span>
         </div>
 
-        {/* Level badge */}
-        <span
-          className="shrink-0 text-[7px] font-digital font-black px-1.5 py-0.5 border uppercase tracking-wider leading-none mt-1"
-          style={{
-            color: "var(--teal-glow)",
-            borderColor: "rgba(45,212,191,0.3)",
-            background: "rgba(45,212,191,0.05)",
-            clipPath: "polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 3px 100%, 0 calc(100% - 3px))",
-          }}
-        >
-          {tutorial.level || "CORE"}
-        </span>
+        <h3 className="text-sm font-black text-ink uppercase tracking-tighter leading-tight group-hover:text-teal-primary transition-colors">
+          {tutorial.tutorialName}
+        </h3>
       </div>
 
       {/* ── Body ── */}
-      <div className="px-3 py-2.5 flex flex-col gap-2 flex-1">
-        {/* Description */}
+      <div className="px-4 py-4 flex flex-col gap-3 flex-1">
         {tutorial.description && (
-          <p className="text-[9px] font-terminal text-text-secondary leading-relaxed line-clamp-2 opacity-70">
-            <span className="text-teal-glow/40 mr-1">{">"}</span>
+          <p className="text-[10px] text-dust font-medium leading-relaxed line-clamp-2">
             {tutorial.description}
           </p>
         )}
 
-        {/* Category */}
-        <div className="flex items-center gap-1.5 mt-auto">
-          <span className="w-1 h-1 bg-purple-glow shrink-0" style={{ boxShadow: "0 0 4px var(--shadow-purple)" }} />
-          <span className="text-[8px] font-terminal font-bold text-purple-glow uppercase tracking-[0.2em]">
-            {tutorial.category}
-          </span>
+        <div className="flex items-center justify-between mt-auto pt-2">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 border border-ink bg-teal-primary" />
+            <span className="text-[8px] font-mono font-bold text-ink uppercase tracking-widest">
+              {tutorial.category}
+            </span>
+          </div>
+          <button
+            onClick={() => router.push(`/tutorials/${tutorial.id}`)}
+            className="text-[10px] font-black text-teal-primary group-hover:underline">
+            VIEW_DETAILS
+          </button>
         </div>
       </div>
 
@@ -104,11 +69,10 @@ export function TutorialNode({ data, selected }: NodeProps<CustomTutorialNode>) 
         position={Position.Top}
         id="top"
         style={{
-          background: "var(--teal-glow)",
-          border: "2px solid var(--surface-900)",
-          width: 10,
-          height: 10,
-          boxShadow: "0 0 6px var(--shadow-teal)",
+          background: "var(--color-ink-black)",
+          border: "2px solid var(--color-background)",
+          width: 8,
+          height: 8,
         }}
       />
       <Handle
@@ -116,11 +80,10 @@ export function TutorialNode({ data, selected }: NodeProps<CustomTutorialNode>) 
         position={Position.Bottom}
         id="bottom"
         style={{
-          background: "var(--emerald-glow)",
-          border: "2px solid var(--surface-900)",
-          width: 10,
-          height: 10,
-          boxShadow: "0 0 6px var(--shadow-emerald)",
+          background: "var(--color-blueprint-teal)",
+          border: "2px solid var(--color-background)",
+          width: 8,
+          height: 8,
         }}
       />
     </div>

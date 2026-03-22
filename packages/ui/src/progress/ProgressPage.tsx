@@ -3,6 +3,7 @@ import { setRedirect, setRequired, toggleAuthModal, useDispatch } from "@repo/re
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
+
 function AnimatedBar({ percentage }: { percentage: number }) {
   const [width, setWidth] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
@@ -22,118 +23,62 @@ function AnimatedBar({ percentage }: { percentage: number }) {
   }, [percentage]);
 
   return (
-    <div ref={ref} className="relative h-2 w-full bg-surface-800 overflow-hidden">
-      {/* Tick marks */}
-      {[25, 50, 75].map((tick) => (
-        <div
-          key={tick}
-          className="absolute top-0 bottom-0 w-px bg-surface-700 z-10"
-          style={{ left: `${tick}%` }}
-        />
-      ))}
-      {/* Fill */}
+    <div ref={ref} className="relative h-4 w-full bg-background border-2 border-ink p-[2px] overflow-hidden">
       <div
-        className="absolute inset-y-0 left-0 transition-all duration-1000 ease-out"
-        style={{
-          width: `${width}%`,
-          background: percentage === 100
-            ? "var(--emerald-glow)"
-            : "var(--teal-glow)",
-          boxShadow: percentage === 100
-            ? "0 0 12px rgba(16,185,129,0.7), 0 0 24px rgba(16,185,129,0.3)"
-            : "0 0 12px rgba(45,212,191,0.7), 0 0 24px rgba(45,212,191,0.3)",
-        }}
+        className="h-full bg-teal-primary transition-all duration-1000 ease-out"
+        style={{ width: `${width}%` }}
       />
-      {/* Animated scan sweep */}
-      {width > 0 && width < 100 && (
-        <div
-          className="absolute inset-y-0 w-8 pointer-events-none"
-          style={{
-            left: `${width}%`,
-            background: "linear-gradient(90deg, rgba(45,212,191,0.5) 0%, transparent 100%)",
-            animation: "progressPulse 2s ease-in-out infinite",
-          }}
-        />
-      )}
+      {/* Grid lines on top of the bar */}
+      <div className="absolute inset-0 flex justify-between pointer-events-none px-4">
+         <div className="w-px h-full bg-ink/10" />
+         <div className="w-px h-full bg-ink/10" />
+         <div className="w-px h-full bg-ink/10" />
+      </div>
     </div>
   );
 }
 
-function UnitBadge({ unit, index }: { unit: any; index: number }) {
+function UnitBadge({ unit }: { unit: any; index: number }) {
   return (
-    <div
-      className="
-        group/unit relative flex items-center gap-2
-        border border-surface-700 bg-surface-900/50
-        px-3 py-1.5
-        text-[10px] font-terminal text-text-secondary
-        hover:border-teal-glow/60 hover:text-text-primary
-        hover:bg-surface-800/80
-        transition-all duration-200 cursor-default
-        opacity-0 animate-[fadeSlideIn_0.3s_ease_forwards]
-      "
-      style={{
-        animationDelay: `${index * 40}ms`,
-        clipPath: "polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px))",
-      }}
-    >
-      <span className="text-teal-glow/40 group-hover/unit:text-teal-glow transition-colors font-bold text-[9px]">›</span>
-      <span className="uppercase tracking-wider leading-none">{unit.unitTitle}</span>
+    <div className="badge-tape flex items-center gap-2 border border-ink/20">
+      <span className="opacity-40">Section:</span>
+      <span className="font-bold">{unit.unitTitle}</span>
     </div>
   );
 }
 
-function QuizProgressCard({ item, index }: { item: any; index: number }) {
+function QuizProgressCard({ item }: { item: any; index: number }) {
   const isComplete = item.isCompleted || item.score >= (item.quiz?.passMark || 70);
-  const accentColor = isComplete ? "var(--emerald-glow)" : "var(--purple-glow)";
-  const shadowColor = isComplete ? "var(--shadow-emerald)" : "var(--shadow-purple)";
 
   return (
-    <div
-      className="
-        group relative
-        bg-surface-900 border border-surface-800
-        hover:border-purple-glow/50 hover:bg-surface-800/60
-        transition-all duration-300
-        opacity-0 animate-[fadeSlideIn_0.4s_ease_forwards]
-      "
-      style={{
-        animationDelay: `${index * 80}ms`,
-        boxShadow: "4px 4px 0px var(--surface-800)",
-        clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px))",
-      }}
-    >
-      <div className="absolute top-0 left-0 bottom-0 w-0.5" style={{ background: accentColor, boxShadow: `0 0 8px ${shadowColor}` }} />
-      
-      <div className="p-8 flex flex-col gap-4">
-        <div className="flex justify-between items-start">
-          <div className="flex flex-col gap-1">
-            <span className="text-[8px] font-terminal uppercase tracking-[0.3em] font-bold" style={{ color: accentColor }}>
-              {isComplete ? "ASSESSMENT_PASSED" : "ASSESSMENT_FAILED"}
-            </span>
-            <h3 className="text-sm font-digital font-black text-text-primary uppercase tracking-wide truncate max-w-[200px]">
-              {item.quiz?.title || "Unknown Quiz"}
-            </h3>
-          </div>
-          <div className="flex flex-col items-end gap-0.5">
-            <span className="text-2xl font-digital font-black leading-none" style={{ color: accentColor, textShadow: `0 0 14px ${shadowColor}` }}>
-              {item.score}%
-            </span>
-            <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-40">Score</span>
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center pt-3 border-t border-surface-800">
-          <span className="text-[8px] font-terminal text-text-secondary uppercase opacity-50">
-            Last Attempt: {new Date(item.updatedAt).toLocaleDateString()}
+    <div className={`wire-card flex flex-col gap-4 p-8 ${isComplete ? 'border-teal-primary shadow-wire-teal' : ''}`}>
+      <div className="flex justify-between items-start">
+        <div className="flex flex-col gap-1">
+          <span className={`text-[10px] font-mono font-black uppercase tracking-widest ${isComplete ? 'text-teal-primary' : 'text-dust'}`}>
+            {isComplete ? "Passed" : "Needs Review"}
           </span>
-          <Link
-            href={`/quizzes/${item.quizId}`}
-            className="text-[9px] font-digital font-black text-purple-glow uppercase tracking-widest hover:text-white transition-colors"
-          >
-            [ RE_ATTEMPT ]
-          </Link>
+          <h3 className="text-lg font-black text-ink uppercase tracking-tighter leading-tight truncate max-w-[200px]">
+            {item.quiz?.title || "Assessment"}
+          </h3>
         </div>
+        <div className="flex flex-col items-end">
+          <span className={`text-3xl font-black ${isComplete ? 'text-teal-primary' : 'text-ink'}`}>
+            {item.score}%
+          </span>
+          <span className="text-[8px] font-mono font-bold text-dust uppercase">Score</span>
+        </div>
+      </div>
+
+      <div className="mt-auto pt-4 border-t-2 border-dashed border-ink/5 flex justify-between items-center">
+        <span className="text-[9px] font-mono font-bold text-dust uppercase">
+          {new Date(item.updatedAt).toLocaleDateString()}
+        </span>
+        <Link
+          href={`/quizzes/${item.quizId}`}
+          className="btn-wire text-[10px] px-4 py-1.5"
+        >
+          Try Again
+        </Link>
       </div>
     </div>
   );
@@ -142,7 +87,6 @@ function QuizProgressCard({ item, index }: { item: any; index: number }) {
 export function ProgressPageContent({ unitProgressByUser, quizProgressByUser }: any) {
   const [activeTab, setActiveTab] = useState<"tutorials" | "quizzes">("tutorials");
   const dispatch = useDispatch();
-
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId")
 
@@ -163,210 +107,150 @@ export function ProgressPageContent({ unitProgressByUser, quizProgressByUser }: 
     : [];
 
   const totalTutorialsCompleted = tutorialsData.filter((item: any) => item?.isCompleted).length;
-  const totalQuizzesPassed = quizzesData.filter((item: any) => item?.isCompleted).length;
-
   const avgProgress = tutorialsData.length > 0
     ? Math.round(tutorialsData.reduce((acc: number, item: any) => acc + (item?.percentage || 0), 0) / tutorialsData.length)
     : 0;
 
   return (
-    <div className="h-[calc(100vh-80px)] w-full flex flex-col font-terminal overflow-hidden">
-      {/* Background grid */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage: "linear-gradient(var(--teal-glow) 1px, transparent 1px), linear-gradient(90deg, var(--teal-glow) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-          opacity: "var(--grid-opacity)",
-        }}
-      />
-      {/* Vignette */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{ background: "radial-gradient(ellipse at center, transparent 40%, var(--vignette-color) 100%)" }}
-      />
+    <div className="min-h-full w-full flex flex-col font-sans">
+      
+      {/* ── Header ── */}
+      <div className="relative z-10 shrink-0 border-b-2 border-ink bg-surface shadow-wire px-8 py-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
 
-      {/* ── PAGE HEADER ── */}
-      <div className="relative z-10 shrink-0 border-b border-surface-800 bg-surface-900/80 backdrop-blur-sm px-8 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-6">
-
-          {/* Title block */}
-          <div className="flex items-center gap-8">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.35em] opacity-50">
-                // SYS://NEURAL_PROGRESS
-              </span>
-              <h1 className="text-base font-digital font-black text-text-primary uppercase tracking-wider leading-none">
-                Training_Matrix
+          <div className="flex items-center gap-10">
+            <div className="flex flex-col">
+              <span className="badge-tape w-fit mb-2">Student Dashboard</span>
+              <h1 className="text-3xl font-black text-ink uppercase tracking-tighter leading-none">
+                My Progress
               </h1>
             </div>
 
-            {/* Tab Switcher */}
-            <div className="flex bg-surface-950 border border-surface-700 p-1">
+            <div className="flex border-2 border-ink bg-background p-1 shadow-[2px_2px_0px_0px_rgba(19,21,22,1)]">
               <button
                 onClick={() => setActiveTab("tutorials")}
-                className={`px-4 py-1.5 text-[9px] font-digital font-black uppercase tracking-widest transition-all ${activeTab === "tutorials" ? "bg-teal-glow text-black" : "text-text-secondary hover:text-white"}`}
+                className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "tutorials" ? "bg-ink text-background" : "text-dust hover:text-ink"}`}
               >
-                Tutorials
+                Lessons
               </button>
               <button
                 onClick={() => setActiveTab("quizzes")}
-                className={`px-4 py-1.5 text-[9px] font-digital font-black uppercase tracking-widest transition-all ${activeTab === "quizzes" ? "bg-purple-glow text-black" : "text-text-secondary hover:text-white"}`}
+                className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "quizzes" ? "bg-ink text-background" : "text-dust hover:text-ink"}`}
               >
                 Quizzes
               </button>
             </div>
           </div>
 
-          {/* Stats row */}
-          <div className="flex items-center gap-6">
-            {activeTab === "tutorials" ? (
-              <>
-                <div className="flex flex-col items-center gap-0.5">
-                  <span className="text-xl font-digital font-black text-teal-glow" style={{ textShadow: "0 0 10px var(--shadow-teal)" }}>
-                    {avgProgress}%
-                  </span>
-                  <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-50">Avg_Load</span>
-                </div>
-                <div className="w-px h-8 bg-surface-700" />
-                <div className="flex flex-col items-center gap-0.5">
-                  <span className="text-xl font-digital font-black text-emerald-glow" style={{ textShadow: "0 0 10px var(--shadow-emerald)" }}>
-                    {totalTutorialsCompleted}/{tutorialsData.length}
-                  </span>
-                  <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-50">Decrypted</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex flex-col items-center gap-0.5">
-                  <span className="text-xl font-digital font-black text-purple-glow" style={{ textShadow: "0 0 10px var(--shadow-purple)" }}>
-                    {totalQuizzesPassed}/{quizzesData.length}
-                  </span>
-                  <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-50">Quizzes_Passed</span>
-                </div>
-              </>
-            )}
-
-            <div className="w-px h-8 bg-surface-700" />
-
-            {/* Status indicator */}
-            <div className="flex items-center gap-2 border border-surface-700 px-3 py-1.5">
-              <span
-                className="w-1.5 h-1.5 bg-emerald-glow animate-pulse"
-                style={{ boxShadow: "0 0 5px var(--shadow-emerald)" }}
-              />
-              <span className="text-[9px] font-terminal text-text-secondary uppercase tracking-[0.2em]">
-                <span className="text-emerald-glow font-bold">ONLINE</span>
+          <div className="flex items-center gap-8">
+            <div className="flex flex-col items-center">
+              <span className="text-3xl font-black text-teal-primary leading-none">
+                {avgProgress}%
               </span>
+              <span className="text-[8px] font-mono font-bold text-dust uppercase tracking-widest">Avg Completion</span>
+            </div>
+            
+            <div className="w-px h-10 bg-ink/10" />
+
+            <div className="flex flex-col items-center">
+              <span className="text-3xl font-black text-ink leading-none">
+                {totalTutorialsCompleted}/{tutorialsData.length}
+              </span>
+              <span className="text-[8px] font-mono font-bold text-dust uppercase tracking-widest">Finished</span>
+            </div>
+
+            <div className="w-px h-10 bg-ink/10" />
+
+            <div className="flex items-center gap-2 border-2 border-ink px-4 py-2 bg-background/50">
+              <div className="w-2 h-2 bg-teal-primary shadow-[1px_1px_0px_0px_rgba(19,21,22,1)] animate-pulse" />
+              <span className="text-[10px] font-mono font-black text-ink uppercase">Active</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── SCROLLABLE CONTENT ── */}
-      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto custom-scrollbar p-8">
-        <div className="max-w-7xl mx-auto pb-12">
+      {/* ── Content ── */}
+      <div className="relative z-10 flex-1 p-8">
+        <div className="max-w-7xl mx-auto pb-20">
           {activeTab === "tutorials" ? (
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-8">
               {tutorialsData.map((item: any, i: number) => {
                 const isComplete = item.isCompleted || item.percentage === 100;
-                const accentColor = isComplete ? "var(--emerald-glow)" : "var(--teal-glow)";
-                const shadowColor = isComplete ? "var(--shadow-emerald)" : "var(--shadow-teal)";
 
                 return (
                   <div
                     key={item.id}
-                    className="
-                      group relative
-                      bg-surface-900 border border-surface-800
-                      hover:border-teal-glow/50 hover:bg-surface-800/60
-                      transition-all duration-300
-                      opacity-0 animate-[fadeSlideIn_0.4s_ease_forwards]
-                    "
-                    style={{
-                      animationDelay: `${i * 80}ms`,
-                      boxShadow: "4px 4px 0px var(--surface-800)",
-                      clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px))",
-                    }}
+                    className={`wire-card flex flex-col md:flex-row ${isComplete ? 'border-teal-primary shadow-wire-teal' : ''}`}
                   >
-                    {/* Content same as before... */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(45,212,191,0.035) 0%, transparent 55%)" }} />
-                    <div className="absolute top-0 left-0 bottom-0 w-0.5" style={{ background: accentColor, boxShadow: `0 0 8px ${shadowColor}`, opacity: isComplete ? 1 : 0.5 }} />
-                    <div className="absolute bottom-0 left-0 right-0 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left" style={{ background: accentColor, boxShadow: `0 0 8px ${shadowColor}` }} />
-
-                    <div className="p-10 flex flex-col gap-4">
+                    <div className="p-10 flex-1 flex flex-col gap-6">
                       <div className="flex items-start justify-between gap-4">
-                        <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                        <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2">
-                            <span className="w-1 h-1" style={{ background: accentColor, boxShadow: `0 0 5px ${shadowColor}`, animation: !isComplete ? "homeStatusPulse 2s ease-in-out infinite" : undefined }} />
-                            <span className="text-[8px] font-terminal uppercase tracking-[0.3em] font-bold" style={{ color: accentColor }}>
-                              {isComplete ? "Fully_Decrypted" : "In_Progress"}
+                            <div className={`w-2 h-2 border border-ink ${isComplete ? 'bg-ink' : 'bg-teal-primary'}`} />
+                            <span className={`text-[10px] font-mono font-black uppercase tracking-widest ${isComplete ? 'text-ink' : 'text-teal-primary'}`}>
+                              {isComplete ? "Lesson Completed" : "Currently Learning"}
                             </span>
                           </div>
-                          <h3 className="text-sm font-digital font-black text-text-primary uppercase tracking-wide leading-snug group-hover:text-teal-glow transition-colors duration-200 truncate">
+                          <h3 className="text-2xl font-black text-ink uppercase tracking-tighter leading-tight group-hover:text-teal-primary transition-colors">
                             {item.tutorial.tutorialName}
                           </h3>
                         </div>
-                        <div className="shrink-0 flex flex-col items-end gap-0.5">
-                          <span className="text-2xl font-digital font-black leading-none" style={{ color: accentColor, textShadow: `0 0 14px ${shadowColor}` }}>
+                        <div className="flex flex-col items-end">
+                          <span className={`text-4xl font-black leading-none ${isComplete ? 'text-ink' : 'text-teal-primary'}`}>
                             {Math.floor(item.percentage)}%
                           </span>
-                          <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.2em] opacity-40">completion</span>
+                          <span className="text-[10px] font-mono font-bold text-dust uppercase">Progress</span>
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-1.5">
-                        <AnimatedBar percentage={item.percentage} />
-                        <div className="flex justify-between text-[7px] font-terminal text-text-secondary opacity-30 uppercase tracking-wider px-px">
-                          <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
-                        </div>
-                      </div>
+                      <AnimatedBar percentage={item.percentage} />
 
                       {item.tutorial.units?.length > 0 && (
-                        <div className="flex flex-col gap-2">
-                          <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-40">// units ({item.tutorial.units.length})</span>
-                          <div className="flex flex-row flex-wrap gap-2">
-                            {item.tutorial.units.map((unit: any, idx: number) => (
+                        <div className="flex flex-col gap-3">
+                          <span className="text-[10px] font-mono font-black text-dust uppercase tracking-widest">Recent Sections</span>
+                          <div className="flex flex-wrap gap-2">
+                            {item.tutorial.units.slice(0, 5).map((unit: any, idx: number) => (
                               <UnitBadge key={unit.id} unit={unit} index={idx} />
                             ))}
                           </div>
                         </div>
                       )}
 
-                      <div className="flex items-center justify-between pt-3 border-t border-surface-800 gap-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-wider opacity-40">Units:</span>
-                            <span className="text-[9px] font-digital font-black text-purple-glow">{item.tutorial.units?.length ?? 0}</span>
+                      <div className="flex items-center justify-between pt-6 border-t-2 border-dashed border-ink/5">
+                        <div className="flex items-center gap-6">
+                          <div className="flex flex-col">
+                            <span className="text-[8px] font-mono font-bold text-dust uppercase">Ref ID</span>
+                            <span className="text-[10px] font-mono font-black text-ink truncate max-w-[100px]">{item.tutorial.id?.slice(0, 8)}</span>
                           </div>
-                          <div className="w-px h-3 bg-surface-700" />
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-wider opacity-40">ID:</span>
-                            <span className="text-[9px] font-digital font-black text-text-secondary opacity-50 truncate max-w-[80px]">{item.tutorial.id?.slice(0, 8)}…</span>
+                          <div className="flex flex-col">
+                            <span className="text-[8px] font-mono font-bold text-dust uppercase">Sections</span>
+                            <span className="text-[10px] font-mono font-black text-ink">{item.tutorial.units?.length ?? 0}</span>
                           </div>
                         </div>
-                        <Link href={{ pathname: `/tutorials/${item.tutorial.id}` }} className="relative group/btn overflow-hidden shrink-0 border px-5 py-2 text-[9px] font-digital font-black uppercase tracking-[0.2em] transition-colors duration-200 active:scale-95" style={{ borderColor: accentColor, color: accentColor, clipPath: "polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px))" }}>
-                          <span className="absolute inset-0 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-200 z-0" style={{ background: accentColor }} />
-                          <span className="relative z-10 group-hover/btn:text-black transition-colors duration-200">{isComplete ? "Review_Session" : "Resume_Session"}<span className="ml-1.5 group-hover/btn:translate-x-1 inline-block transition-transform duration-200">→</span></span>
+                        <Link href={{ pathname: `/tutorials/${item.tutorial.id}` }} className={isComplete ? 'btn-wire' : 'btn-wire-teal'}>
+                          <span className="px-4 uppercase font-black text-[10px] tracking-widest">
+                            {isComplete ? "Review Content" : "Continue Learning →"}
+                          </span>
                         </Link>
                       </div>
                     </div>
-                    <div className="absolute top-0 right-0 w-5 h-5 border-t border-r border-surface-700 group-hover:border-teal-glow/50 transition-colors duration-300" />
-                    <div className="absolute bottom-0 left-0 w-5 h-5 border-b border-l border-surface-700 group-hover:border-teal-glow/30 transition-colors duration-300 opacity-0 group-hover:opacity-100" />
-                    <div className="absolute top-2 right-8 text-[8px] font-digital text-text-secondary opacity-15 font-black">{String(i + 1).padStart(2, "0")}</div>
+                    {/* Index marker */}
+                    <div className="hidden md:flex w-16 border-l-2 border-ink bg-surface items-center justify-center font-mono font-black text-ink/10 text-4xl select-none">
+                       {String(i + 1).padStart(2, "0")}
+                    </div>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {quizzesData.map((item: any, i: number) => (
                 <QuizProgressCard key={item.id} item={item} index={i} />
               ))}
               {quizzesData.length === 0 && (
-                <div className="col-span-full py-20 text-center border border-dashed border-surface-800">
-                  <span className="text-[10px] font-terminal text-text-secondary uppercase tracking-[0.4em] opacity-40">
-                    // NO_ASSESSMENT_DATA_FOUND
+                <div className="col-span-full py-24 text-center border-2 border-ink border-dashed rounded-none">
+                  <span className="text-xs font-bold text-dust uppercase tracking-widest">
+                    No assessment history found.
                   </span>
                 </div>
               )}
@@ -375,40 +259,24 @@ export function ProgressPageContent({ unitProgressByUser, quizProgressByUser }: 
         </div>
       </div>
 
-      {/* ── FOOTER STATUS BAR ── */}
-      <div className="relative z-10 shrink-0 h-8 bg-surface-900 border-t border-surface-800 px-8 flex items-center justify-between text-[9px] font-terminal">
-        <div className="flex items-center gap-5">
+      {/* ── Footer ── */}
+      <div className="relative z-10 shrink-0 h-10 bg-surface border-t-2 border-ink px-8 flex items-center justify-between text-[10px] font-mono font-bold text-dust">
+        <div className="flex items-center gap-8">
           <div className="flex items-center gap-2">
-            <span className="text-text-secondary uppercase tracking-wider opacity-50">SYSTEM_STATUS:</span>
-            <span
-              className="text-emerald-glow font-bold uppercase tracking-wider flex items-center gap-1.5"
-              style={{ textShadow: "0 0 6px var(--shadow-emerald)" }}
-            >
-              <span className="w-1 h-1 bg-emerald-glow animate-pulse inline-block" />
-              READY
+            <span className="opacity-50">STATUS:</span>
+            <span className="text-ink uppercase flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-teal-primary animate-pulse" />
+              SYSTEM_READY
             </span>
           </div>
-          <div className="w-px h-3 bg-surface-700" />
           <div className="flex items-center gap-2">
-            <span className="text-text-secondary uppercase tracking-wider opacity-50">ACCESS_LEVEL:</span>
-            <span
-              className="text-purple-glow font-bold uppercase tracking-wider"
-              style={{ textShadow: "0 0 6px var(--shadow-purple)" }}
-            >
-              ROOT
-            </span>
-          </div>
-          <div className="w-px h-3 bg-surface-700" />
-          <div className="flex items-center gap-2">
-            <span className="text-text-secondary uppercase tracking-wider opacity-50">MODULES:</span>
-            <span className="text-teal-glow font-bold">{activeTab === "tutorials" ? tutorialsData.length : quizzesData.length}</span>
+            <span className="opacity-50">VER:</span>
+            <span className="text-ink">4.0.2</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 opacity-40">
-          <span className="uppercase tracking-wider">v4.0.2_STABLE</span>
-          <div className="w-px h-3 bg-surface-700" />
-          <span className="uppercase tracking-wider">
+        <div className="flex items-center gap-4">
+          <span className="uppercase tracking-widest">
             {new Date().toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }).toUpperCase()}
           </span>
         </div>
@@ -417,4 +285,3 @@ export function ProgressPageContent({ unitProgressByUser, quizProgressByUser }: 
     </div>
   );
 }
-

@@ -12,7 +12,7 @@ import { getAllQuizzes, useQuery } from "@repo/gql";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-// ─── Quiz Display Component (Web & Editor Preview) ────────────────────────────
+// ─── Quiz Display Component ──────────────────────────────────────────────────
 export function QuizComponent({
   quizId,
   title,
@@ -26,36 +26,32 @@ export function QuizComponent({
   if (!quizId) return null;
 
   return (
-    <div className="my-8 w-full max-w-xl mx-auto">
-      <div className="relative group bg-surface-900 border border-purple-glow/30 p-6 [clip-path:polygon(0_0,calc(100%-20px)_0,100%_20px,100%_100%,20px_100%,0_calc(100%-20px))] hover:border-purple-glow transition-all duration-300 shadow-[0_0_30px_rgba(168,85,247,0.05)]">
-        {/* Decorative corner */}
-        <div className="absolute top-0 right-0 w-10 h-10 bg-purple-glow/10 [clip-path:polygon(100%_0,0_0,100%_100%)] group-hover:bg-purple-glow/20 transition-colors" />
+    <div className="my-12 w-full max-w-2xl mx-auto px-4">
+      <div className="wire-card group p-8 flex flex-col items-center text-center gap-6 border-teal-primary/30 shadow-wire-teal">
         
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-surface-950 border border-purple-glow/50 flex items-center justify-center text-purple-glow shadow-glow-purple-sm">
-              <span className="text-xs font-digital font-black">?</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[8px] font-terminal text-purple-glow uppercase tracking-[0.3em] opacity-60 leading-none">
-                // ASSESSMENT_REQUIRED
-              </span>
-              <h3 className="text-sm font-digital font-black text-text-primary uppercase tracking-wider mt-1">
-                {title || "Untitled Assessment"}
-              </h3>
-            </div>
-          </div>
-
-          <Link
-            href={{
-              pathname: `/quizzes/${quizId}`,
-              query: unitId ? { unitId } : {},
-            }}
-            className="w-full text-center py-3 bg-purple-glow text-black text-[10px] font-digital font-black uppercase tracking-widest hover:bg-white transition-all active:translate-y-px shadow-glow-purple-sm"
-          >
-            [ Launch_Quiz_Sequence ]
-          </Link>
+        <div className="w-16 h-16 border-2 border-ink bg-background flex items-center justify-center text-3xl shadow-wire group-hover:bg-teal-primary group-hover:text-background transition-all">
+          ?
         </div>
+
+        <div className="flex flex-col gap-2">
+          <span className="badge-tape w-fit mx-auto">Knowledge Check</span>
+          <h3 className="text-2xl font-black text-ink uppercase tracking-tighter mt-2">
+            {title || "Assessment"}
+          </h3>
+          <p className="text-xs text-dust font-medium max-w-xs">
+            Complete this quiz to test your understanding of the material.
+          </p>
+        </div>
+
+        <Link
+          href={{
+            pathname: `/quizzes/${quizId}`,
+            query: unitId ? { unitId } : {},
+          }}
+          className="btn-wire-teal w-full py-4 text-xs font-black uppercase tracking-[0.2em]"
+        >
+          Start Quiz →
+        </Link>
       </div>
     </div>
   );
@@ -81,7 +77,6 @@ export const QuizComponentEditor = ({ mdastNode }: JsxEditorProps) => {
     queryFn: () => getAllQuizzes(),
   });
 
-  // ─── Sync mdast whenever attrs change ───
   useEffect(() => {
     const otherAttributes = mdastNode.attributes.filter(
       (a) =>
@@ -99,25 +94,20 @@ export const QuizComponentEditor = ({ mdastNode }: JsxEditorProps) => {
   }, [quizId, title]);
 
   return (
-    <div
-      className="border p-4 rounded-md flex flex-col gap-4 shadow-lg"
-      style={{ background: "#0d1117", borderColor: "#1e2a38" }}
-    >
-      <div className="flex items-center gap-2">
-        <span style={{ color: "#a855f7", fontSize: 16 }}>?</span>
-        <span
-          className="text-xs font-semibold tracking-wide"
-          style={{ color: "#94a3b8" }}
-        >
-          Quiz Selector
-        </span>
+    <div className="border-2 border-ink p-6 bg-surface shadow-wire flex flex-col gap-6 my-4 font-sans">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 border-2 border-ink bg-teal-primary/10 flex items-center justify-center text-lg">?</div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-ink">Quiz Selector</span>
+        </div>
+        <button onClick={removeNode} className="text-red-500 hover:underline text-[10px] font-black uppercase">Remove</button>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1">
-          <label className="text-[10px] text-surface-500 uppercase font-bold">Select Quiz</label>
+      <div className="space-y-4">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] text-dust uppercase font-black tracking-widest">Select Assessment</label>
           <select
-            className="w-full bg-surface-950 border border-surface-700 text-white text-xs p-2 outline-none focus:border-purple-glow"
+            className="w-full bg-background border-2 border-ink text-ink text-sm font-bold p-2 outline-none focus:ring-2 focus:ring-teal-primary/20"
             value={quizId}
             onChange={(e) => {
               const selected = quizzes?.find((q: any) => q.id === e.target.value);
@@ -125,7 +115,7 @@ export const QuizComponentEditor = ({ mdastNode }: JsxEditorProps) => {
               if (selected) setTitle(selected.title);
             }}
           >
-            <option value="">-- Choose a quiz --</option>
+            <option value="">-- Choose from library --</option>
             {quizzes?.map((q: any) => (
               <option key={q.id} value={q.id}>
                 {q.title}
@@ -134,24 +124,15 @@ export const QuizComponentEditor = ({ mdastNode }: JsxEditorProps) => {
           </select>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label className="text-[10px] text-surface-500 uppercase font-bold">Display Title</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] text-dust uppercase font-black tracking-widest">Display Title</label>
           <input
-            className="w-full bg-transparent border px-2 py-1.5 text-sm text-white outline-none rounded"
-            style={{ borderColor: "#1e2a38" }}
-            placeholder="Title to show on the button..."
+            className="w-full bg-background border-2 border-ink p-2 text-sm font-bold text-ink outline-none focus:ring-2 focus:ring-teal-primary/20 placeholder:text-dust/30"
+            placeholder="Custom title for the user..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-
-        <button
-          onClick={removeNode}
-          className="text-red-500 hover:text-white border px-2 py-1 rounded text-[10px] uppercase font-bold w-fit mt-2"
-          style={{ background: "#0d1117", borderColor: "#2d2020" }}
-        >
-          ✕ Remove Quiz Component
-        </button>
       </div>
     </div>
   );
@@ -170,9 +151,9 @@ export const InsertQuizComponent = () => {
           props: { quizId: "", title: "" },
         })
       }
-      title="Insert Quiz"
+      title="Insert Knowledge Check"
     >
-      <div className="font-bold text-lg leading-none mb-1">Quiz</div>
+      <div className="font-black text-lg leading-none mb-1">Quiz</div>
     </Button>
   );
 };

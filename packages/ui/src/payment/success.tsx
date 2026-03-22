@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -40,385 +41,100 @@ export function PaymentSuccessPage() {
 
   const isComplete = data?.status === 'complete';
 
-  // ── Render ────────────────────────────────────────────────────────────────
-
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-          --teal:    #00f5d4;
-          --emerald: #00e676;
-          --purple:  #b388ff;
-          --red:     #ff5252;
-          --bg:      #050a0e;
-          --surface: #0d1b24;
-          --border:  #1a3040;
-          --text:    #c8d8e0;
-          --muted:   #4a6070;
-        }
-
-        .page {
-          min-height: 100vh;
-          background: var(--bg);
-          font-family: 'JetBrains Mono', monospace;
-          color: var(--text);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          position: relative;
-          overflow: hidden;
-        }
-
-        /* grid */
-        .page::before {
-          content: '';
-          position: fixed;
-          inset: 0;
-          background-image:
-            linear-gradient(rgba(0,245,212,.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,245,212,.03) 1px, transparent 1px);
-          background-size: 40px 40px;
-          pointer-events: none;
-        }
-
-        /* scanlines */
-        .page::after {
-          content: '';
-          position: fixed;
-          inset: 0;
-          background: repeating-linear-gradient(
-            0deg, transparent, transparent 2px,
-            rgba(0,0,0,.07) 2px, rgba(0,0,0,.07) 4px
-          );
-          pointer-events: none;
-        }
-
-        /* ── Card ──────────────────────────────── */
-        .card {
-          width: 100%;
-          max-width: 480px;
-          background: var(--surface);
-          border: 1px solid var(--border);
-          clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
-          padding: 48px 40px;
-          position: relative;
-          z-index: 1;
-          animation: fadeUp .5s ease both;
-        }
-
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .card--success { border-color: var(--teal); box-shadow: 0 0 40px rgba(0,245,212,.12); }
-        .card--error   { border-color: var(--red);  box-shadow: 0 0 40px rgba(255,82,82,.1); }
-
-        /* ── Icon ──────────────────────────────── */
-        .icon-wrap {
-          width: 72px;
-          height: 72px;
-          margin: 0 auto 32px;
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .icon-ring {
-          position: absolute;
-          inset: 0;
-          border-radius: 50%;
-          border: 2px solid var(--teal);
-          animation: pulse 2s ease infinite;
-        }
-
-        @keyframes pulse {
-          0%,100% { transform: scale(1);   opacity: 1; }
-          50%      { transform: scale(1.1); opacity: .5; }
-        }
-
-        .icon-inner {
-          width: 52px;
-          height: 52px;
-          border-radius: 50%;
-          background: rgba(0,245,212,.1);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 24px;
-        }
-
-        .icon-wrap--error .icon-ring  { border-color: var(--red); animation: none; }
-        .icon-wrap--error .icon-inner { background: rgba(255,82,82,.1); }
-
-        /* ── Text ──────────────────────────────── */
-        .eyebrow {
-          text-align: center;
-          font-size: 10px;
-          letter-spacing: .2em;
-          color: var(--teal);
-          margin-bottom: 10px;
-        }
-
-        .eyebrow--error { color: var(--red); }
-
-        .title {
-          font-family: 'Orbitron', sans-serif;
-          font-size: 26px;
-          font-weight: 900;
-          text-align: center;
-          color: #fff;
-          margin-bottom: 12px;
-          line-height: 1.2;
-        }
-
-        .subtitle {
-          text-align: center;
-          font-size: 12px;
-          color: var(--muted);
-          line-height: 1.7;
-          margin-bottom: 32px;
-        }
-
-        /* ── Info rows ─────────────────────────── */
-        .info-block {
-          background: rgba(0,0,0,.3);
-          border: 1px solid var(--border);
-          padding: 16px 20px;
-          margin-bottom: 28px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .info-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 12px;
-        }
-
-        .info-label { color: var(--muted); }
-
-        .info-value { color: var(--text); }
-
-        .badge-active {
-          background: rgba(0,230,118,.12);
-          border: 1px solid rgba(0,230,118,.3);
-          color: var(--emerald);
-          font-size: 10px;
-          letter-spacing: .1em;
-          padding: 3px 10px;
-        }
-
-        /* ── Countdown ─────────────────────────── */
-        .countdown-wrap {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 24px;
-        }
-
-        .countdown-text {
-          font-size: 11px;
-          color: var(--muted);
-          letter-spacing: .08em;
-        }
-
-        .countdown-bar-bg {
-          width: 100%;
-          height: 2px;
-          background: var(--border);
-          overflow: hidden;
-        }
-
-        .countdown-bar-fill {
-          height: 100%;
-          background: linear-gradient(90deg, var(--teal), var(--emerald));
-          transition: width 1s linear;
-        }
-
-        /* ── Buttons ───────────────────────────── */
-        .btn {
-          display: block;
-          width: 100%;
-          padding: 14px;
-          text-align: center;
-          font-family: 'Orbitron', sans-serif;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: .12em;
-          cursor: pointer;
-          text-decoration: none;
-          border: none;
-          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
-          transition: all .2s;
-        }
-
-        .btn-primary {
-          background: var(--teal);
-          color: var(--bg);
-        }
-
-        .btn-primary:hover {
-          background: var(--emerald);
-          box-shadow: 0 0 20px rgba(0,230,118,.3);
-        }
-
-        .btn-ghost {
-          background: transparent;
-          border: 1px solid var(--border);
-          color: var(--muted);
-          margin-top: 12px;
-        }
-
-        .btn-ghost:hover {
-          border-color: var(--teal);
-          color: var(--teal);
-        }
-
-        /* ── Loading skeleton ──────────────────── */
-        .loading-wrap {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 20px;
-        }
-
-        .loading-spinner {
-          width: 40px;
-          height: 40px;
-          border: 2px solid var(--border);
-          border-top-color: var(--teal);
-          border-radius: 50%;
-          animation: spin .8s linear infinite;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .loading-label {
-          font-size: 11px;
-          letter-spacing: .15em;
-          color: var(--muted);
-        }
-
-        /* blinking cursor */
-        .loading-label::after {
-          content: '_';
-          animation: blink .8s step-end infinite;
-        }
-
-        @keyframes blink { 50% { opacity: 0; } }
-      `}</style>
-
-      <div className="page">
-
-        {/* ── Loading ── */}
+    <div className="min-h-full w-full flex items-center justify-center p-6 py-20 font-sans text-ink">
+      
+      {/* Main Success/Error Container */}
+      <div className="w-full max-w-lg flex flex-col items-center">
+        
+        {/* Loading State */}
         {isLoading && (
-          <div className="card" style={{ textAlign: 'center' }}>
-            <div className="loading-wrap">
-              <div className="loading-spinner" />
-              <span className="loading-label">VERIFYING_PAYMENT</span>
-            </div>
+          <div className="wire-card p-12 w-full flex flex-col items-center gap-6">
+            <div className="w-12 h-12 border-4 border-ink border-t-teal-primary rounded-full animate-spin" />
+            <span className="font-mono text-xs font-bold uppercase tracking-widest opacity-50">Verifying Payment...</span>
           </div>
         )}
 
-        {/* ── Error ── */}
+        {/* Error State */}
         {isError && (
-          <div className="card card--error">
-            <div className={`icon-wrap icon-wrap--error`}>
-              <div className="icon-ring" />
-              <div className="icon-inner">✗</div>
+          <div className="wire-card p-10 w-full border-red-500/30 flex flex-col items-center text-center gap-6">
+            <div className="w-16 h-16 border-2 border-ink flex items-center justify-center text-3xl shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]">
+              ✗
             </div>
-            <p className="eyebrow eyebrow--error">// PAYMENT_ERROR</p>
-            <h1 className="title">VERIFICATION FAILED</h1>
-            <p className="subtitle">
-              We couldn&apos;t verify your payment session.<br />
-              If you were charged, contact support.
+            <div className="badge-tape bg-red-500 text-white">Payment Error</div>
+            <h1 className="text-3xl font-black uppercase tracking-tighter">Verification Failed</h1>
+            <p className="text-dust text-sm font-medium">
+              We couldn&apos;t verify your payment session. If you were charged, please contact support with your session ID.
             </p>
-            <button className="btn btn-primary" onClick={() => router.push('/pricing')}>
-              BACK_TO_PRICING
-            </button>
-            <button className="btn btn-ghost" onClick={() => router.push('/')}>
-              GO_HOME
-            </button>
+            <div className="w-full flex flex-col gap-3 mt-4">
+              <button onClick={() => router.push('/pricing')} className="btn-wire-teal w-full py-3">Back to Pricing</button>
+              <button onClick={() => router.push('/')} className="btn-wire w-full py-3">Go Home</button>
+            </div>
           </div>
         )}
 
-        {/* ── Success ── */}
+        {/* Success State */}
         {isComplete && data && (
-          <div className="card card--success">
-            <div className="icon-wrap">
-              <div className="icon-ring" />
-              <div className="icon-inner">✓</div>
+          <div className="wire-card p-10 w-full border-teal-primary shadow-wire-teal flex flex-col items-center text-center gap-6">
+            <div className="w-16 h-16 border-2 border-ink bg-teal-primary/10 flex items-center justify-center text-3xl shadow-wire">
+              ✓
             </div>
-
-            <p className="eyebrow">// PAYMENT_CONFIRMED</p>
-            <h1 className="title">ACCESS GRANTED</h1>
-            <p className="subtitle">
-              Your subscription is now active.<br />
-              <span style={{ color: 'var(--teal)', fontWeight: 'bold' }}>Important: Please logout and login again to refresh your session and access premium content.</span><br />
-              Welcome to the terminal.
+            <div className="badge-tape">Access Granted</div>
+            <h1 className="text-4xl font-black uppercase tracking-tighter">Welcome Aboard</h1>
+            
+            <p className="text-dust text-sm font-medium leading-relaxed">
+              Your subscription is now active! <br />
+              <span className="text-teal-primary font-bold">Important:</span> Please logout and login again to refresh your session.
             </p>
 
-            <div className="info-block">
-              <div className="info-row">
-                <span className="info-label">ACCOUNT</span>
-                <span className="info-value">{data.customerEmail}</span>
+            {/* Info Table */}
+            <div className="w-full border-2 border-ink bg-surface mt-4 overflow-hidden">
+              <div className="flex justify-between px-4 py-3 border-b-2 border-ink/5">
+                <span className="font-mono text-[10px] font-bold uppercase text-dust">Account</span>
+                <span className="text-xs font-bold">{data.customerEmail}</span>
               </div>
-              <div className="info-row">
-                <span className="info-label">PLAN</span>
-                <span className="info-value">{data.planName?.toUpperCase() ?? 'PRO'}</span>
+              <div className="flex justify-between px-4 py-3 border-b-2 border-ink/5">
+                <span className="font-mono text-[10px] font-bold uppercase text-dust">Plan</span>
+                <span className="text-xs font-bold uppercase">{data.planName || 'Professional'}</span>
               </div>
-              <div className="info-row">
-                <span className="info-label">STATUS</span>
-                <span className="badge-active">● {data.subscriptionStatus.toUpperCase()}</span>
+              <div className="flex justify-between px-4 py-3">
+                <span className="font-mono text-[10px] font-bold uppercase text-dust">Status</span>
+                <span className="text-[10px] font-black uppercase text-teal-primary">Active</span>
               </div>
             </div>
 
-            <button
-              className="btn btn-primary"
-              onClick={() => router.push('/tutorials/list')}
-            >
-              START_LEARNING →
-            </button>
-            <button
-              className="btn btn-ghost"
-              onClick={() => router.push('/')}
-            >
-              GO_HOME
-            </button>
+            <div className="w-full flex flex-col gap-3 mt-6">
+              <Link href="/tutorials/list" className="btn-wire-teal w-full py-4 uppercase font-black tracking-widest text-xs">
+                Start Learning →
+              </Link>
+              <button onClick={() => router.push('/')} className="btn-wire w-full py-3 uppercase font-black tracking-widest text-xs">
+                Go to Home
+              </button>
+            </div>
           </div>
         )}
 
-        {/* ── Session not complete (open/expired) ── */}
+        {/* Incomplete / Pending */}
         {!isLoading && !isError && data && !isComplete && (
-          <div className="card card--error">
-            <div className="icon-wrap icon-wrap--error">
-              <div className="icon-ring" />
-              <div className="icon-inner">!</div>
+          <div className="wire-card p-10 w-full flex flex-col items-center text-center gap-6">
+            <div className="w-16 h-16 border-2 border-ink flex items-center justify-center text-3xl shadow-wire">
+              !
             </div>
-            <p className="eyebrow eyebrow--error">// PAYMENT_INCOMPLETE</p>
-            <h1 className="title">NOT COMPLETED</h1>
-            <p className="subtitle">
-              Your payment session is <strong>{data.status}</strong>.<br />
-              Please try again or contact support.
+            <div className="badge-tape bg-dust text-white">Pending</div>
+            <h1 className="text-3xl font-black uppercase tracking-tighter">Not Completed</h1>
+            <p className="text-dust text-sm">
+              Your payment session is <strong>{data.status}</strong>. Please try again or wait for confirmation.
             </p>
-            <button className="btn btn-primary" onClick={() => router.push('/pricing')}>
-              TRY_AGAIN
-            </button>
+            <button onClick={() => router.push('/pricing')} className="btn-wire-teal w-full py-3 mt-4 uppercase">Try Again</button>
           </div>
         )}
 
+        {/* Footer annotations */}
+        <div className="mt-12 flex flex-col items-center gap-2 opacity-20">
+           <div className="w-px h-8 bg-ink" />
+           <span className="font-mono text-[8px] uppercase font-bold tracking-[0.3em]">Confirmation ID: {sessionId.slice(0, 8)}...</span>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
-

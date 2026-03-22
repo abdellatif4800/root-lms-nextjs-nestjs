@@ -4,8 +4,8 @@ export function AuthInput({
   label,
   type,
   placeholder,
-  value, // NEW: Accepts the current text
-  onChange // NEW: Accepts the function to update the text
+  value,
+  onChange
 }: {
   label: string,
   type: string,
@@ -14,23 +14,22 @@ export function AuthInput({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }) {
   return (
-    <div className="flex flex-col gap-1 mb-4">
-      <label className="text-[10px] uppercase font-bold text-text-secondary tracking-wider pl-1">{label}</label>
+    <div className="flex flex-col gap-1.5 mb-5 text-ink">
+      <label className="text-[10px] uppercase font-black tracking-widest pl-1 opacity-70">{label}</label>
       <div className="relative group">
         <input
           type={type}
           placeholder={placeholder}
-          value={value} // Hooked up to parent state
-          onChange={onChange} // Fires when user types
+          value={value}
+          onChange={onChange}
           className="
-          w-full bg-surface-950 border border-surface-700 text-text-primary text-xs font-mono p-3
-          focus:outline-none focus:border-teal-glow focus:ring-1 focus:ring-teal-glow/50
-          placeholder:text-surface-700 transition-all duration-300
+          w-full bg-background border-2 border-ink text-ink text-sm font-bold p-3
+          focus:outline-none focus:ring-2 focus:ring-teal-primary/20
+          placeholder:text-dust/40 transition-all duration-300
         "
         />
-        {/* Corner Decor */}
-        <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-surface-600 group-focus-within:border-teal-glow transition-colors" />
-        <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-surface-600 group-focus-within:border-teal-glow transition-colors" />
+        {/* Simple Drafting Corner */}
+        <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t-2 border-r-2 border-ink opacity-20 group-focus-within:opacity-100 transition-opacity" />
       </div>
     </div>
   )

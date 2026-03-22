@@ -13,7 +13,6 @@ export function UserMenu() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state: RootState) => state.authSlice);
 
-  // Position the portal dropdown under the button
   useEffect(() => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
@@ -24,7 +23,6 @@ export function UserMenu() {
     }
   }, [isOpen]);
 
-  // Close on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -48,61 +46,65 @@ export function UserMenu() {
 
   return (
     <div className="relative">
-      {/* Trigger */}
       <button
         ref={buttonRef}
         onClick={() => setIsOpen((prev) => !prev)}
         className={`
-          flex items-center gap-2 px-4 py-2 border transition-all duration-200
-          text-[10px] font-digital font-bold uppercase tracking-wider
+          flex items-center gap-2 px-4 py-2 border-2 transition-all duration-200
+          text-[10px] font-mono font-black uppercase tracking-widest
           ${isOpen
-            ? "border-teal-glow text-teal-glow bg-surface-900 shadow-[0_0_10px_rgba(45,212,191,0.2)]"
-            : "border-surface-700 text-text-secondary hover:text-text-primary hover:border-surface-600"
+            ? "border-ink bg-background shadow-wire"
+            : "border-ink/20 text-dust hover:border-ink hover:text-ink"
           }
         `}
       >
-        <div className="w-2 h-2 bg-emerald-glow animate-pulse shadow-[0_0_5px_var(--emerald-glow)]" />
+        <div className={`w-2 h-2 border border-ink ${isOpen ? 'bg-teal-primary' : 'bg-ink/20'}`} />
         <span className="max-w-[100px] truncate">{user?.username || user?.email}</span>
-        <span className="text-[8px] opacity-60 ml-1">{isOpen ? "▲" : "▼"}</span>
+        <span className="text-[8px] opacity-40 ml-1">{isOpen ? "▲" : "▼"}</span>
       </button>
 
-      {/* Portal dropdown — renders at document.body, escapes all stacking contexts */}
       {isOpen && typeof document !== "undefined" && createPortal(
         <div
           ref={menuRef}
-          className="fixed z-[9999] w-56 bg-surface-900 border border-surface-700 flex flex-col shadow-xl font-digital"
+          className="fixed z-[9999] w-56 bg-surface border-2 border-ink flex flex-col shadow-wire font-sans"
           style={{
             top: dropdownPos.top,
             right: dropdownPos.right,
-            boxShadow: "4px 4px 0px var(--surface-800)",
           }}
         >
-          {/* User info header */}
-          <div className="px-4 py-3 border-b border-surface-800 flex items-center gap-2">
-            <div className="w-1.5 h-1.5 bg-emerald-glow animate-pulse shadow-[0_0_4px_var(--shadow-emerald)]" />
-            <span className="text-[9px] font-terminal text-text-secondary uppercase tracking-[0.2em] truncate opacity-60">
-              {user?.email}
-            </span>
+          {/* User Info */}
+          <div className="px-4 py-4 border-b-2 border-ink/10 flex items-center gap-3 bg-background/50">
+            <div className="w-8 h-8 border-2 border-ink flex items-center justify-center text-sm shadow-[2px_2px_0px_0px_rgba(19,21,22,1)]">
+              👤
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[10px] font-mono font-bold text-dust uppercase truncate tracking-tighter">
+                {user?.email}
+              </span>
+              <span className="text-xs font-black text-ink truncate uppercase">
+                {user?.username || 'Student'}
+              </span>
+            </div>
           </div>
 
-          {/* Progress link */}
+          {/* Links */}
           <Link
             href={`/progress?userId=${user?.sub}`}
             onClick={() => setIsOpen(false)}
-            className="w-full px-4 py-3 text-[10px] text-text-secondary hover:bg-surface-800 hover:text-teal-glow transition-colors border-l-2 border-transparent hover:border-teal-glow text-left flex items-center gap-2 group"
+            className="w-full px-4 py-3 text-xs font-bold text-dust hover:bg-background hover:text-ink transition-colors border-b border-ink/5 flex items-center gap-3 group uppercase"
           >
-            <span className="opacity-0 group-hover:opacity-100 text-teal-glow transition-opacity">{">"}</span>
-            My_Progress
+            <span className="w-1.5 h-1.5 border border-ink opacity-0 group-hover:opacity-100 bg-teal-primary" />
+            My Progress
           </Link>
 
           {/* Logout */}
           <button
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
-            className="w-full px-4 py-3 text-[10px] text-red-400 hover:bg-red-900/10 hover:text-red-300 transition-colors border-l-2 border-transparent hover:border-red-500 text-left flex items-center gap-2 group disabled:opacity-40"
+            className="w-full px-4 py-3 text-xs font-bold text-dust hover:bg-red-500/5 hover:text-red-500 transition-colors flex items-center gap-3 group disabled:opacity-40 uppercase"
           >
-            <span className="opacity-0 group-hover:opacity-100 text-red-500 transition-opacity">{">"}</span>
-            {mutation.isPending ? "Logging_Out..." : "[Logout]"}
+            <span className="w-1.5 h-1.5 border border-ink opacity-0 group-hover:opacity-100 bg-red-500" />
+            {mutation.isPending ? "Signing Out..." : "Sign Out"}
           </button>
         </div>,
         document.body

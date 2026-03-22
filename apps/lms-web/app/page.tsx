@@ -24,10 +24,10 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-full w-full bg-background relative font-sans text-ink">
+    <div className="min-h-full w-full relative font-sans text-ink">
 
       {/* Drafting Lines - Vertical */}
-      <div className="absolute inset-0 z-0 pointer-events-none border-x-2 border-ink/5 mx-auto max-w-7xl h-full" />
+      {/* <div className="absolute inset-0 z-0 pointer-events-none border-x-2 border-ink/5 mx-auto max-w-7xl h-full" /> */}
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-12 flex flex-col items-center gap-12 sm:gap-20">
 

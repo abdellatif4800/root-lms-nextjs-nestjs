@@ -1,6 +1,6 @@
 "use client"
-import { useMdastNodeUpdater, useLexicalNodeRemove, usePublisher, insertJsx$, Button, JsxEditorProps, Separator } from "@mdxeditor/editor";
-import { useEffect, useState, useCallback } from "react";
+import { useMdastNodeUpdater, useLexicalNodeRemove, usePublisher, insertJsx$, Button, JsxEditorProps } from "@mdxeditor/editor";
+import { useEffect, useState } from "react";
 import { SimpleSeparator } from "./HorizontalSeprator";
 
 const BLOB_LIST_URL = "https://vercel-nest-gql-lms.vercel.app/files/listFilesVercelblob?folder=tutorial-images";
@@ -31,7 +31,6 @@ function ImageBrowseModal({
     fetch(BLOB_LIST_URL)
       .then((r) => r.json())
       .then((data) => {
-        // Filter out folder-only entries (size 0 with trailing slash)
         const files = (data.blobs as BlobFile[]).filter(
           (b) => b.size > 0 && !b.pathname.endsWith("/")
         );
@@ -53,66 +52,52 @@ function ImageBrowseModal({
   };
 
   return (
-    // Backdrop
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/40 backdrop-blur-sm p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      {/* Modal panel */}
       <div
-        className="relative flex flex-col rounded-xl shadow-2xl"
-        style={{
-          width: "min(680px, 95vw)",
-          maxHeight: "85vh",
-          background: "#0d1117",
-          border: "1px solid #1e2a38",
-        }}
+        className="relative flex flex-col bg-surface border-2 border-ink shadow-wire w-full max-w-2xl max-h-[80vh]"
       >
         {/* Header */}
-        <div
-          className="flex items-center justify-between px-5 py-4"
-          style={{ borderBottom: "1px solid #1e2a38" }}
-        >
-          <div className="flex items-center gap-2">
-            <span style={{ color: "#38bdf8", fontSize: 18 }}>☁</span>
-            <span className="font-semibold text-white text-sm tracking-wide">
-              Vercel Blob — tutorial-images
+        <div className="flex items-center justify-between px-6 py-4 border-b-2 border-ink">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 bg-teal-primary" />
+            <span className="font-black text-ink text-sm uppercase tracking-tighter">
+              Image Library
             </span>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-white transition-colors text-lg leading-none"
+            className="w-8 h-8 border-2 border-ink flex items-center justify-center hover:bg-ink hover:text-background transition-colors"
           >
             ✕
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
           {loading && (
-            <div className="flex items-center justify-center h-40 text-gray-400 text-sm">
-              <span className="animate-pulse">Loading images…</span>
+            <div className="flex flex-col items-center justify-center h-40 gap-3">
+              <div className="w-8 h-8 border-2 border-ink border-t-teal-primary rounded-full animate-spin" />
+              <span className="text-[10px] font-black uppercase text-dust">Scanning storage...</span>
             </div>
           )}
 
           {error && (
-            <div className="flex items-center justify-center h-40 text-red-400 text-sm">
+            <div className="flex items-center justify-center h-40 text-red-500 text-[10px] font-black uppercase">
               {error}
             </div>
           )}
 
           {!loading && !error && blobs.length === 0 && (
-            <div className="flex items-center justify-center h-40 text-gray-500 text-sm">
-              No images found in this folder.
+            <div className="flex items-center justify-center h-40 text-dust text-[10px] font-black uppercase">
+              No images found in this sector.
             </div>
           )}
 
           {!loading && !error && blobs.length > 0 && (
-            <div
-              className="grid gap-3"
-              style={{ gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))" }}
-            >
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {blobs.map((blob) => {
                 const isSelected = selected === blob.url;
                 const filename = blob.pathname.split("/").pop() || blob.pathname;
@@ -122,55 +107,17 @@ function ImageBrowseModal({
                   <button
                     key={blob.url}
                     onClick={() => setSelected(blob.url)}
-                    className="flex flex-col rounded-lg overflow-hidden text-left transition-all"
-                    style={{
-                      border: isSelected
-                        ? "2px solid #38bdf8"
-                        : "2px solid #1e2a38",
-                      background: isSelected ? "#0f2030" : "#111820",
-                      outline: "none",
-                      cursor: "pointer",
-                    }}
+                    className={`flex flex-col border-2 transition-all p-2 gap-2 text-left relative ${isSelected ? "border-teal-primary bg-background shadow-wire-teal" : "border-ink/10 bg-background/50 hover:border-ink"
+                      }`}
                   >
-                    {/* Thumbnail */}
-                    <div
-                      className="w-full flex items-center justify-center"
-                      style={{ height: 120, background: "#0a0f15" }}
-                    >
-                      <img
-                        src={blob.url}
-                        alt={filename}
-                        style={{
-                          maxWidth: "100%",
-                          maxHeight: "100%",
-                          objectFit: "contain",
-                        }}
-                      />
+                    <div className="w-full aspect-square border-2 border-ink/5 bg-surface flex items-center justify-center overflow-hidden">
+                      <img src={blob.url} alt={filename} className="max-w-full max-h-full object-contain grayscale hover:grayscale-0 transition-all" />
                     </div>
-
-                    {/* Meta */}
-                    <div className="px-2 py-2">
-                      <p
-                        className="text-xs font-medium truncate"
-                        style={{ color: isSelected ? "#38bdf8" : "#cbd5e1" }}
-                        title={filename}
-                      >
-                        {filename}
-                      </p>
-                      <p className="text-xs mt-0.5" style={{ color: "#475569" }}>
-                        {kb} KB
-                      </p>
+                    <div className="min-w-0">
+                      <p className={`text-[10px] font-black uppercase truncate ${isSelected ? 'text-teal-primary' : 'text-ink'}`}>{filename}</p>
+                      <p className="text-[8px] font-mono text-dust uppercase">{kb} KB</p>
                     </div>
-
-                    {/* Selected check */}
-                    {isSelected && (
-                      <div
-                        className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
-                        style={{ background: "#38bdf8", color: "#000" }}
-                      >
-                        ✓
-                      </div>
-                    )}
+                    {isSelected && <div className="absolute top-1 right-1 w-4 h-4 bg-teal-primary text-background flex items-center justify-center text-[10px] font-black">✓</div>}
                   </button>
                 );
               })}
@@ -179,34 +126,9 @@ function ImageBrowseModal({
         </div>
 
         {/* Footer */}
-        <div
-          className="flex items-center justify-end gap-3 px-5 py-4"
-          style={{ borderTop: "1px solid #1e2a38" }}
-        >
-          <button
-            onClick={onClose}
-            className="px-4 py-1.5 rounded text-sm transition-colors"
-            style={{
-              background: "transparent",
-              border: "1px solid #2d3748",
-              color: "#94a3b8",
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleConfirm}
-            disabled={!selected}
-            className="px-4 py-1.5 rounded text-sm font-semibold transition-all"
-            style={{
-              background: selected ? "#38bdf8" : "#1e2a38",
-              color: selected ? "#000" : "#475569",
-              cursor: selected ? "pointer" : "not-allowed",
-              border: "none",
-            }}
-          >
-            Insert Image
-          </button>
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t-2 border-ink bg-background/50">
+          <button onClick={onClose} className="btn-wire py-2 px-6 text-[10px]">Cancel</button>
+          <button onClick={handleConfirm} disabled={!selected} className="btn-wire-teal py-2 px-6 text-[10px] disabled:opacity-50">Insert Selected</button>
         </div>
       </div>
     </div>
@@ -224,21 +146,24 @@ export function ImageComponent({
   caption?: string;
 }) {
   return (
-    <>
+    <div className="border p-2 flex flex-col gap-2">
       <SimpleSeparator />
-      <div className="flex flex-col gap-2 items-center p-8">
-        <img
-          src={src}
-          alt={alt || "MDX Image"}
-          className="max-w-full max-h-60 w-auto h-auto border rounded-md"
-          style={{ borderColor: "var(--teal-glow)" }}
-        />
-        <span className="italic text-gray-700" style={{ color: "gray" }}>
-          {caption}
-        </span>
+      <div className="flex flex-col gap-4 items-center my-12 px-4">
+        <div className="border-2 border-ink shadow-wire p-2 bg-background">
+          <img
+            src={src}
+            alt={alt || "Illustration"}
+            className="max-w-full max-h-[500px] w-auto h-auto block"
+          />
+        </div>
+        {caption && (
+          <span className="text-xs font-mono font-bold text-dust uppercase tracking-widest text-center max-w-lg">
+            // {caption}
+          </span>
+        )}
       </div>
       <SimpleSeparator />
-    </>
+    </div>
   );
 }
 
@@ -261,73 +186,29 @@ export const ImageComponentEditor = ({ mdastNode }: JsxEditorProps) => {
 
   useEffect(() => {
     const otherAttributes = mdastNode.attributes.filter(
-      (a) =>
-        a.type === "mdxJsxAttribute" &&
-        !["src", "alt", "caption"].includes(a.name)
+      (a) => a.type === "mdxJsxAttribute" && !["src", "alt", "caption"].includes(a.name)
     );
-
     const newAttributes = [
       ...otherAttributes,
       { type: "mdxJsxAttribute", name: "src", value: src },
       { type: "mdxJsxAttribute", name: "alt", value: alt },
     ];
-
-    if (caption) {
-      newAttributes.push({
-        type: "mdxJsxAttribute",
-        name: "caption",
-        value: caption,
-      });
-    }
-
-    // Fix: cast to 'any' to bypass strict AST union inference limits
+    if (caption) newAttributes.push({ type: "mdxJsxAttribute", name: "caption", value: caption });
     updateMdastNode({ ...mdastNode, attributes: newAttributes } as any);
   }, [src, alt, caption]);
-
-  // useEffect(() => {
-  //   const otherAttributes = mdastNode.attributes.filter(
-  //     (a) =>
-  //       a.type === "mdxJsxAttribute" &&
-  //       !["src", "alt", "caption"].includes(a.name)
-  //   );
-  //
-  //   const newAttributes = [
-  //     ...otherAttributes,
-  //     { type: "mdxJsxAttribute", name: "src", value: src },
-  //     { type: "mdxJsxAttribute", name: "alt", value: alt },
-  //   ];
-  //
-  //   if (caption) {
-  //     newAttributes.push({
-  //       type: "mdxJsxAttribute",
-  //       name: "caption",
-  //       value: caption,
-  //     });
-  //   }
-  //
-  //   updateMdastNode({ ...mdastNode, attributes: newAttributes });
-  // }, [src, alt, caption]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     try {
       const tempPreview = URL.createObjectURL(file);
       setSrc(tempPreview);
-
       const formData = new FormData();
       formData.append("file", file);
       formData.append("folderName", "tutorial-images");
-      formData.append("fileName", alt);
-
-      const response = await fetch(
-        `https://vercel-nest-gql-lms.vercel.app/files/uploadFileVercelBlob`,
-        { method: "POST", body: formData }
-      );
-
+      formData.append("fileName", alt || file.name);
+      const response = await fetch(`https://vercel-nest-gql-lms.vercel.app/files/uploadFileVercelBlob`, { method: "POST", body: formData });
       if (!response.ok) throw new Error("Upload failed");
-
       const uploadedFile = await response.json();
       setSrc(uploadedFile.url);
     } catch (err) {
@@ -335,106 +216,61 @@ export const ImageComponentEditor = ({ mdastNode }: JsxEditorProps) => {
     }
   };
 
-  const handleBlobSelect = (url: string, name: string) => {
-    setSrc(url);
-    if (!alt) setAlt(name);
-  };
-
   return (
     <>
-      {/* Browse Modal */}
-      {showBrowser && (
-        <ImageBrowseModal
-          onSelect={handleBlobSelect}
-          onClose={() => setShowBrowser(false)}
-        />
-      )}
+      {showBrowser && <ImageBrowseModal onSelect={(url, name) => { setSrc(url); if (!alt) setAlt(name); }} onClose={() => setShowBrowser(false)} />}
 
-      <div className="bg-surface-900 border border-surface-800 p-3 rounded-md flex flex-col gap-3 shadow-lg">
-        {/* Live Preview */}
-        <div className="mb-4 border border-dashed border-surface-500 p-2 rounded-md flex flex-col items-center justify-center min-h-[120px] bg-black/10">
+      <div className="bg-surface border-2 border-ink p-6 flex flex-col gap-6 shadow-wire my-4 font-sans text-ink">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 border-2 border-ink bg-teal-primary/10 flex items-center justify-center text-sm">📸</div>
+            <span className="text-[10px] font-black uppercase tracking-widest">Visual Asset</span>
+          </div>
+          <button onClick={removeNode} className="text-red-500 hover:underline text-[10px] font-black uppercase">Remove</button>
+        </div>
+
+        <div className="w-full flex items-center justify-center border-2 border-dashed border-ink/20 bg-background min-h-[160px] p-4 relative overflow-hidden">
           {src ? (
-            <ImageComponent src={src} alt={alt} caption={caption} />
+            <div className="pointer-events-none opacity-50 grayscale contrast-125">
+              <ImageComponent src={src} alt={alt} />
+            </div>
           ) : (
-            <span className="text-white text-sm">No Image Selected</span>
+            <span className="text-[10px] font-black uppercase text-dust/40 text-center">Drag image file or choose from library</span>
           )}
         </div>
 
-        {/* Controls */}
-        <div className="flex flex-col gap-2">
-          {/* Upload row */}
-          <div className="flex items-center gap-2">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="flex-1 text-sm text-white file:bg-teal-glow file:text-black file:px-2 file:py-1 file:rounded file:border-none"
-              disabled={alt === ""}
-            />
-
-            {/* Browse Blob button */}
-            <button
-              onClick={() => setShowBrowser(true)}
-              title="Browse uploaded images"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all whitespace-nowrap"
-              style={{
-                background: "#0f2030",
-                border: "1px solid #38bdf8",
-                color: "#38bdf8",
-                cursor: "pointer",
-              }}
-            >
-              <span style={{ fontSize: 14 }}>☁</span>
-              Browse
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <label className="btn-wire flex-1 py-2 text-[10px] uppercase font-black tracking-widest text-center cursor-pointer">
+              Upload New File
+              <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+            </label>
+            <button onClick={() => setShowBrowser(true)} className="btn-wire-teal py-2 px-6 text-[10px] uppercase font-black tracking-widest flex items-center gap-2">
+              <span>☁</span> Library
             </button>
           </div>
 
-          {/* Alt / Name */}
-          <input
-            className="bg-transparent border border-surface-700 px-2 py-1 text-sm text-white outline-none focus:border-teal-glow w-full"
-            placeholder="Image Name..."
-            value={alt}
-            onChange={(e) => setAlt(e.target.value)}
-          />
-
-          {/* Caption */}
-          <input
-            className="bg-transparent border border-surface-700 px-2 py-1 text-sm text-white outline-none focus:border-teal-glow w-full"
-            placeholder="Caption..."
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-          />
-
-          {/* Remove */}
-          <button
-            onClick={removeNode}
-            className="text-red-500 hover:text-white bg-surface-900 border border-surface-700 px-2 py-1 rounded text-[10px] uppercase font-bold w-fit"
-          >
-            ✕ Remove Image
-          </button>
+          <div className="space-y-3">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[8px] font-black uppercase tracking-widest text-dust pl-1">Description (Alt)</label>
+              <input className="w-full bg-background border-2 border-ink p-2 text-sm font-bold placeholder:text-dust/30 focus:outline-none focus:ring-2 focus:ring-teal-primary/20" placeholder="e.g. System Diagram" value={alt} onChange={(e) => setAlt(e.target.value)} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[8px] font-black uppercase tracking-widest text-dust pl-1">Caption</label>
+              <input className="w-full bg-background border-2 border-ink p-2 text-sm font-bold placeholder:text-dust/30 focus:outline-none focus:ring-2 focus:ring-teal-primary/20" placeholder="Shown below the image..." value={caption} onChange={(e) => setCaption(e.target.value)} />
+            </div>
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-// ─── Toolbar Insert Button ────────────────────────────────────────────────────
 export const InsertImageComponent = () => {
   const insertJsx = usePublisher(insertJsx$);
-
   return (
-    <Button
-      onClick={() =>
-        insertJsx({
-          name: "ImageComponent",
-          kind: "flow",
-          props: { src: "", alt: "", caption: "" },
-        })
-      }
-      title="Insert Image"
-    >
-      <div className="font-bold text-lg leading-none mb-1">Image</div>
+    <Button onClick={() => insertJsx({ name: "ImageComponent", kind: "flow", props: { src: "", alt: "", caption: "" } })} title="Insert Visual Asset">
+      <div className="font-black text-lg leading-none mb-1">Image</div>
     </Button>
   );
 };
-

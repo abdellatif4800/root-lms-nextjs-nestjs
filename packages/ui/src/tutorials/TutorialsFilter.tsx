@@ -61,7 +61,7 @@ export function TutorialsFilter({ loadFilterdData, onClose }: any) {
   };
 
   return (
-    <aside className="w-80 h-full border-r-2 border-ink bg-surface shrink-0 flex flex-col relative z-[100] ">
+    <aside className="w-80 h-full border-2 border-ink bg-surface shrink-0 flex flex-col relative z-[100] ">
 
       {/* ── Header ── */}
       <header className="px-6 py-6 border-b-2 border-ink flex flex-col gap-6 pt-2">

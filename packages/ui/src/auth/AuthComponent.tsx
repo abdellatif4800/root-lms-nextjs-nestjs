@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useDispatch, toggleAuthModal, useAppDispatch, useAppSelector, RootState } from "@repo/reduxSetup"
+import { toggleAuthModal, useAppDispatch, useAppSelector, RootState } from "@repo/reduxSetup"
 import { LoginForm } from "./LoginForm"
 import { RegisterForm } from "./RegisterForm"
 
@@ -11,72 +11,68 @@ export function AuthComponent({ isPublic }: { isPublic: boolean }) {
   const { isRequired } = useAppSelector((state: RootState) => state.authSlice);
 
   return (
-    // 1. Added p-4 sm:p-0 so the modal has breathing room on mobile edges
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-950/80 backdrop-blur-sm p-4 sm:p-0">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/40 backdrop-blur-sm p-4">
 
       {/* Modal Container */}
-      {/* 2. Added w-full, max-h-[95dvh] to handle mobile sizing and browser UI bars */}
       <div
-        className="relative bg-surface-900 w-full max-w-md max-h-[95dvh] border border-surface-800 flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]"
-        style={{ boxShadow: '8px 8px 0px var(--surface-800)' }}
+        className="relative bg-surface w-full max-w-md max-h-[95dvh] border-2 border-ink flex flex-col overflow-hidden shadow-wire"
       >
-        {/* Scanline Overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] z-10 opacity-50" />
-
         {/* --- Header --- */}
-        {/* 3. Added sm:px-4 and px-3 to adjust spacing on tiny screens */}
-        <div className="h-12 border-b border-surface-800 bg-surface-950/50 flex items-center justify-between px-3 sm:px-4 shrink-0 relative z-20">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <span className={`shrink-0 w-2 h-2 rounded-full ${isLogin ? 'bg-teal-glow shadow-[0_0_8px_var(--teal-glow)]' : 'bg-purple-glow shadow-[0_0_8px_var(--purple-glow)]'} animate-pulse`} />
-            <span className="font-digital text-xs sm:text-sm tracking-widest text-text-primary truncate">
-              {isLogin ? 'AUTH_SEQUENCE_V1' : 'NEW_USER_PROTOCOL'}
-            </span>
+        <div className="h-14 border-b-2 border-ink flex items-center justify-between px-6 shrink-0 relative z-20">
+          <div className="flex items-center gap-3">
+            <div className={`w-2.5 h-2.5 border-2 border-ink ${isLogin ? 'bg-teal-primary shadow-[2px_2px_0px_0px_rgba(19,21,22,1)]' : 'bg-ink'}`} />
+            <h2 className="font-black text-sm uppercase tracking-tighter text-ink">
+              {isLogin ? 'Welcome Back' : 'Create Account'}
+            </h2>
           </div>
           {(isPublic && !isRequired) &&
             <button
               onClick={() => dispatch(toggleAuthModal())}
-              className="text-text-secondary hover:text-red-500 font-mono text-xs transition-colors shrink-0 ml-2"
+              className="w-8 h-8 border-2 border-ink flex items-center justify-center hover:bg-ink hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(19,21,22,1)] active:translate-y-0.5 active:shadow-none"
             >
-              [ X ]
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
             </button>
           }
         </div>
 
-        {/* --- Tabs (Login / Register) --- */}
-        {/* 4. Shrunk the font slightly on mobile (text-[10px] sm:text-xs) to prevent wrap */}
-        <div className="flex border-b border-surface-800 relative z-20 shrink-0">
+        {/* --- Tabs --- */}
+        <div className="flex border-b-2 border-ink relative z-20 shrink-0">
           <button
             onClick={() => setIsLogin(true)}
-            className={`flex-1 py-3 text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all ${isLogin
-              ? 'bg-surface-900 text-teal-glow border-b-2 border-teal-glow'
-              : 'bg-surface-950 text-text-secondary hover:text-white border-b-2 border-transparent'
+            className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${isLogin
+              ? 'bg-background text-ink'
+              : 'bg-surface text-dust hover:text-ink border-l-2 border-ink'
               }`}
           >
-            Login_Seq
+            Login
           </button>
           {isPublic && (
-
             <button
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-3 text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all ${!isLogin
-                ? 'bg-surface-900 text-purple-glow border-b-2 border-purple-glow'
-                : 'bg-surface-950 text-text-secondary hover:text-white border-b-2 border-transparent'
+              className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${!isLogin
+                ? 'bg-background text-ink'
+                : 'bg-surface text-dust hover:text-ink border-l-2 border-ink'
                 }`}
             >
-              Register_Seq
+              Register
             </button>
           )}
         </div>
 
         {/* --- Form Body --- */}
-        {/* 5. Scaled padding (p-5 sm:p-8) and added overflow-y-auto for internal scrolling */}
-        <div className="p-5 sm:p-8 relative z-20 flex-1 bg-surface-900/50 overflow-y-auto custom-scrollbar">
+        <div className="p-8 relative z-20 flex-1 bg-background overflow-y-auto custom-scrollbar font-sans">
           {isLogin ? (
             <LoginForm isPublic={isPublic} />
           ) : (
-
             <RegisterForm />
           )}
+        </div>
+
+        {/* Footer annotation */}
+        <div className="p-3 border-t-2 border-ink/5 text-center bg-surface/30">
+           <span className="font-mono text-[8px] uppercase text-dust opacity-40 font-bold">Secure Access Protocol V1.0</span>
         </div>
 
       </div>

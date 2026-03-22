@@ -9,10 +9,10 @@ export function TutorialsHeader({ hasMore, loadMore, tutorialsLength, onOpenFilt
   });
 
   return (
-    <header className="shrink-0 z-10 bg-surface border-b-2 border-ink px-6 py-6 flex flex-col gap-6 shadow-wire">
+    <header className="shrink-0 z-10 bg-surface border-b-2 border-ink p-3 flex flex-col gap-6 shadow-wire">
 
       {/* Top Row */}
-      <div className="flex items-center justify-between gap-4 w-full py-2">
+      <div className="flex items-center justify-between gap-4 w-full">
         <div className="flex items-center gap-4 min-w-0">
           <button
             onClick={onOpenFilter}
@@ -46,7 +46,7 @@ export function TutorialsHeader({ hasMore, loadMore, tutorialsLength, onOpenFilt
 
       {/* Active Filter Tape */}
       {activeFilters.length > 0 && (
-        <div className="flex flex-wrap items-center gap-3 py-4 border-t-2 border-ink/5">
+        <div className="flex flex-wrap items-center gap-3 border-t-2 pt-3">
           <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest mr-2">
             Applied:
           </span>

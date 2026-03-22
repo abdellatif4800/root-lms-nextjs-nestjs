@@ -2,8 +2,6 @@
 import { type Node, type Edge } from "@xyflow/react";
 import { useDispatch, useSelector, RootState } from "@repo/reduxSetup";
 import {
-  addNode,
-  addTutorialNode,
   updateNode,
   addEdge,
   updateEdge,
@@ -57,107 +55,125 @@ export function AdminPanel({ currentNode }: AdminPanelProps) {
     : [];
 
   return (
-    <div className="p-4 space-y-4 border-l border-surface-800 bg-surface-900 text-text-primary">
-      <TutorialDropdown />
-      {currentNode && (
-        <button
-          onClick={handleDeleteNode}
-          className="w-full py-2 px-4 rounded bg-red-600 text-white font-bold hover:bg-red-500 transition-all shadow-[4px_4px_0px_var(--surface-700)] mt-2"
-        >
-          Delete Node
-        </button>
-      )}
+    <div className="w-80 h-full overflow-y-auto custom-scrollbar p-6 space-y-8 border-l-2 border-ink bg-surface text-ink font-sans">
+      <div className="flex flex-col gap-2">
+        <span className="badge-tape w-fit">Editor Controls</span>
+        <h2 className="text-xl font-black uppercase tracking-tighter">Drafting Tools</h2>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-[10px] font-mono font-black uppercase text-dust tracking-widest">Add Module</h3>
+        <TutorialDropdown />
+      </div>
 
       {currentNode ? (
-        <>
+        <div className="space-y-8 animate-[fadeSlideIn_0.3s_ease_forwards]">
           {/* Node Details */}
-          <div className="space-y-2">
-            <label className="block text-sm text-text-secondary">ID</label>
-            <input
-              type="text"
-              value={currentNode.id}
-              disabled
-              className="w-full border border-surface-800 p-1 bg-surface-800 text-text-primary rounded"
-            />
+          <div className="space-y-4">
+            <h3 className="text-[10px] font-mono font-black uppercase text-dust tracking-widest border-b border-ink/10 pb-2 flex justify-between items-center">
+              Selected Node
+              <button
+                onClick={handleDeleteNode}
+                className="text-red-500 hover:underline"
+              >
+                Delete
+              </button>
+            </h3>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[8px] font-bold uppercase text-dust mb-1">Internal ID</label>
+                <input
+                  type="text"
+                  value={currentNode.id}
+                  disabled
+                  className="w-full border-2 border-ink p-2 bg-background/50 text-[10px] font-mono opacity-50 cursor-not-allowed"
+                />
+              </div>
 
-
-            <label className="block text-sm text-text-secondary">Position X</label>
-            <input
-              type="number"
-              value={currentNode.position?.x || 0}
-              onChange={(e) => handleUpdateNode('x', Number(e.target.value))}
-              className="w-full border border-surface-800 p-1 bg-surface-800 text-text-primary rounded"
-            />
-
-            <label className="block text-sm text-text-secondary">Position Y</label>
-            <input
-              type="number"
-              value={currentNode.position?.y || 0}
-              onChange={(e) => handleUpdateNode('y', Number(e.target.value))}
-              className="w-full border border-surface-800 p-1 bg-surface-800 text-text-primary rounded"
-            />
-          </div>
-
-          {/* Edge Controls */}
-          <div className="mt-4">
-            <h3 className="font-bold mb-2 text-teal-glow">Connected Edges</h3>
-            {connectedEdges.length === 0 && <div className="text-text-secondary">No edges</div>}
-            {connectedEdges.map(edge => (
-              <div key={edge.id} className="border border-surface-800 p-2 mb-2 rounded bg-surface-800 space-y-1 shadow-[2px_2px_0px_var(--surface-700)]">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-text-primary">{edge.id}</span>
-                  <button
-                    className="text-red-500 text-sm hover:text-red-400"
-                    onClick={() => handleRemoveEdge(edge.id)}
-                  >
-                    Remove
-                  </button>
-                </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-text-secondary">Source</label>
+                  <label className="block text-[8px] font-bold uppercase text-dust mb-1">X Position</label>
                   <input
-                    type="text"
-                    value={edge.source}
-                    onChange={(e) => handleUpdateEdge(edge.id, 'source', e.target.value)}
-                    className="w-full border border-surface-700 p-1 bg-surface-700 text-text-primary rounded"
+                    type="number"
+                    value={Math.round(currentNode.position?.x || 0)}
+                    onChange={(e) => handleUpdateNode('x', Number(e.target.value))}
+                    className="w-full border-2 border-ink p-2 bg-background text-[10px] font-mono focus:outline-none focus:ring-2 focus:ring-teal-primary/20"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-text-secondary">Target</label>
+                  <label className="block text-[8px] font-bold uppercase text-dust mb-1">Y Position</label>
                   <input
-                    type="text"
-                    value={edge.target}
-                    onChange={(e) => handleUpdateEdge(edge.id, 'target', e.target.value)}
-                    className="w-full border border-surface-700 p-1 bg-surface-700 text-text-primary rounded"
+                    type="number"
+                    value={Math.round(currentNode.position?.y || 0)}
+                    onChange={(e) => handleUpdateNode('y', Number(e.target.value))}
+                    className="w-full border-2 border-ink p-2 bg-background text-[10px] font-mono focus:outline-none focus:ring-2 focus:ring-teal-primary/20"
                   />
                 </div>
               </div>
-            ))}
+            </div>
+          </div>
+
+          {/* Edge Controls */}
+          <div className="space-y-4">
+            <h3 className="text-[10px] font-mono font-black uppercase text-dust tracking-widest border-b border-ink/10 pb-2">Connections</h3>
+            
+            <div className="space-y-3">
+              {connectedEdges.length === 0 && <div className="text-[10px] italic text-dust">No active links.</div>}
+              {connectedEdges.map(edge => (
+                <div key={edge.id} className="border-2 border-ink p-3 bg-background/50 space-y-2 relative group/edge">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[8px] font-mono font-black uppercase text-teal-primary">Link_{edge.id.slice(-4)}</span>
+                    <button
+                      className="text-[8px] font-black text-red-500 hover:underline uppercase"
+                      onClick={() => handleRemoveEdge(edge.id)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex flex-col gap-1">
+                       <span className="text-[7px] font-bold uppercase opacity-40">From</span>
+                       <span className="text-[9px] font-mono truncate">{edge.source}</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                       <span className="text-[7px] font-bold uppercase opacity-40">To</span>
+                       <span className="text-[9px] font-mono truncate">{edge.target}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Quick Add Edge */}
-          <div className="mt-2">
-            <label className="block text-sm text-text-secondary">Connect to Node ID:</label>
-            <input
-              type="text"
-              placeholder="Target Node ID"
-              id="targetNodeId"
-              className="w-full border border-surface-700 p-1 mb-1 bg-surface-800 text-text-primary rounded"
-            />
-            <button
-              className="w-full py-2 px-4 rounded bg-emerald-glow text-black font-bold hover:bg-teal-glow transition-all shadow-[4px_4px_0px_var(--surface-700)]"
-              onClick={() => {
-                const targetIdInput = document.getElementById('targetNodeId') as HTMLInputElement;
-                if (targetIdInput?.value) handleAddEdge(targetIdInput.value);
-                targetIdInput.value = '';
-              }}
-            >
-              Add Edge
-            </button>
+          <div className="space-y-3 pt-4 border-t-2 border-ink/5">
+            <label className="block text-[10px] font-mono font-black uppercase text-dust tracking-widest">Create New Link</label>
+            <div className="flex flex-col gap-2">
+              <input
+                type="text"
+                placeholder="Paste Target ID..."
+                id="targetNodeId"
+                className="w-full border-2 border-ink p-2 bg-background text-[10px] font-mono focus:outline-none placeholder:text-dust/30"
+              />
+              <button
+                className="btn-wire-teal py-2 text-[10px] uppercase font-black tracking-widest"
+                onClick={() => {
+                  const targetIdInput = document.getElementById('targetNodeId') as HTMLInputElement;
+                  if (targetIdInput?.value) handleAddEdge(targetIdInput.value);
+                  targetIdInput.value = '';
+                }}
+              >
+                Add Connection
+              </button>
+            </div>
           </div>
-        </>
+        </div>
       ) : (
-        <div className="text-text-secondary">Select a node to edit</div>
+        <div className="py-20 text-center border-2 border-ink border-dashed flex flex-col items-center gap-3">
+           <span className="text-2xl opacity-20">🖱️</span>
+           <span className="text-[10px] font-black uppercase text-dust tracking-widest">Select a node to edit</span>
+        </div>
       )}
     </div>
   );
