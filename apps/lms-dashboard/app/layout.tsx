@@ -1,4 +1,5 @@
 import '@repo/ui/styles.css';
+import '@repo/mdxSetup/styles.css';
 
 
 import type { Metadata } from "next";

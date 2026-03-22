@@ -7,7 +7,7 @@ import { useQuery, getSystemStats } from "@repo/gql";
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 function BookIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
       <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
       <path d="M8 7h6" /><path d="M8 11h8" />
     </svg>
@@ -15,21 +15,21 @@ function BookIcon({ size = 16 }: { size?: number }) {
 }
 function MapIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
       <path d="M3 17l4-8 4 4 4-6 4 10" /><path d="M3 21h18" />
     </svg>
   );
 }
 function CheckIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
       <path d="M20 6L9 17l-5-5" />
     </svg>
   );
 }
 function EditIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
     </svg>
@@ -37,7 +37,7 @@ function EditIcon({ size = 16 }: { size?: number }) {
 }
 function ListIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
       <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" />
       <line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" />
       <line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
@@ -46,7 +46,7 @@ function ListIcon({ size = 16 }: { size?: number }) {
 }
 function ClipboardIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
       <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
       <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
     </svg>
@@ -56,46 +56,38 @@ function ClipboardIcon({ size = 16 }: { size?: number }) {
 // ─── Constants ────────────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
   { label: "New Tutorial", href: "/tutorials/tutorialEditor?editOrCreate=create", color: "teal", icon: BookIcon },
-  { label: "New Roadmap", href: "/roadmaps/roadmapEditor?editOrCreate=create", color: "emerald", icon: MapIcon },
-  { label: "View Published", href: "/tutorials/list", color: "purple", icon: ListIcon },
+  { label: "New Roadmap", href: "/roadmaps/roadmapEditor?editOrCreate=create", color: "ink", icon: MapIcon },
+  { label: "View Published", href: "/tutorials/list", color: "ink", icon: ListIcon },
 ];
 
 // ─── Color helpers ─────────────────────────────────────────────────────────────
 const COLOR_MAP: Record<string, {
   text: string;
   border: string;
-  hoverBorder: string;
   shadow: string;
   bg: string;
-  gradientBg: string;
-  accentBar: string;
+  accent: string;
 }> = {
   teal: {
-    text: "text-teal-glow",
-    border: "border-teal-glow/50",
-    hoverBorder: "hover:border-teal-glow/50",
-    shadow: "shadow-glow-teal",
-    bg: "bg-teal-glow/5",
-    gradientBg: "[background:linear-gradient(135deg,rgba(45,212,191,0.06)_0%,transparent_60%)]",
-    accentBar: "bg-teal-glow shadow-glow-teal-sm",
+    text: "text-teal-primary",
+    border: "border-teal-primary",
+    shadow: "shadow-wire-teal",
+    bg: "bg-teal-primary/5",
+    accent: "bg-teal-primary",
   },
-  emerald: {
-    text: "text-emerald-glow",
-    border: "border-emerald-glow/50",
-    hoverBorder: "hover:border-emerald-glow/50",
-    shadow: "shadow-glow-emerald",
-    bg: "bg-emerald-glow/5",
-    gradientBg: "[background:linear-gradient(135deg,rgba(16,185,129,0.06)_0%,transparent_60%)]",
-    accentBar: "bg-emerald-glow shadow-glow-emerald-sm",
+  ink: {
+    text: "text-ink",
+    border: "border-ink",
+    shadow: "shadow-wire",
+    bg: "bg-ink/5",
+    accent: "bg-ink",
   },
-  purple: {
-    text: "text-purple-glow",
-    border: "border-purple-glow/50",
-    hoverBorder: "hover:border-purple-glow/50",
-    shadow: "shadow-glow-purple",
-    bg: "bg-purple-glow/5",
-    gradientBg: "[background:linear-gradient(135deg,rgba(168,85,247,0.06)_0%,transparent_60%)]",
-    accentBar: "bg-purple-glow shadow-glow-purple-sm",
+  dust: {
+    text: "text-dust",
+    border: "border-ink",
+    shadow: "shadow-wire",
+    bg: "bg-surface",
+    accent: "bg-dust",
   },
 };
 
@@ -147,46 +139,48 @@ type Stat = {
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ stat, index }: { stat: Stat; index: number }) {
-  const c = COLOR_MAP[stat.color];
+  const c = COLOR_MAP[stat.color] || COLOR_MAP.ink;
   const Icon = stat.icon;
 
   return (
     <div
       className={`
-        group relative flex flex-col gap-3 p-4 sm:p-5
-        bg-surface-900 border border-surface-800
-        ${c.hoverBorder}
-        transition-all duration-300 hover:-translate-y-1
-        shadow-card
-        [clip-path:polygon(0_0,calc(100%-12px)_0,100%_12px,100%_100%,12px_100%,0_calc(100%-12px))]
+        group relative flex flex-col gap-3 p-5
+        wire-card
+        ${stat.color === 'teal' ? 'border-teal-primary shadow-wire-teal hover:shadow-[6px_6px_0px_0px_rgba(13,148,136,1)]' : ''}
+        transition-all duration-300
         opacity-0 animate-[fadeSlideIn_0.4s_ease_forwards]
       `}
-      style={{ animationDelay: `${1600 + index * 80}ms` }}
+      style={{ animationDelay: `${200 + index * 80}ms` }}
     >
-      <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none ${c.gradientBg}`} />
-      <div className={`absolute bottom-0 left-0 right-0 h-px scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left ${c.accentBar}`} />
-
+      {/* Drafting Corner Decor */}
+      <div className={`absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 ${c.border} opacity-20 group-hover:opacity-100 transition-opacity`} />
+      
       <div className="flex items-start justify-between relative z-10">
-        <span className="text-[8px] font-terminal uppercase tracking-[0.3em] text-text-secondary opacity-50">
+        <span className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-dust">
           {"//"} {stat.label}
         </span>
-        <span className={`${c.text} opacity-70`}>
+        <span className={`${c.text} opacity-60 group-hover:opacity-100 transition-opacity`}>
           <Icon size={14} />
         </span>
       </div>
 
-      <div className="relative z-10">
-        <span className={`text-2xl sm:text-3xl font-digital font-black leading-none ${c.text} text-glow-teal`}>
+      <div className="relative z-10 flex items-baseline gap-1 mt-1">
+        <span className={`text-4xl font-mono font-black leading-none ${c.text}`}>
           <AnimatedCounter target={stat.value} duration={1400} />
+        </span>
+        <span className="text-[10px] font-mono font-black text-dust uppercase">
           {stat.suffix}
         </span>
       </div>
 
-      <span className="text-[9px] font-digital font-black text-text-secondary uppercase tracking-wider relative z-10">
-        {stat.label}
-      </span>
-
-      <div className={`absolute top-0 right-0 w-4 h-4 border-t border-r transition-colors duration-300 ${c.border}`} />
+      {/* Progress Line */}
+      <div className="mt-4 h-1.5 w-full bg-ink/5 relative overflow-hidden border border-ink/10">
+        <div 
+          className={`absolute inset-0 ${c.accent} origin-left transition-transform duration-1000 ease-out`}
+          style={{ transform: `scaleX(${stat.value > 0 ? 1 : 0})` }}
+        />
+      </div>
     </div>
   );
 }
@@ -194,48 +188,41 @@ function StatCard({ stat, index }: { stat: Stat; index: number }) {
 // ─── Quick Actions ────────────────────────────────────────────────────────────
 function QuickActions() {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <div
-        className="flex items-center gap-2 opacity-0 animate-[fadeSlideIn_0.3s_ease_forwards]"
-        style={{ animationDelay: "1650ms" }}
+        className="flex items-center gap-3 opacity-0 animate-[fadeSlideIn_0.3s_ease_forwards]"
+        style={{ animationDelay: "600ms" }}
       >
-        <div className="w-0.5 h-4 bg-purple-glow shadow-glow-purple-sm" />
-        <span className="text-[8px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-50">
-          {"// QUICK_ACTIONS"}
+        <div className="w-1 h-5 bg-teal-primary" />
+        <span className="text-[10px] font-mono font-black text-ink uppercase tracking-[0.3em]">
+          QUICK_COMMANDS
         </span>
       </div>
 
-      {QUICK_ACTIONS.map((action, i) => {
-        const c = COLOR_MAP[action.color];
-        const Icon = action.icon;
-        return (
-          <Link
-            key={i}
-            href={action.href}
-            className={`
-              group relative flex items-center gap-3 px-4 py-3
-              bg-surface-900 border border-surface-800
-              ${c.hoverBorder}
-              hover:-translate-y-0.5 transition-all duration-200
-              shadow-card
-              [clip-path:polygon(0_0,calc(100%-8px)_0,100%_8px,100%_100%,8px_100%,0_calc(100%-8px))]
-              opacity-0 animate-[fadeSlideIn_0.3s_ease_forwards]
-            `}
-            style={{ animationDelay: `${1700 + i * 80}ms` }}
-          >
-            <div className={`absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 z-0 ${c.bg}`} />
-            <span className={`relative z-10 transition-colors duration-200 ${c.text}`}>
-              <Icon size={15} />
-            </span>
-            <span className="relative z-10 text-[10px] font-digital font-black uppercase tracking-wider text-text-secondary group-hover:text-text-primary transition-colors duration-200">
-              {action.label}
-            </span>
-            <span className={`relative z-10 ml-auto text-[10px] font-digital translate-x-0 group-hover:translate-x-1 transition-all duration-200 opacity-0 group-hover:opacity-100 ${c.text}`}>
-              →
-            </span>
-          </Link>
-        );
-      })}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {QUICK_ACTIONS.map((action, i) => {
+          const isTeal = action.color === 'teal';
+          const Icon = action.icon;
+          return (
+            <Link
+              key={i}
+              href={action.href}
+              className={`
+                ${isTeal ? 'btn-wire-teal' : 'btn-wire'}
+                group flex items-center gap-4 px-6 py-4 text-[11px]
+                opacity-0 animate-[fadeSlideIn_0.3s_ease_forwards]
+              `}
+              style={{ animationDelay: `${650 + i * 80}ms` }}
+            >
+              <Icon size={18} />
+              <span className="tracking-widest">{action.label}</span>
+              <span className="ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                →
+              </span>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -247,32 +234,40 @@ export default function Page() {
     queryFn: getSystemStats,
   });
 
-  console.log("System Stats:", systemStats);
-
   const STATS = [
-    { label: "Tutorials", value: systemStats?.tutorials.total ?? 0, suffix: "", color: "teal", icon: BookIcon },
-    { label: "Roadmaps", value: systemStats?.roadmapsCount ?? 0, suffix: "", color: "emerald", icon: MapIcon },
-    { label: "Quizzes", value: systemStats?.quizzesCount ?? 0, suffix: "", color: "purple", icon: ClipboardIcon },
-    { label: "Published", value: systemStats?.tutorials.published ?? 0, suffix: "", color: "emerald", icon: CheckIcon },
-    { label: "Drafts", value: systemStats?.tutorials.draft ?? 0, suffix: "", color: "teal", icon: EditIcon },
+    { label: "Tutorials", value: systemStats?.tutorials.total ?? 0, suffix: "Units", color: "teal", icon: BookIcon },
+    { label: "Roadmaps", value: systemStats?.roadmapsCount ?? 0, suffix: "Maps", color: "ink", icon: MapIcon },
+    { label: "Quizzes", value: systemStats?.quizzesCount ?? 0, suffix: "Tests", color: "ink", icon: ClipboardIcon },
+    { label: "Published", value: systemStats?.tutorials.published ?? 0, suffix: "Live", color: "teal", icon: CheckIcon },
+    { label: "Drafts", value: systemStats?.tutorials.draft ?? 0, suffix: "Pending", color: "dust", icon: EditIcon },
   ];
 
   return (
-    <div className="h-full w-full overflow-y-auto custom-scrollbar font-terminal">
-      <div className="max-w-7xl mx-auto p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 pb-12">
+    <div className="h-full w-full overflow-y-auto custom-scrollbar bg-surface/30">
+      <div className="max-w-7xl mx-auto p-6 sm:p-10 flex flex-col gap-10">
+
+        {/* ── HEADER ── */}
+        <div className="flex flex-col gap-2 border-b-2 border-ink pb-6">
+          <h1 className="text-3xl font-mono font-black text-ink tracking-tighter uppercase">
+            System_Diagnostics
+          </h1>
+          <div className="flex items-center gap-4 text-[10px] font-mono font-bold text-dust uppercase tracking-widest">
+            <span>Terminal: DASH_01</span>
+            <span className="w-1 h-1 bg-ink rounded-full" />
+            <span>Status: Ready</span>
+          </div>
+        </div>
 
         {/* ── STAT CARDS ── */}
-        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-5 gap-6">
           {STATS.map((stat, i) => (
             <StatCard key={stat.label} stat={stat} index={i} />
           ))}
         </div>
 
         {/* ── QUICK ACTIONS ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-1">
-            <QuickActions />
-          </div>
+        <div className="mt-4">
+          <QuickActions />
         </div>
 
       </div>

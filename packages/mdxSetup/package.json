@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@mux/mux-player-react": "^3.11.5",
+    "@repo/tailwind-config": "workspace:*",
     "react-player": "^3.4.0"
   }
 }

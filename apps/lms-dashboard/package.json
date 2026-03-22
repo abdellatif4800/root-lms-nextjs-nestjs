@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@repo/gql": "workspace:*",
+    "@repo/mdxSetup": "workspace:*",
     "@repo/reactFlowSetup": "workspace:*",
     "@repo/reduxSetup": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
