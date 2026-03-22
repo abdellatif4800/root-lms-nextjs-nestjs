@@ -27,7 +27,6 @@ export * from './tutorials/CreateTutorialInputField'
 //----- roadmaps ------
 export * from './roadmaps/CreateRoadmapPage'
 export * from './roadmaps/RoadmapViewer'
-export * from './roadmaps/RoadmapForm'
 export * from './roadmaps/RoadmapsList'
 
 

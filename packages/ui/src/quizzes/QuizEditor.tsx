@@ -1,6 +1,6 @@
 "use client";
 
-import { useFieldArray, UseFormReturn } from "react-hook-form";
+import { UseFormReturn, FieldArrayWithId, useFieldArray } from "react-hook-form";
 import {
   DndContext,
   closestCenter,
@@ -18,7 +18,6 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   QuizForm,
   QuestionType,
-  defaultQuestion,
   questionTypeColors,
 } from "./Quiz.types";
 
@@ -37,8 +36,7 @@ function SortableQuestion({ id, children }: { id: string; children: React.ReactN
       <div
         {...attributes}
         {...listeners}
-        className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center cursor-grab active:cursor-grabbing z-10"
-        style={{ color: "#334155" }}
+        className="absolute left-[-24px] top-0 bottom-0 w-6 flex items-center justify-center cursor-grab active:cursor-grabbing z-10 opacity-30 hover:opacity-100"
       >
         <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor">
           <circle cx="3" cy="2" r="1.5" /><circle cx="7" cy="2" r="1.5" />
@@ -54,59 +52,68 @@ function SortableQuestion({ id, children }: { id: string; children: React.ReactN
 // ─── MCQ Options ──────────────────────────────────────────────────────────────
 
 function MCQOptions({ questionIndex, form }: { questionIndex: number; form: UseFormReturn<QuizForm> }) {
-  const { register, watch, setValue } = form;
+  const { register, watch, setValue, control } = form;
+  
   const { fields, append, remove } = useFieldArray({
-    control: form.control,
+    control,
     name: `questions.${questionIndex}.options`,
   });
-  const options = watch(`questions.${questionIndex}.options`);
 
   const handleSetCorrect = (optionIndex: number) => {
-    options.forEach((_, i) => {
+    fields.forEach((_, i) => {
       setValue(`questions.${questionIndex}.options.${i}.isCorrect`, i === optionIndex);
     });
   };
 
   return (
-    <div className="flex flex-col gap-2 mt-2">
-      <span className="text-[9px] font-terminal text-text-secondary uppercase tracking-widest">
-        Options — click circle to mark correct
+    <div className="flex flex-col gap-3 mt-4 border-l-2 border-ink/10 pl-4 py-1">
+      <span className="text-[9px] font-mono font-black text-dust uppercase tracking-widest flex items-center gap-2">
+        <span className="w-1.5 h-px bg-dust" />
+        Option_Config — [Mark Correct]
       </span>
-      {fields.map((field, oi) => {
-        const isCorrect = watch(`questions.${questionIndex}.options.${oi}.isCorrect`);
-        return (
-          <div key={field.id} className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => handleSetCorrect(oi)}
-              className="w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all"
-              style={{ borderColor: isCorrect ? "#2dd4bf" : "#334155", background: isCorrect ? "#2dd4bf" : "transparent" }}
-            >
-              {isCorrect && (
-                <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                  <path d="M1.5 4L3 5.5L6.5 2" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              )}
-            </button>
-            <input
-              {...register(`questions.${questionIndex}.options.${oi}.text`, { required: true })}
-              placeholder={`Option ${oi + 1}...`}
-              className="flex-1 bg-transparent border px-2 py-1 text-xs text-white outline-none rounded"
-              style={{ borderColor: isCorrect ? "#2dd4bf44" : "#1e2a38" }}
-            />
-            {fields.length > 2 && (
-              <button type="button" onClick={() => remove(oi)} className="text-red-500 text-xs px-1 hover:text-white transition-colors">✕</button>
-            )}
-          </div>
-        );
-      })}
+      <div className="grid grid-cols-1 gap-2">
+        {fields.map((field, oi) => {
+          const isCorrect = watch(`questions.${questionIndex}.options.${oi}.isCorrect`);
+          return (
+            <div key={field.id} className="flex items-center gap-3 group">
+              <button
+                type="button"
+                onClick={() => handleSetCorrect(oi)}
+                className={`w-5 h-5 border-2 flex items-center justify-center shrink-0 transition-all ${isCorrect ? 'border-teal-primary bg-teal-primary text-background' : 'border-ink/20 hover:border-ink/40'}`}
+              >
+                {isCorrect && (
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="3">
+                    <path d="M2 6L5 9L10 3" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </button>
+              <div className="flex-1 flex items-center bg-background/50 border-2 border-ink/10 hover:border-ink/20 transition-all">
+                 <input
+                   {...register(`questions.${questionIndex}.options.${oi}.text`, { required: true })}
+                   placeholder={`OPTION_STRING_${oi + 1}...`}
+                   className="flex-1 bg-transparent px-3 py-1.5 text-xs text-ink font-mono outline-none"
+                 />
+                 {fields.length > 2 && (
+                   <button 
+                     type="button" 
+                     onClick={() => remove(oi)} 
+                     className="px-3 text-red-500 hover:bg-red-500/10 h-full text-xs font-black transition-all"
+                   >
+                     ✕
+                   </button>
+                 )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
       {fields.length < 6 && (
         <button
           type="button"
           onClick={() => append({ text: "", isCorrect: false })}
-          className="text-[9px] font-terminal text-teal-glow border border-teal-glow/30 px-3 py-1 w-fit hover:bg-teal-glow/10 transition-colors"
+          className="text-[9px] font-mono font-black text-teal-primary uppercase tracking-widest border-2 border-teal-primary/20 px-3 py-1.5 w-fit hover:bg-teal-primary/5 transition-all mt-1"
         >
-          + Add Option
+          + ADD_OPTION_SLOT
         </button>
       )}
     </div>
@@ -138,79 +145,89 @@ function QuestionEditor({
   };
 
   return (
-    <div className="ml-6 border p-4 rounded-md flex flex-col gap-3" style={{ background: "#0d1117", borderColor: "#1e2a38" }}>
+    <div className="border-2 border-ink p-5 bg-surface shadow-sm relative animate-[fadeSlideIn_0.3s_ease_forwards]">
+      {/* Drafting Corner Decor */}
+      <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-ink/20" />
+      
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
           <span
-            className="text-[8px] font-digital font-black px-2 py-0.5 rounded-full"
-            style={{ color: questionTypeColors[questionType], border: `1px solid ${questionTypeColors[questionType]}44`, background: `${questionTypeColors[questionType]}11` }}
+            className="text-[9px] font-mono font-black px-2 py-1 uppercase tracking-widest"
+            style={{ 
+              color: 'white', 
+              backgroundColor: questionTypeColors[questionType] 
+            }}
           >
             {questionType}
           </span>
-          <span className="text-[8px] font-terminal text-text-secondary">Q{questionIndex + 1}</span>
+          <span className="text-[10px] font-mono font-black text-dust uppercase tracking-widest">Question_Ref: Q{questionIndex + 1}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] font-digital font-bold text-teal-glow uppercase tracking-tighter">Points:</span>
-          <input
-            type="number"
-            {...register(`questions.${questionIndex}.points`, { min: 1, valueAsNumber: true, })}
-            className="w-14 bg-surface-950 border border-surface-700 text-teal-glow text-xs text-center outline-none px-1 py-1 font-digital focus:border-teal-glow transition-colors"
-            min={1}
-          />
-          <button 
-            type="button" 
-            onClick={onRemove} 
-            className="text-surface-600 hover:text-red-500 text-xs transition-colors ml-1"
-            title="Remove Question"
-          >
-            ✕
-          </button>
+        
+        <div className="flex items-center gap-4">
+           <div className="flex items-center gap-2">
+             <label className="text-[9px] font-mono font-black text-dust uppercase tracking-widest opacity-60">Weight:</label>
+             <input
+               type="number"
+               {...register(`questions.${questionIndex}.points`, { min: 1, valueAsNumber: true, })}
+               className="w-20 bg-background border-2 border-ink text-ink text-[10px] text-center font-mono py-1 focus:outline-none focus:ring-2 focus:ring-teal-primary/20"
+               min={1}
+             />
+           </div>
+           <button 
+             type="button" 
+             onClick={onRemove} 
+             className="text-dust hover:text-red-500 text-xs font-black transition-colors"
+           >
+             [ DISCARD ]
+           </button>
         </div>
       </div>
 
-      {/* Type selector */}
-      <div className="flex gap-1">
+      {/* Type Switcher */}
+      <div className="flex gap-1 mb-4">
         {(["MCQ", "TRUE_OR_FALSE", "ESSAY"] as QuestionType[]).map((t) => (
           <button
-            key={t} type="button" onClick={() => handleTypeChange(t)}
-            className="text-[8px] font-digital font-black px-2 py-1 border transition-all"
-            style={{
-              borderColor: questionType === t ? questionTypeColors[t] : "#1e2a38",
-              color: questionType === t ? questionTypeColors[t] : "#475569",
-              background: questionType === t ? `${questionTypeColors[t]}11` : "transparent",
-            }}
+            key={t} 
+            type="button" 
+            onClick={() => handleTypeChange(t)}
+            className={`text-[8px] font-mono font-black px-2 py-1 border-2 transition-all uppercase tracking-widest ${questionType === t ? 'border-teal-primary text-teal-primary bg-teal-primary/5' : 'border-ink/10 text-dust hover:border-ink/30'}`}
           >
             {t}
           </button>
         ))}
       </div>
 
-      {/* Question text */}
-      <textarea
-        {...register(`questions.${questionIndex}.text`, { required: true })}
-        placeholder="Question text..."
-        rows={2}
-        className="bg-transparent border px-2 py-1.5 text-sm text-white outline-none rounded resize-none"
-        style={{ borderColor: "#1e2a38" }}
-      />
+      {/* Question Text */}
+      <div className="space-y-2">
+        <label className="block text-[9px] font-mono font-black text-dust uppercase tracking-widest opacity-60">Content_Prompt</label>
+        <textarea
+          {...register(`questions.${questionIndex}.text`, { required: true })}
+          placeholder="ENTER_QUESTION_TEXT_PROMPT..."
+          rows={2}
+          className="w-full bg-background border-2 border-ink px-3 py-2 text-sm text-ink font-mono outline-none focus:ring-2 focus:ring-teal-primary/20 resize-none transition-all"
+        />
+      </div>
 
       {/* MCQ */}
       {questionType === "MCQ" && <MCQOptions questionIndex={questionIndex} form={form} />}
 
       {/* True/False */}
       {questionType === "TRUE_OR_FALSE" && (
-        <div className="flex flex-col gap-1">
-          <span className="text-[9px] font-terminal text-text-secondary uppercase tracking-widest">Correct Answer</span>
-          <div className="flex gap-2">
+        <div className="mt-4 space-y-3">
+          <span className="text-[9px] font-mono font-black text-dust uppercase tracking-widest flex items-center gap-2">
+            <span className="w-1.5 h-px bg-dust" />
+            Boolean_Logic_Setting
+          </span>
+          <div className="grid grid-cols-2 gap-3">
             {["true", "false"].map((val) => {
               const isSelected = watch(`questions.${questionIndex}.correctBooleanAnswer`) === val;
               return (
                 <button
-                  key={val} type="button"
+                  key={val} 
+                  type="button"
                   onClick={() => setValue(`questions.${questionIndex}.correctBooleanAnswer`, val)}
-                  className="flex-1 py-1.5 text-[9px] font-digital font-black uppercase tracking-wider border transition-all"
-                  style={{ borderColor: isSelected ? "#34d399" : "#1e2a38", color: isSelected ? "#34d399" : "#475569", background: isSelected ? "#34d39911" : "transparent" }}
+                  className={`py-2 text-[10px] font-mono font-black uppercase tracking-widest border-2 transition-all ${isSelected ? 'border-teal-primary text-teal-primary bg-teal-primary/5' : 'border-ink/10 text-dust'}`}
                 >
                   {isSelected ? `[✓] ${val}` : val}
                 </button>
@@ -222,14 +239,16 @@ function QuestionEditor({
 
       {/* Essay */}
       {questionType === "ESSAY" && (
-        <div className="flex flex-col gap-1">
-          <span className="text-[9px] font-terminal text-text-secondary uppercase tracking-widest">Model Answer (admin reference only)</span>
+        <div className="mt-4 space-y-2">
+          <span className="text-[9px] font-mono font-black text-dust uppercase tracking-widest flex items-center gap-2">
+            <span className="w-1.5 h-px bg-dust" />
+            Structural_Key_Reference
+          </span>
           <textarea
             {...register(`questions.${questionIndex}.modelAnswer`)}
-            placeholder="Expected answer..."
+            placeholder="ENTER_EXPECTED_SOLUTION_KEY..."
             rows={3}
-            className="bg-transparent border px-2 py-1.5 text-xs text-white outline-none rounded resize-none"
-            style={{ borderColor: "#1e2a3866" }}
+            className="w-full bg-background border-2 border-ink px-3 py-2 text-xs text-ink font-mono outline-none focus:ring-2 focus:ring-teal-primary/20 resize-none transition-all"
           />
         </div>
       )}
@@ -239,15 +258,20 @@ function QuestionEditor({
 
 // ─── Quiz Editor (exported) ───────────────────────────────────────────────────
 
-export function QuizEditor({ form }: { form: UseFormReturn<QuizForm> }) {
-  const { control } = form;
-  const { fields, append, remove, move } = useFieldArray({ control, name: "questions" });
+interface QuizEditorProps {
+  form: UseFormReturn<QuizForm>;
+  fields: FieldArrayWithId<QuizForm, "questions", "id">[];
+  removeQuestion: (index: number) => void;
+  moveQuestion: (from: number, to: number) => void;
+}
+
+export function QuizEditor({ form, fields, removeQuestion, moveQuestion }: QuizEditorProps) {
   const sensors = useSensors(useSensor(PointerSensor));
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      move(
+      moveQuestion(
         fields.findIndex((f) => f.id === active.id),
         fields.findIndex((f) => f.id === over.id)
       );
@@ -255,20 +279,25 @@ export function QuizEditor({ form }: { form: UseFormReturn<QuizForm> }) {
   };
 
   return (
-    <div className="flex flex-col gap-4 flex-1">
-      <div className="flex items-center gap-2">
-        <span className="w-3 h-px bg-text-secondary opacity-40" />
-        <span className="text-[9px] font-terminal text-text-secondary uppercase tracking-widest">
-          Questions ({fields.length})
-        </span>
+    <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto py-8">
+      <div className="flex items-center justify-between border-b-2 border-ink pb-4">
+        <h2 className="text-xl font-mono font-black text-ink uppercase tracking-tighter">
+          Blueprint_Questions
+        </h2>
+        <div className="flex items-center gap-3 text-[10px] font-mono font-black text-dust uppercase tracking-widest">
+           <span className="flex items-center gap-1">
+             <span className="w-2 h-2 bg-ink" />
+             Count: {fields.length}
+           </span>
+        </div>
       </div>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={fields.map((f) => f.id)} strategy={verticalListSortingStrategy}>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-6 pl-6">
             {fields.map((field, index) => (
               <SortableQuestion key={field.id} id={field.id}>
-                <QuestionEditor questionIndex={index} form={form} onRemove={() => remove(index)} />
+                <QuestionEditor questionIndex={index} form={form} onRemove={() => removeQuestion(index)} />
               </SortableQuestion>
             ))}
           </div>
@@ -276,28 +305,14 @@ export function QuizEditor({ form }: { form: UseFormReturn<QuizForm> }) {
       </DndContext>
 
       {fields.length === 0 && (
-        <div className="text-center py-10 border border-dashed text-text-secondary text-xs font-terminal" style={{ borderColor: "#1e2a38" }}>
-          No questions yet — add one below
+        <div className="text-center py-32 border-2 border-ink border-dashed flex flex-col items-center justify-center gap-4 bg-background/50">
+          <span className="text-3xl opacity-20">📝</span>
+          <span className="text-[10px] font-mono font-black uppercase text-dust tracking-widest">Workspace_Empty — Initialize questions via sidebar palette.</span>
         </div>
       )}
 
-      {/* Add question buttons */}
-      <div className="flex gap-2 flex-wrap">
-        {([
-          { type: "MCQ", label: "MCQ", color: "#38bdf8" },
-          { type: "TRUE_OR_FALSE", label: "True/False", color: "#34d399" },
-          { type: "ESSAY", label: "Essay", color: "#a855f7" },
-        ] as { type: QuestionType; label: string; color: string }[]).map(({ type, label, color }) => (
-          <button
-            key={type} type="button"
-            onClick={() => append(defaultQuestion(type))}
-            className="text-[9px] font-digital font-black px-3 py-1.5 border transition-all hover:opacity-80"
-            style={{ borderColor: `${color}44`, color, background: `${color}0d` }}
-          >
-            + {label}
-          </button>
-        ))}
-      </div>
+      {/* Bottom Padding */}
+      <div className="h-20" />
     </div>
   );
 }

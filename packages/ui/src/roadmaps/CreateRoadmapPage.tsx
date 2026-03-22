@@ -1,5 +1,5 @@
 "use client";
-import { AdminPanel, ReactFlowComponent } from "@repo/reactFlowSetup";
+import { RoadmapEditorPanel, ReactFlowComponent } from "@repo/reactFlowSetup";
 import { RootState, setEdges, setNodes, updateNode, useDispatch, useSelector } from "@repo/reduxSetup";
 import { useEffect } from "react";
 
@@ -42,20 +42,8 @@ export function CreateRoadmapPage({
   return (
     <div className={`flex flex-row h-[calc(100vh-10rem)] gap-4 w-full p-2 bg-background ${className ?? ""}`}>
       {/* Configuration Sidebar */}
-      <div className="w-1/4 h-full bg-surface border-2 border-ink shadow-wire overflow-hidden flex flex-col relative">
-        {/* Drafting Corner Decor */}
-        <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-ink opacity-20" />
-        
-        <div className="p-3 border-b-2 border-ink bg-background/20 shrink-0">
-          <h3 className="font-mono font-black text-ink text-sm tracking-widest uppercase flex items-center gap-2">
-            <span className="w-2 h-2 bg-teal-primary" />
-            Node_Configuration
-          </h3>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
-          <AdminPanel currentNode={currentNode} />
-        </div>
+      <div className="w-80 h-full bg-surface border-2 border-ink shadow-wire overflow-hidden flex flex-col relative shrink-0">
+        <RoadmapEditorPanel currentNode={currentNode} initialData={initialData} />
       </div>
 
       {/* Main Canvas Area */}
