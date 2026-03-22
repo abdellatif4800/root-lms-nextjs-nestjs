@@ -2,7 +2,6 @@
 import { usePathname } from "next/navigation";
 import MainLayoutClient from "./MainLayoutClient";
 import { Navbar } from "./Navbar";
-import { QuizHeader } from "./QuizHeader";
 import { Inter, JetBrains_Mono } from "next/font/google";
 
 const sansFont = Inter({ subsets: ["latin"], variable: "--font-sans" });

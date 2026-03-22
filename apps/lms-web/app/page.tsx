@@ -24,7 +24,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-full w-full relative font-sans text-ink">
+    <div className="h-screen w-full relative font-sans text-ink">
 
       {/* Drafting Lines - Vertical */}
       {/* <div className="absolute inset-0 z-0 pointer-events-none border-x-2 border-ink/5 mx-auto max-w-7xl h-full" /> */}
@@ -142,25 +142,6 @@ export default function Home() {
             <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest">Quizzes Passed</span>
           </div>
         </section>
-
-        {/* Premium Resources Feed */}
-        {paidTutorials && paidTutorials.length > 0 && (
-          <section className="w-full pb-20">
-            <div className="flex items-center gap-6 mb-12">
-              <h2 className="text-2xl font-black uppercase whitespace-nowrap">Latest Lessons</h2>
-              <div className="flex-1 h-px bg-ink/20" />
-              <div className="font-mono text-[10px] text-dust border border-ink px-2 py-1">COLLECTION_V1</div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-              {paidTutorials.slice(0, 5).map((tutorial: any) => (
-                <div key={tutorial.id} className="relative transition-transform hover:-translate-y-2">
-                  <TutorialCard tutorial={tutorial} />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
       </div>
     </div>
