@@ -24,44 +24,34 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="h-screen w-full relative font-sans text-ink">
+    <div className="h-screen w-full relative font-sans text-ink overflow-hidden ">
 
       {/* Drafting Lines - Vertical */}
-      {/* <div className="absolute inset-0 z-0 pointer-events-none border-x-2 border-ink/5 mx-auto max-w-7xl h-full" /> */}
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-12 flex flex-col items-center gap-12 sm:gap-20">
+      <div className="relative z-10 w-full h-full max-w-7xl mx-auto px-6 py-8 flex flex-col items-center justify-center gap-8 sm:gap-12">
 
         {/* Hero Section */}
-        <header className="w-full flex flex-col items-center gap-6 pt-12 text-center relative">
-
-          <div className="inline-block border-2 border-ink px-4 py-1 font-mono text-xs uppercase tracking-[0.2em] bg-surface/50 rotate-[-1deg] translate-x-4">
-            Welcome to the Library
+        <header className="w-full flex flex-col items-center gap-4 text-center relative shrink-0">
+          <div className="inline-block border-2 border-ink px-4 py-1 font-mono text-[10px] uppercase tracking-[0.2em] bg-surface/50 rotate-[-1deg] translate-x-4">
+            Welcome_to_the_Library
           </div>
 
           <div className="relative">
-            <h1 className="text-5xl sm:text-8xl font-black tracking-tighter leading-none [letter-spacing:-0.05em] uppercase text-teal-primary">
+            <h1 className="text-4xl sm:text-7xl font-black tracking-tighter leading-none [letter-spacing:-0.05em] uppercase text-teal-primary">
               <span className=" mr-2">&gt;./</span>
               Root_lms
             </h1>
             <div className="absolute -right-8 -top-4 w-12 h-12 border-2 border-dashed border-teal-primary rounded-full opacity-40 animate-spin-slow hidden sm:block" />
           </div>
 
-          <p className="max-w-xl text-lg text-dust font-medium leading-relaxed font-sans">
-            A simple space designed for you to grow your skills. <br className="hidden sm:block" />
-            Pick a course, start a lesson, and track your progress.
+          <p className="max-w-xl text-base text-dust font-medium leading-relaxed font-sans opacity-80">
+            A specialized environment for skill acquisition. <br className="hidden sm:block" />
+            Initialize a sequence, track telemetry, and optimize growth.
           </p>
-
-          {/* Weird "Sketch" arrow utility */}
-          <div className="hidden lg:block absolute left-20 bottom-0 text-teal-primary rotate-[-45deg] opacity-60">
-            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M7 17L17 7M17 7H7M17 7V17" />
-            </svg>
-            <span className="font-mono text-[10px] uppercase">Start_Browsing</span>
-          </div>
         </header>
 
         {/* Main Navigation - "Weird Wireframe" Grid */}
-        <section className={`grid grid-cols-1 md:grid-cols-3 gap-8 w-full transition-all duration-700 ease-out ${showCards ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <section className={`grid grid-cols-1 md:grid-cols-3 gap-6 w-full transition-all duration-700 ease-out shrink-0 ${showCards ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
 
           {/* Card: Free Lessons */}
           <Link href="/tutorials/list?filter=free" className="wire-card group p-8 flex flex-col items-start gap-8 relative overflow-hidden">
