@@ -19,61 +19,60 @@ type AdminLink = {
 
 const Icons = {
   dashboard: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
       <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
       <rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
     </svg>
   ),
   tutorials: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
       <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
       <path d="M8 7h6" /><path d="M8 11h8" />
     </svg>
   ),
   roadmaps: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
       <path d="M3 17l4-8 4 4 4-6 4 10" /><path d="M3 21h18" />
     </svg>
   ),
   chevron: (
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square">
       <path d="M6 9l6 6 6-6" />
     </svg>
   ),
   menu: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
       <path d="M3 12h18M3 6h18M3 18h18" />
     </svg>
   ),
 }
 
 const ADMIN_LINKS: AdminLink[] = [
-  { name: 'Dashboard', href: '/', icon: Icons.dashboard },
+  { name: 'Overview', href: '/', icon: Icons.dashboard },
   {
-    name: 'Tutorials', href: '#', icon: Icons.tutorials,
+    name: 'Lessons', href: '#', icon: Icons.tutorials,
     subRoutes: [
-      { name: 'Create/Edit', href: '/tutorials/tutorialEditor' },
-      { name: 'Published/Draft', href: '/tutorials/list' },
+      { name: 'Draft New', href: '/tutorials/tutorialEditor' },
+      { name: 'Manage Library', href: '/tutorials/list' },
     ]
   },
   {
-    name: 'Roadmaps', href: '#', icon: Icons.roadmaps,
+    name: 'Study Paths', href: '#', icon: Icons.roadmaps,
     subRoutes: [
-      { name: 'Create/Edit', href: '/roadmaps/roadmapEditor', query: { editOrCreate: 'create' } },
-      { name: 'Published/Draft', href: '/roadmaps/list' },
+      { name: 'Create Path', href: '/roadmaps/roadmapEditor', query: { editOrCreate: 'create' } },
+      { name: 'Manage Paths', href: '/roadmaps/list' },
     ]
   },
   {
-    name: 'Quizzes', href: '#', icon: Icons.menu,
+    name: 'Assessments', href: '#', icon: Icons.menu,
     subRoutes: [
-      { name: 'Create/Edit', href: '/quizzes/quizEditor', query: { editOrCreate: 'create' } },
-      { name: 'Quiz Database', href: '/quizzes/list' },
+      { name: 'Create Quiz', href: '/quizzes/quizEditor', query: { editOrCreate: 'create' } },
+      { name: 'Manage Quizzes', href: '/quizzes/list' },
     ]
   }
 ]
 
 export default function Sidebar() {
-  // On lg+ starts open, on smaller screens starts closed
   const [isOpen, setIsOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [expandedMenus, setExpandedMenus] = useState<string[]>([])
@@ -83,22 +82,20 @@ export default function Sidebar() {
     const checkScreen = () => {
       const mobile = window.innerWidth < 1024
       setIsMobile(mobile)
-      if (!mobile) setIsOpen(true)   // always open on desktop
-      else setIsOpen(false)          // closed by default on mobile
+      if (!mobile) setIsOpen(true)
+      else setIsOpen(false)
     }
     checkScreen()
     window.addEventListener('resize', checkScreen)
     return () => window.removeEventListener('resize', checkScreen)
   }, [])
 
-  // Listen for open trigger fired by Navbar hamburger button
   useEffect(() => {
     const handler = () => setIsOpen(true)
     window.addEventListener('sidebar:open', handler)
     return () => window.removeEventListener('sidebar:open', handler)
   }, [])
 
-  // Close mobile sidebar on route change
   useEffect(() => {
     if (isMobile) setIsOpen(false)
   }, [pathname])
@@ -122,57 +119,48 @@ export default function Sidebar() {
       {/* ── Mobile backdrop ── */}
       {isMobile && isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* ── Sidebar ── */}
       <aside className={`
-        flex-shrink-0 flex flex-col z-50
-        bg-surface-900/95 border border-surface-800 border-t-2 border-t-teal-glow
-        backdrop-blur-sm shadow-card
+        flex-shrink-0 flex flex-col z-50 font-sans text-ink
+        bg-surface border-2 border-ink shadow-wire
         transition-all duration-300 ease-in-out
         ${isMobile
-          /* Mobile: fixed overlay, slides in from left, always full-width when open */
-          ? `fixed top-0 left-0 h-full ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64'}`
-          /* Desktop: in-flow, collapsible */
-          : `relative ${isOpen ? 'w-56' : 'w-[52px]'}`
+          ? `fixed top-0 left-0 h-full ${isOpen ? 'translate-x-0 w-72' : '-translate-x-full w-72'}`
+          : `relative ${isOpen ? 'w-64' : 'w-[72px]'}`
         }
       `}>
-
-        {/* Scanline */}
-        <div className="scanline-overlay opacity-[0.03]" />
-
-        {/* Right edge accent */}
-        <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-teal-glow/30 via-transparent to-transparent pointer-events-none z-10" />
-
         <div className="flex flex-col h-full relative z-20">
 
           {/* ── Header ── */}
-          <div className="h-14 flex items-center px-3.5 border-b border-surface-800 shrink-0 gap-3 overflow-hidden">
-            <div className="shrink-0 w-6 h-6 border border-teal-glow/50 flex items-center justify-center text-teal-glow shadow-glow-teal">
-              <span className="text-[9px] font-digital font-black">&gt;_</span>
+          <div className="h-16 flex items-center px-4 border-b-2 border-ink shrink-0 gap-4 overflow-hidden bg-background/50">
+            <div className="shrink-0 w-8 h-8 border-2 border-ink bg-teal-primary/10 flex items-center justify-center text-ink shadow-[2px_2px_0px_0px_rgba(19,21,22,1)]">
+              <span className="text-[10px] font-black uppercase">Admin</span>
             </div>
-            {/* Label — visible when open (always on mobile since w-64, conditional on desktop) */}
-            <div className={`flex flex-col gap-0 overflow-hidden transition-all duration-300 ${(isMobile || isOpen) ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
-              <span className="text-[7px] font-terminal text-text-secondary uppercase tracking-[0.3em] opacity-40 leading-none whitespace-nowrap">
-                {"// ACCESS::GRANTED"}
+            
+            <div className={`flex flex-col gap-0.5 overflow-hidden transition-all duration-300 ${(isMobile || isOpen) ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+              <span className="text-[8px] font-mono text-dust uppercase font-bold tracking-widest leading-none whitespace-nowrap">
+                System Access
               </span>
               <Link
                 href="/"
-                className="text-[11px] font-digital font-black text-teal-glow uppercase tracking-wider hover:text-white transition-colors leading-tight whitespace-nowrap text-glow-teal"
+                className="text-sm font-black text-ink uppercase tracking-tighter hover:text-teal-primary transition-colors leading-tight whitespace-nowrap"
               >
-                ROOT_ADMIN
+                Root_Control
               </Link>
             </div>
+            
             {/* Close button — mobile only */}
             {isMobile && (
               <button
                 onClick={() => setIsOpen(false)}
-                className="ml-auto text-text-secondary hover:text-teal-glow transition-colors shrink-0"
+                className="ml-auto w-8 h-8 border-2 border-ink flex items-center justify-center hover:bg-ink hover:text-background transition-colors shrink-0"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
               </button>
@@ -180,7 +168,7 @@ export default function Sidebar() {
           </div>
 
           {/* ── Nav Links ── */}
-          <nav className="flex-1 overflow-y-auto custom-scrollbar p-2 flex flex-col gap-0.5">
+          <nav className="flex-1 overflow-y-auto custom-scrollbar p-4 flex flex-col gap-2">
             {ADMIN_LINKS.map((link) => {
               const hasSubRoutes = !!link.subRoutes
               const isExpanded = expandedMenus.includes(link.name)
@@ -194,25 +182,25 @@ export default function Sidebar() {
                     <button
                       onClick={() => toggleMenu(link.name)}
                       className={`
-                        group flex items-center gap-3 px-3 py-2.5 w-full text-left
-                        border transition-all duration-200 relative overflow-hidden
+                        group flex items-center gap-4 px-4 py-3 w-full text-left
+                        border-2 transition-all duration-200 relative overflow-hidden
                         ${isActive
-                          ? 'bg-surface-800/80 border-teal-glow/50 text-teal-glow [box-shadow:inset_0_0_12px_rgba(45,212,191,0.06)]'
-                          : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-800/50 hover:border-surface-700'
+                          ? 'bg-background border-ink shadow-[2px_2px_0px_0px_rgba(19,21,22,1)] text-ink'
+                          : 'border-transparent text-dust hover:text-ink hover:bg-background/50 hover:border-ink/20'
                         }
                       `}
                     >
                       {isActive && (
-                        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-teal-glow shadow-glow-teal-sm" />
+                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-teal-primary border-r-2 border-ink" />
                       )}
-                      <span className={`shrink-0 transition-colors ${isActive ? 'text-teal-glow' : 'text-text-secondary group-hover:text-text-primary'}`}>
+                      <span className={`shrink-0 transition-colors ${isActive ? 'text-teal-primary' : 'text-dust group-hover:text-ink'}`}>
                         {link.icon}
                       </span>
                       <span className={`flex-1 flex items-center justify-between overflow-hidden transition-all duration-300 ${(isMobile || isOpen) ? 'opacity-100' : 'opacity-0 w-0'}`}>
-                        <span className="text-[10px] font-digital font-black uppercase tracking-wider whitespace-nowrap">
+                        <span className="text-xs font-black uppercase tracking-widest whitespace-nowrap">
                           {link.name}
                         </span>
-                        <span className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : 'rotate-0'} text-text-secondary`}>
+                        <span className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : 'rotate-0'} text-ink`}>
                           {Icons.chevron}
                         </span>
                       </span>
@@ -221,21 +209,21 @@ export default function Sidebar() {
                     <Link
                       href={{ pathname: link.href }}
                       className={`
-                        group flex items-center gap-3 px-3 py-2.5
-                        border transition-all duration-200 relative overflow-hidden
+                        group flex items-center gap-4 px-4 py-3
+                        border-2 transition-all duration-200 relative overflow-hidden
                         ${isActive
-                          ? 'bg-surface-800/80 border-teal-glow/50 text-teal-glow [box-shadow:inset_0_0_12px_rgba(45,212,191,0.06)]'
-                          : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-800/50 hover:border-surface-700'
+                          ? 'bg-background border-ink shadow-[2px_2px_0px_0px_rgba(19,21,22,1)] text-ink'
+                          : 'border-transparent text-dust hover:text-ink hover:bg-background/50 hover:border-ink/20'
                         }
                       `}
                     >
                       {isActive && (
-                        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-teal-glow shadow-glow-teal-sm" />
+                        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-teal-primary border-r-2 border-ink" />
                       )}
-                      <span className={`shrink-0 transition-colors ${isActive ? 'text-teal-glow' : 'text-text-secondary group-hover:text-text-primary'}`}>
+                      <span className={`shrink-0 transition-colors ${isActive ? 'text-teal-primary' : 'text-dust group-hover:text-ink'}`}>
                         {link.icon}
                       </span>
-                      <span className={`text-[10px] font-digital font-black uppercase tracking-wider whitespace-nowrap overflow-hidden transition-all duration-300 ${(isMobile || isOpen) ? 'opacity-100' : 'opacity-0 w-0'}`}>
+                      <span className={`text-xs font-black uppercase tracking-widest whitespace-nowrap overflow-hidden transition-all duration-300 ${(isMobile || isOpen) ? 'opacity-100' : 'opacity-0 w-0'}`}>
                         {link.name}
                       </span>
                     </Link>
@@ -245,28 +233,26 @@ export default function Sidebar() {
                   {hasSubRoutes && (isMobile || isOpen) && (
                     <div className={`
                       overflow-hidden transition-all duration-300 ease-in-out
-                      border-l border-surface-800 ml-[26px] mt-0.5
+                      border-l-2 border-ink/10 ml-[26px] mt-1
                       ${isExpanded ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}
                     `}>
-                      {link.subRoutes?.map((sub, idx) => {
+                      {link.subRoutes?.map((sub) => {
                         const isSubActive = pathname === sub.href
                         return (
                           <Link
                             key={sub.name}
                             href={{ pathname: sub.href, query: sub.query }}
                             className={`
-                              flex items-center gap-2 px-3 py-1.5
-                              text-[9px] font-terminal uppercase tracking-[0.2em]
-                              border-l-2 transition-all duration-200
-                              opacity-0 animate-[fadeSlideIn_0.2s_ease_forwards]
+                              flex items-center gap-3 px-4 py-2.5
+                              text-[10px] font-black uppercase tracking-widest
+                              border-l-2 transition-all duration-200 group
                               ${isSubActive
-                                ? 'text-teal-glow border-teal-glow bg-teal-glow/5'
-                                : 'text-text-secondary border-transparent hover:text-text-primary hover:border-surface-600 hover:bg-surface-800/30'
+                                ? 'text-teal-primary border-teal-primary bg-background'
+                                : 'text-dust border-transparent hover:text-ink hover:bg-background/50 hover:border-ink/20'
                               }
                             `}
-                            style={{ animationDelay: `${idx * 40}ms` }}
                           >
-                            <span className={`text-[8px] font-bold transition-opacity ${isSubActive ? 'opacity-100 text-teal-glow' : 'opacity-0'}`}>›</span>
+                            <div className={`w-1.5 h-1.5 border border-ink ${isSubActive ? 'bg-teal-primary' : 'bg-transparent group-hover:bg-ink'}`} />
                             {sub.name}
                           </Link>
                         )
@@ -280,16 +266,16 @@ export default function Sidebar() {
 
           {/* ── Footer / Collapse (desktop only) ── */}
           {!isMobile && (
-            <div className="shrink-0 border-t border-surface-800">
+            <div className="shrink-0 border-t-2 border-ink bg-background/50 p-4">
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-center gap-2 py-3 px-3 text-text-secondary hover:text-teal-glow hover:bg-surface-800/50 transition-all duration-200 group"
+                className="w-full btn-wire py-2.5 flex items-center justify-center gap-2"
               >
-                <span className={`text-[10px] font-digital font-black uppercase tracking-wider transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen ? 'opacity-100 max-w-xs' : 'opacity-0 max-w-0'}`}>
-                  [ Collapse ]
+                <span className={`text-[10px] font-black uppercase tracking-widest transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen ? 'opacity-100 max-w-xs' : 'opacity-0 max-w-0'}`}>
+                  Collapse
                 </span>
-                <span className={`shrink-0 transition-transform duration-300 group-hover:text-teal-glow ${isOpen ? 'rotate-0' : 'rotate-180'}`}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
+                <span className={`shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-0' : 'rotate-180'}`}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M15 18l-6-6 6-6" />
                   </svg>
                 </span>
