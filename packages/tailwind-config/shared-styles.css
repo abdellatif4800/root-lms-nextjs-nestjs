@@ -99,6 +99,15 @@ h1, h2, h3, .tech-label {
   .badge-tape {
     @apply bg-ink text-background px-2 py-0.5 font-mono text-[10px] uppercase tracking-tighter;
   }
+
+  /* Utility to hide scrollbars */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
 }
 
 /* ========================================= 
