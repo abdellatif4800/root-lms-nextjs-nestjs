@@ -7,7 +7,7 @@ import { TanstackProvider } from "@repo/gql";
 import { WebStoreProvider } from "@repo/reduxSetup";
 
 export const metadata: Metadata = {
-  title: "DevDocs_Terminal",
+  title: "Root-Lms",
   description: "Technical Tutorials for Developers",
 };
 
