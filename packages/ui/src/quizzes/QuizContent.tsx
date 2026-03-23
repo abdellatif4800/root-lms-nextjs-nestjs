@@ -118,6 +118,7 @@ export function QuizContent() {
         <QuizViewer
           quiz={quiz}
           onComplete={handleComplete}
+          userId={userId}
         />
       </div>
     </div>

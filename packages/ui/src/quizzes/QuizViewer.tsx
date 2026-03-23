@@ -5,9 +5,10 @@ import Link from "next/link";
 interface QuizViewerProps {
   quiz: any;
   onComplete: (results: { score: number; answers: any[] }) => void;
+  userId: string
 }
 
-export function QuizViewer({ quiz, onComplete }: QuizViewerProps) {
+export function QuizViewer({ quiz, onComplete, userId }: QuizViewerProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<any[]>([]);
   const [quizFinished, setQuizFinished] = useState(false);
@@ -88,20 +89,24 @@ export function QuizViewer({ quiz, onComplete }: QuizViewerProps) {
         </div>
 
         <div className="flex flex-col items-center">
-           <span className={`text-7xl font-black ${isPassed ? 'text-teal-primary' : 'text-ink'}`}>
-             {finalScore}%
-           </span>
-           <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest mt-2">Final Score</span>
+          <span className={`text-7xl font-black ${isPassed ? 'text-teal-primary' : 'text-ink'}`}>
+            {finalScore}%
+          </span>
+          <span className="text-[10px] font-mono font-bold text-dust uppercase tracking-widest mt-2">Final Score</span>
         </div>
 
         <p className="text-sm text-dust font-medium max-w-sm leading-relaxed">
-          Your progress has been recorded. {isPassed 
-            ? "Great job! You've mastered this section." 
+          Your progress has been recorded. {isPassed
+            ? "Great job! You've mastered this section."
             : "You might want to review the material and try again to improve your score."}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm mt-4">
-          <Link href="/progress" className="btn-wire-teal flex-1 py-4 text-[10px] font-black uppercase">
+          <Link href={{
+            pathname: '/progress',
+            query: { userId: userId }
+          }}
+            className="btn-wire-teal flex-1 py-4 text-[10px] font-black uppercase">
             View My Progress
           </Link>
           <button onClick={() => window.location.reload()} className="btn-wire flex-1 py-4 text-[10px] font-black uppercase">
@@ -116,7 +121,7 @@ export function QuizViewer({ quiz, onComplete }: QuizViewerProps) {
 
   return (
     <div className="flex flex-col gap-10 animate-[fadeSlideIn_0.3s_ease_forwards]">
-      
+
       {/* ── Progress ── */}
       <div className="flex flex-col gap-3">
         <div className="flex justify-between items-end">
@@ -133,9 +138,9 @@ export function QuizViewer({ quiz, onComplete }: QuizViewerProps) {
             style={{ width: `${progressPct}%` }}
           />
           <div className="absolute inset-0 flex justify-between pointer-events-none px-4">
-             <div className="w-px h-full bg-ink/10" />
-             <div className="w-px h-full bg-ink/10" />
-             <div className="w-px h-full bg-ink/10" />
+            <div className="w-px h-full bg-ink/10" />
+            <div className="w-px h-full bg-ink/10" />
+            <div className="w-px h-full bg-ink/10" />
           </div>
         </div>
       </div>
@@ -145,10 +150,10 @@ export function QuizViewer({ quiz, onComplete }: QuizViewerProps) {
         <div className="p-10 flex flex-col gap-8 flex-1">
           <div className="flex justify-between items-center pb-6 border-b-2 border-ink/5">
             <div className="flex items-center gap-3">
-               <div className="w-2 h-2 bg-teal-primary border border-ink" />
-               <span className="text-[10px] font-mono font-black text-ink uppercase tracking-widest">
-                 Ref: {currentQuestion.type}
-               </span>
+              <div className="w-2 h-2 bg-teal-primary border border-ink" />
+              <span className="text-[10px] font-mono font-black text-ink uppercase tracking-widest">
+                Ref: {currentQuestion.type}
+              </span>
             </div>
             <span className="text-[10px] font-mono font-bold text-dust uppercase">
               Value: {currentQuestion.points} pts
