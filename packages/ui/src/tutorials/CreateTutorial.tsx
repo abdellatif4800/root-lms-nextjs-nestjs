@@ -14,16 +14,37 @@ import { RootState, useSelector } from "@repo/reduxSetup";
 import { ForwardRefEditor, type MDXEditorMethods } from "@repo/mdxSetup";
 import { useRouter } from "next/navigation";
 
+function ChevronIcon({ isOpen }: { isOpen: boolean }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+    >
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  );
+}
+
 export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
-  const [activeStep, setActiveStep] = useState(1);
-  const editorRef = useRef<MDXEditorMethods>(null)
+  const [isMetaOpen, setIsMetaOpen] = useState(true);
+  const [isUnitsOpen, setIsUnitsOpen] = useState(true);
+
+  const editorRef = useRef<MDXEditorMethods>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
   const { user } = useSelector((state: RootState) => state.authSlice);
 
-  const router = useRouter()
+  const router = useRouter();
 
-  const { data: tutorialData, isLoading } = useQuery({
+  const { data: tutorialData } = useQuery({
     queryKey: ["tutorialById", tutorialId],
     queryFn: () => getTutorialById(tutorialId!),
     enabled: !!tutorialId,
@@ -56,52 +77,34 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
     order: number;
     content: string;
     publish: boolean;
-  } | null>(tutorialData?.units[0]);
+  } | null>(null);
 
-  // 1. Create Mutation
-  const { mutate: submitCreate, isPending: isCreating } = useMutation({
-    mutationFn: (data: any) => createTutorial(data),
-    onSuccess: (data) => {
-      const created = data.createTutorial;
-      setTutorialDetails({
-        tutorialName: created.tutorialName,
-        author: user?.sub,
-        category: created.category,
-        description: created.description,
-        level: created.level,
-        thumbnail: created.thumbnail,
-        publish: created.publish,
-      });
-
-      const formattedUnits = created.units.map((u: any) => ({
+  useEffect(() => {
+    if (tutorialData?.units && tutorialData.units.length > 0 && !activeUnit) {
+      const formattedUnits = tutorialData.units.map((u: any) => ({
         id: u.id,
         unitTitle: u.unitTitle,
         order: u.order,
         content: u.content,
         publish: u.publish
       }));
-
       setUnits(formattedUnits);
+      setActiveUnit(formattedUnits[0]);
+    }
+  }, [tutorialData]);
 
-      if (formattedUnits.length > 0) {
-        setActiveUnit(formattedUnits[0]);
-      }
-
+  const { mutate: submitCreate, isPending: isCreating } = useMutation({
+    mutationFn: (data: any) => createTutorial(data),
+    onSuccess: (data) => {
+      const created = data.createTutorial;
       router.replace(`/tutorials/tutorialEditor?editOrCreate=edit&tutorialId=${created.id}`);
-    },
-    onError: (err) => {
-      console.error("Error creating:", err);
     },
   });
 
-  // 2. Update Mutation
   const { mutate: submitUpdate, isPending: isUpdating } = useMutation({
     mutationFn: (data: any) => updateTutorial(data),
-    onSuccess: (data) => {
-      console.log("Successfully Updated:", data);
-    },
-    onError: (err) => {
-      console.error("Error updating:", err);
+    onSuccess: () => {
+      console.log("Successfully Updated");
     },
   });
 
@@ -123,7 +126,6 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
 
   const handleEditorChange = () => {
     const mdx: string = editorRef.current?.getMarkdown() || ''
-
     if (!activeUnit) return;
 
     setUnits((prev) =>
@@ -162,14 +164,10 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
         }
       );
 
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
+      if (!response.ok) throw new Error("Upload failed");
 
       const uploadedFileUrl = await response.text();
       setTutorialDetails((prev) => ({ ...prev, thumbnail: uploadedFileUrl }));
-
     } catch (err) {
       console.error("Upload failed:", err);
       setLocalPreviewUrl(null);
@@ -203,50 +201,33 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
     }
   };
 
-  const getButtonStyle = (isActive: boolean) => {
-    const base =
-      "flex-1 w-full justify-center h-[42px] px-6 text-[10px] font-black uppercase tracking-[0.1em] transition-all flex items-center gap-2 active:translate-y-0.5 ";
-    const activeStyle =
-      "bg-teal-primary text-background border-2 border-ink shadow-wire hover:bg-background hover:text-ink ";
-    const inactiveStyle =
-      "bg-surface text-dust border-2 border-ink hover:border-teal-primary hover:text-teal-primary ";
-    return base + (isActive ? activeStyle : inactiveStyle);
-  };
-
   useEffect(() => {
     if (!editorRef.current || !activeUnit) return;
     editorRef.current.setMarkdown(activeUnit.content);
-  }, [activeUnit])
+  }, [activeUnit?.id, activeUnit?.order]);
 
   return (
-    <div className="h-full flex flex-col gap-6 p-6 bg-background">
-      <div className="w-full bg-surface border-2 border-ink p-4 shrink-0 shadow-wire">
-        <div className="flex items-center gap-4 w-full">
+    <div className="h-screen flex bg-background gap-5 p-2 ">
+
+      {/* SIDEBAR - Fixed Width and Flex Column */}
+      {/* 1. Ensure only this outer container dictates the 450px width */}
+      <div className="border-r-2 border-ink bg-surface flex flex-col shrink-0 shadow-wire z-10 h-full" style={{ width: '450px' }}>
+
+        {/* TOP CONTROLS - Fixed height */}
+        <div className="p-4 flex flex-col gap-3 border-b-2 border-ink bg-background/40 shrink-0">
           <button
-            onClick={() => setActiveStep(1)}
-            className={getButtonStyle(activeStep === 1)}
+            onClick={handleSaveTutorial}
+            disabled={isCreating || isUpdating}
+            className="
+              w-full h-[48px] bg-ink text-background font-black uppercase tracking-[0.1em] text-[11px]
+              hover:bg-teal-primary transition-all active:translate-y-0.5 shadow-wire border-2 border-ink
+              disabled:opacity-50 disabled:cursor-wait
+            "
           >
-            <span
-              className={`flex items-center justify-center w-4 h-4 rounded-sm text-[9px] border-2 ${activeStep === 1 ? "border-background" : "border-current"}`}
-            >
-              1
-            </span>
-            <span>Meta_Config</span>
+            {isCreating || isUpdating ? "[ PROCESSING... ]" : "[ INITIALIZE_SAVE ]"}
           </button>
 
-          <button
-            onClick={() => setActiveStep(2)}
-            className={getButtonStyle(activeStep === 2)}
-          >
-            <span
-              className={`flex items-center justify-center w-4 h-4 rounded-sm text-[9px] border-2 ${activeStep === 2 ? "border-background" : "border-current"}`}
-            >
-              2
-            </span>
-            <span>Unit_Sequence</span>
-          </button>
-
-          <div className="flex h-[42px] bg-background border-2 border-ink w-48 overflow-hidden">
+          <div className="flex h-[42px] bg-background border-2 border-ink w-full overflow-hidden">
             <label
               className={`flex-1 flex items-center justify-center cursor-pointer text-[10px] font-black uppercase transition-colors ${!tutorialDetailes.publish ? "bg-ink text-background" : "text-dust hover:text-ink"}`}
             >
@@ -259,9 +240,7 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
               />
               Draft
             </label>
-
             <div className="w-px bg-ink h-full"></div>
-
             <label
               className={`flex-1 flex items-center justify-center cursor-pointer text-[10px] font-black uppercase transition-colors ${tutorialDetailes.publish ? "bg-teal-primary text-background" : "text-teal-primary hover:bg-teal-primary hover:text-background"}`}
             >
@@ -275,148 +254,152 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
               Live
             </label>
           </div>
+        </div>
 
-          <button
-            onClick={handleSaveTutorial}
-            disabled={isCreating || isUpdating}
-            className="
-              flex-1 w-full justify-center
-              h-[42px] bg-ink text-background font-black uppercase tracking-[0.1em] text-[10px] px-8
-              hover:bg-teal-primary transition-all active:translate-y-0.5 shadow-wire border-2 border-ink
-              disabled:opacity-50 disabled:cursor-wait
-            "
-          >
-            {isCreating || isUpdating ? "[ PROCESSING... ]" : "[ INITIALIZE_SAVE ]"}
-          </button>
+        {/* INNER COLLAPSIBLE WRAPPER */}
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+
+          {/* Section 1: Meta Config */}
+          {/* FIX: Removed the rogue w-[400px] class from here so it fits the sidebar properly */}
+          <div className="flex flex-col border-b-2 border-ink shrink-0 p-2">
+            <button
+              onClick={() => setIsMetaOpen(!isMetaOpen)}
+              className="w-full flex items-center justify-between p-4 bg-background hover:bg-ink hover:text-background transition-colors sticky top-0 z-20"
+            >
+              <span className="font-mono font-black text-xs tracking-widest uppercase">
+                01 // TUTORIAL_META
+              </span>
+              <ChevronIcon isOpen={isMetaOpen} />
+            </button>
+
+            {isMetaOpen && (
+              <div className="p-4 flex flex-col gap-6 bg-surface max-h-[350px] overflow-y-auto custom-scrollbar">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] uppercase font-black tracking-widest pl-1 opacity-70 text-ink">
+                      Thumbnail_Image
+                    </label>
+                    <div className="flex gap-3">
+                      <div className="w-20 h-20 shrink-0 bg-background border-2 border-ink shadow-wire flex items-center justify-center overflow-hidden relative group">
+                        {(localPreviewUrl || tutorialDetailes.thumbnail) ? (
+                          <img
+                            src={tutorialDetailes.thumbnail}
+                            alt="Thumbnail"
+                            className={`w-full h-full object-cover ${isUploadingImage ? 'opacity-40 animate-pulse' : 'opacity-80'}`}
+                          />
+                        ) : (
+                          <span className="text-[8px] text-dust font-mono font-black uppercase text-center">NA</span>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleThumbnailUpload}
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                        />
+                      </div>
+                      <div className="flex-1 flex flex-col justify-center">
+                        <div className="text-[9px] font-mono text-dust truncate mb-1">
+                          {isUploadingImage ? "UPLOADING..." : (tutorialDetailes.thumbnail ? "FILE_READY" : "NO_FILE")}
+                        </div>
+                        <label className="cursor-pointer px-3 py-1.5 bg-ink text-background text-[9px] font-black border-2 border-ink uppercase tracking-wider hover:bg-teal-primary transition-colors inline-block text-center">
+                          CHOOSE_NEW
+                          <input type="file" accept="image/*" onChange={handleThumbnailUpload} className="hidden" />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <InputField
+                    type="text"
+                    name="tutorialName"
+                    placeholder="Tutorial_Title"
+                    value={tutorialDetailes.tutorialName}
+                    onChange={handleTutorialDetailsChange}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <InputField
+                      type="text"
+                      name="category"
+                      placeholder="Category"
+                      value={tutorialDetailes.category}
+                      onChange={handleTutorialDetailsChange}
+                    />
+                    <InputField
+                      type="text"
+                      name="level"
+                      placeholder="Level"
+                      value={tutorialDetailes.level}
+                      onChange={handleTutorialDetailsChange}
+                    />
+                  </div>
+
+                  <InputField
+                    type="textarea"
+                    name="description"
+                    placeholder="Description"
+                    value={tutorialDetailes.description}
+                    onChange={handleTutorialDetailsChange}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Section 2: Units */}
+          <div className={`flex flex-col flex-1 min-h-0 p-2 overflow-hidden ${isUnitsOpen ? 'flex-1' : 'shrink-0'}`}>
+            <button
+              onClick={() => setIsUnitsOpen(!isUnitsOpen)}
+              className="w-full flex items-center justify-between p-4 bg-background hover:bg-ink hover:text-background transition-colors border-b-2 border-ink sticky top-0 z-20"
+            >
+              <span className="font-mono font-black text-xs tracking-widest uppercase">
+                02 // UNIT_SEQUENCE
+              </span>
+              <ChevronIcon isOpen={isUnitsOpen} />
+            </button>
+
+            {isUnitsOpen && (
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <CreateUnitsContainer
+                  units={units}
+                  currentUnit={activeUnit}
+                  onAddUnit={handleAddUnit}
+                  onSelectUnit={handleEditUnit}
+                  onUpdateUnit={handleUpdateUnit}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 relative overflow-visible min-h-0">
-        {activeStep === 1 && (
-          <div className="h-full w-full max-w-4xl mx-auto flex flex-col justify-center">
-            <div className="bg-surface border-2 border-ink p-10 shadow-wire relative flex flex-col gap-2">
-              <div className=" bg-ink text-[9px] text-background px-3 py-1 font-mono font-black tracking-widest uppercase">
-                STEP 1 // INITIALIZATION
-              </div>
+      {/* MAIN CONTENT AREA */}
+      {/* FIX: Removed overlapping overflow-scroll classes. Set up strict h-screen -> padding -> editor box -> scrollable content */}
+      <div className="flex-1 h-screen flex flex-col min-w-0 bg-background">
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 bg-surface border-2 border-ink shadow-wire flex flex-col min-h-0">
 
-              <div className="flex flex-col gap-6 items-start">
-                <div className="flex flex-col gap-2 w-full">
-                  <label className="text-[10px] uppercase font-black tracking-widest pl-1 opacity-70 text-ink">
-                    Thumbnail_Image
-                  </label>
-                  <div className="relative border-2 border-ink bg-background p-2 flex items-center gap-4 transition-colors hover:border-teal-primary group">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleThumbnailUpload}
-                      disabled={isUploadingImage}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-wait"
-                    />
-                    <div className="px-4 py-1.5 bg-ink text-background text-[10px] font-black border-2 border-ink uppercase tracking-wider pointer-events-none group-hover:bg-teal-primary transition-colors">
-                      Choose_File
-                    </div>
-                    <span className="text-xs text-ink font-mono font-bold truncate pointer-events-none opacity-60">
-                      {isUploadingImage
-                        ? "UPLOADING_DATA..."
-                        : tutorialDetailes.thumbnail || "NO_FILE_SELECTED"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="w-32 h-32 shrink-0 bg-background border-2 border-ink shadow-wire flex items-center justify-center overflow-hidden relative group">
-                  {(localPreviewUrl || tutorialDetailes.thumbnail) ? (
-                    <img
-                      src={tutorialDetailes.thumbnail}
-                      alt="Thumbnail Preview"
-                      className={`w-full h-full object-cover transition-opacity ${isUploadingImage ? 'opacity-40 animate-pulse' : 'opacity-80 group-hover:opacity-100'}`}
-                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                    />
-                  ) : (
-                    <span className="text-[8px] text-dust font-mono font-black uppercase text-center px-2 leading-tight tracking-widest">
-                      Awaiting<br />Signal
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-6 mt-8">
-                <InputField
-                  type="text"
-                  name="tutorialName"
-                  placeholder="Tutorial_Title"
-                  value={tutorialDetailes.tutorialName}
-                  onChange={handleTutorialDetailsChange}
-                />
-
-                <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
-                  <InputField
-                    type="text"
-                    name="category"
-                    placeholder="Category"
-                    value={tutorialDetailes.category}
-                    onChange={handleTutorialDetailsChange}
-                  />
-                  <InputField
-                    type="text"
-                    name="level"
-                    placeholder="Difficulty_Level"
-                    value={tutorialDetailes.level}
-                    onChange={handleTutorialDetailsChange}
-                  />
-                </div>
-                <InputField
-                  type="textarea"
-                  name="description"
-                  placeholder="Description"
-                  value={tutorialDetailes.description}
-                  onChange={handleTutorialDetailsChange}
-                />
-              </div>
+            <div className="p-3 border-b-2 border-ink bg-background/20 flex justify-between items-center shrink-0">
+              <h3 className="font-mono font-black text-teal-primary text-sm tracking-widest uppercase">
+                CONTENT_EDITOR
+              </h3>
+              <span className="text-[9px] font-mono font-bold text-dust uppercase">
+                {activeUnit ? `EDITING_UNIT: ${activeUnit.order} - ${activeUnit.unitTitle}` : "IDLE"}
+              </span>
             </div>
-          </div>
-        )}
 
-        {activeStep === 2 && (
-          <div className="flex h-full gap-8">
-            <div className="w-1/4 min-w-[300px] flex flex-col bg-surface border-2 border-ink shadow-wire relative overflow-hidden">
-              <div className="p-3 border-b-2 border-ink bg-background/20">
-                <h3 className="font-mono font-black text-ink text-sm tracking-widest uppercase">
-                  UNIT_SEQUENCE
-                </h3>
-              </div>
-
-              <CreateUnitsContainer
-                units={units}
-                currentUnit={activeUnit}
-                onAddUnit={handleAddUnit}
-                onSelectUnit={handleEditUnit}
-                onUpdateUnit={handleUpdateUnit}
+            {/* Only the space exactly where the editor sits is allowed to scroll vertically */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar ">
+              <ForwardRefEditor
+                ref={editorRef}
+                markdown={activeUnit?.content || ""}
+                onChange={handleEditorChange}
               />
             </div>
-
-            <div className="flex-1 flex flex-col gap-6 h-full overflow-visible relative z-30">
-              <div className="flex-1 bg-surface border-2 border-ink shadow-wire relative overflow-visible flex flex-col">
-                <div className="p-3 border-b-2 border-ink bg-background/20 flex justify-between items-center">
-                  <h3 className="font-mono font-black text-teal-primary text-sm tracking-widest uppercase">
-                    CONTENT_EDITOR
-                  </h3>
-                  <span className="text-[9px] font-mono font-bold text-dust uppercase">
-                    {activeUnit ? `EDITING_UNIT: ${activeUnit.order}` : "IDLE"}
-                  </span>
-                </div>
-
-                <div className="flex-1">
-                  <ForwardRefEditor
-                    ref={editorRef}
-                    markdown={activeUnit?.content || ""}
-                    onChange={handleEditorChange}
-                  />
-                </div>
-              </div>
-            </div>
           </div>
-        )}
+        </div>
       </div>
+
     </div>
   );
 }
