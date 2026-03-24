@@ -81,7 +81,7 @@ export class FileStorageService {
   }
 
   // ─── Mux: create a direct upload URL ───
-  async createMuxUploadUrl(tutorialId: string, unitId: string) {
+  async createMuxUploadUrl() {
     const upload = await this.mux.video.uploads.create({
       cors_origin: process.env.FRONTEND_URL ?? '*',
       new_asset_settings: {

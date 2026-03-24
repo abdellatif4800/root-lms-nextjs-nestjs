@@ -15,7 +15,7 @@ import { FileStorageService } from './file-storage.service';
 
 @Controller('files')
 export class FileStorageController {
-  constructor(private fileStorageService: FileStorageService) { }
+  constructor(private fileStorageService: FileStorageService) {}
 
   // ----------------------- vercel blob -------------------------
   @Post('uploadFileVercelBlob')
@@ -58,11 +58,8 @@ export class FileStorageController {
 
   // ─── Mux: Next.js calls this before uploading ───
   @Post('mux/upload-url')
-  createMuxUploadUrl(
-    @Body('tutorialId') tutorialId: string,
-    @Body('unitId') unitId: string,
-  ) {
-    return this.fileStorageService.createMuxUploadUrl(tutorialId, unitId);
+  createMuxUploadUrl() {
+    return this.fileStorageService.createMuxUploadUrl();
   }
 
   // ─── Mux: get asset status (poll until ready) ───
