@@ -1,6 +1,6 @@
 # Root_LMS ⚡
 
-> A cyberpunk-themed, full-stack Learning Management System built as a Turborepo monorepo — featuring tutorials, roadmaps, quizzes, and progress tracking with a terminal-aesthetic UI.
+> A full-stack Learning Management System built as a Turborepo monorepo — featuring tutorials, roadmaps, quizzes, and progress tracking.
 
 **Live Demo for web:** [root-lms-web.vercel.app](https://root-lms-web.vercel.app)
 
