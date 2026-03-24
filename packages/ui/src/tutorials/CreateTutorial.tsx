@@ -124,6 +124,15 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
     setActiveUnit(updatedUnit);
   };
 
+  const handleReorderUnits = (reorderedUnits: any[]) => {
+    setUnits(reorderedUnits);
+    // If active unit was moved, update it to keep sync
+    if (activeUnit) {
+      const updatedActive = reorderedUnits.find(u => u.id === activeUnit.id || (u.unitTitle === activeUnit.unitTitle && u.content === activeUnit.content));
+      if (updatedActive) setActiveUnit(updatedActive);
+    }
+  };
+
   const handleEditorChange = () => {
     const mdx: string = editorRef.current?.getMarkdown() || ''
     if (!activeUnit) return;
@@ -366,6 +375,7 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
                   onAddUnit={handleAddUnit}
                   onSelectUnit={handleEditUnit}
                   onUpdateUnit={handleUpdateUnit}
+                  onReorderUnits={handleReorderUnits}
                 />
               </div>
             )}
