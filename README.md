@@ -31,8 +31,6 @@
 
 ### UI/UX
 
-- **Cyberpunk / Terminal aesthetic** — Custom design system with `Orbitron` + `JetBrains Mono` fonts, cut-corner clip-paths, teal/emerald/purple glow accents, scanline overlays, and animated grid backgrounds
-- **Dark / Light theme** — Full theme toggle with CSS variable-driven theming
 - **Fully responsive** — Mobile-first layout with overlay sidebars, hamburger nav, and adaptive grids
 - **Skeleton loading states** — Shimmer skeletons matching real card layouts
 
