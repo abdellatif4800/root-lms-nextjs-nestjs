@@ -39,7 +39,7 @@ export class FileStorageService {
       token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
-    return blob;
+    return blob.url;
   }
 
   async getFileVercelblob(folderName: string, fileName: string) {
@@ -86,7 +86,7 @@ export class FileStorageService {
       cors_origin: process.env.FRONTEND_URL ?? '*',
       new_asset_settings: {
         playback_policy: ['public'], // or 'signed' for paid courses
-        passthrough: JSON.stringify({ tutorialId, unitId }), // track which unit this belongs to
+        // passthrough: JSON.stringify({ tutorialId, unitId }), // track which unit this belongs to
       },
     });
 
