@@ -12,6 +12,7 @@ import { SimpleSeparator } from "./HorizontalSeprator";
 import MuxPlayer from '@mux/mux-player-react'
 
 const NEST_API = "https://root-lms-api.vercel.app";
+//const NEST_API = "http://localhost:8002";
 
 type VideoStatus = "idle" | "uploading" | "processing" | "ready" | "error";
 
@@ -95,11 +96,10 @@ function StatusBadge({ status }: { status: VideoStatus }) {
     error: "Failed",
   };
   return (
-    <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 border-2 ${
-      status === 'ready' ? 'border-teal-primary text-teal-primary bg-teal-primary/5' : 
-      status === 'error' ? 'border-red-500 text-red-500 bg-red-500/5' : 
-      'border-ink text-ink bg-surface'
-    }`}>
+    <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 border-2 ${status === 'ready' ? 'border-teal-primary text-teal-primary bg-teal-primary/5' :
+      status === 'error' ? 'border-red-500 text-red-500 bg-red-500/5' :
+        'border-ink text-ink bg-surface'
+      }`}>
       {labels[status]}
     </span>
   );
@@ -169,6 +169,7 @@ export const VideoComponentEditor = ({ mdastNode }: JsxEditorProps) => {
       try {
         const res = await fetch(`${NEST_API}/files/mux/upload/${uploadId}`);
         const upload: MuxUploadData = await res.json();
+
         if (upload.asset_id) {
           clearInterval(pollRef.current!);
           pollAsset(upload.asset_id);
@@ -227,7 +228,7 @@ export const VideoComponentEditor = ({ mdastNode }: JsxEditorProps) => {
       <div className="w-full flex items-center justify-center border-2 border-dashed border-ink/20 bg-background aspect-video relative overflow-hidden">
         {status === "ready" && playbackId ? (
           <div className="absolute inset-0 pointer-events-none opacity-50 grayscale contrast-125">
-             <VideoComponent playbackId={playbackId} title={title} />
+            <VideoComponent playbackId={playbackId} title={title} />
           </div>
         ) : status === "processing" ? (
           <div className="flex flex-col items-center gap-3 text-center p-4">

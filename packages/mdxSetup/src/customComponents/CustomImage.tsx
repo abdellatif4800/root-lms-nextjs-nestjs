@@ -3,7 +3,7 @@ import { useMdastNodeUpdater, useLexicalNodeRemove, usePublisher, insertJsx$, Bu
 import { useEffect, useState } from "react";
 import { SimpleSeparator } from "./HorizontalSeprator";
 
-const BLOB_LIST_URL = "https://vercel-nest-gql-lms.vercel.app/files/listFilesVercelblob?folder=tutorial-images";
+const BLOB_LIST_URL = "https://root-lms-api.vercel.app/files/listFilesVercelblob?folder=tutorial-images";
 
 interface BlobFile {
   url: string;
@@ -53,30 +53,32 @@ function ImageBrowseModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/40 backdrop-blur-sm p-4"
+      className="absolute inset-0 z-[9999] flex items-center justify-center bg-ink/40 backdrop-blur-sm p-2"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="relative flex flex-col bg-surface border-2 border-ink shadow-wire w-full max-w-2xl max-h-[80vh]"
+        className="relative flex flex-col bg-surface border-2 border-ink shadow-wire w-full h-full"
       >
+
+
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b-2 border-ink">
+        <div className="flex items-center justify-between px-3 py-2 border-b-2 border-ink">
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 bg-teal-primary" />
-            <span className="font-black text-ink text-sm uppercase tracking-tighter">
+            <span className="font-black text-ink text-xs uppercase tracking-tighter">
               Image Library
             </span>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 border-2 border-ink flex items-center justify-center hover:bg-ink hover:text-background transition-colors"
+            className="w-6 h-6 border-2 border-ink flex items-center justify-center hover:bg-ink hover:text-background transition-colors text-xs"
           >
             ✕
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
           {loading && (
             <div className="flex flex-col items-center justify-center h-40 gap-3">
               <div className="w-8 h-8 border-2 border-ink border-t-teal-primary rounded-full animate-spin" />
@@ -97,7 +99,7 @@ function ImageBrowseModal({
           )}
 
           {!loading && !error && blobs.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {blobs.map((blob) => {
                 const isSelected = selected === blob.url;
                 const filename = blob.pathname.split("/").pop() || blob.pathname;
@@ -107,17 +109,17 @@ function ImageBrowseModal({
                   <button
                     key={blob.url}
                     onClick={() => setSelected(blob.url)}
-                    className={`flex flex-col border-2 transition-all p-2 gap-2 text-left relative ${isSelected ? "border-teal-primary bg-background shadow-wire-teal" : "border-ink/10 bg-background/50 hover:border-ink"
+                    className={`flex flex-col border-2 transition-all p-1.5 gap-1.5 text-left relative ${isSelected ? "border-teal-primary bg-background shadow-wire-teal" : "border-ink/10 bg-background/50 hover:border-ink"
                       }`}
                   >
                     <div className="w-full aspect-square border-2 border-ink/5 bg-surface flex items-center justify-center overflow-hidden">
                       <img src={blob.url} alt={filename} className="max-w-full max-h-full object-contain grayscale hover:grayscale-0 transition-all" />
                     </div>
                     <div className="min-w-0">
-                      <p className={`text-[10px] font-black uppercase truncate ${isSelected ? 'text-teal-primary' : 'text-ink'}`}>{filename}</p>
-                      <p className="text-[8px] font-mono text-dust uppercase">{kb} KB</p>
+                      <p className={`text-[9px] font-black uppercase truncate ${isSelected ? 'text-teal-primary' : 'text-ink'}`}>{filename}</p>
+                      <p className="text-[7px] font-mono text-dust uppercase">{kb} KB</p>
                     </div>
-                    {isSelected && <div className="absolute top-1 right-1 w-4 h-4 bg-teal-primary text-background flex items-center justify-center text-[10px] font-black">✓</div>}
+                    {isSelected && <div className="absolute top-1 right-1 w-3 h-3 bg-teal-primary text-background flex items-center justify-center text-[8px] font-black">✓</div>}
                   </button>
                 );
               })}
@@ -126,9 +128,9 @@ function ImageBrowseModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t-2 border-ink bg-background/50">
-          <button onClick={onClose} className="btn-wire py-2 px-6 text-[10px]">Cancel</button>
-          <button onClick={handleConfirm} disabled={!selected} className="btn-wire-teal py-2 px-6 text-[10px] disabled:opacity-50">Insert Selected</button>
+        <div className="flex items-center justify-end gap-2 px-3 py-2 border-t-2 border-ink bg-background/50">
+          <button onClick={onClose} className="btn-wire py-1 px-3 text-[9px]">Cancel</button>
+          <button onClick={handleConfirm} disabled={!selected} className="btn-wire-teal py-1 px-3 text-[9px] disabled:opacity-50">Insert</button>
         </div>
       </div>
     </div>
@@ -146,14 +148,14 @@ export function ImageComponent({
   caption?: string;
 }) {
   return (
-    <div className="border p-2 flex flex-col gap-2">
+    <div className="p-2 flex flex-col gap-2">
       <SimpleSeparator />
-      <div className="flex flex-col gap-4 items-center my-12 px-4">
-        <div className="border-2 border-ink shadow-wire p-2 bg-background">
+      <div className="flex flex-col gap-2 items-center my-3 px-4">
+        <div className="border-2 border-red-500 shadow-wire p-1.5 bg-background ">
           <img
             src={src}
             alt={alt || "Illustration"}
-            className="max-w-full max-h-[500px] w-auto h-auto block"
+            className="max-w-sm w-full h-30 object-contain"
           />
         </div>
         {caption && (
@@ -207,7 +209,7 @@ export const ImageComponentEditor = ({ mdastNode }: JsxEditorProps) => {
       formData.append("file", file);
       formData.append("folderName", "tutorial-images");
       formData.append("fileName", alt || file.name);
-      const response = await fetch(`https://vercel-nest-gql-lms.vercel.app/files/uploadFileVercelBlob`, { method: "POST", body: formData });
+      const response = await fetch(`https://root-lms-api.vercel.app/files/uploadFileVercelBlob`, { method: "POST", body: formData });
       if (!response.ok) throw new Error("Upload failed");
       const uploadedFile = await response.json();
       setSrc(uploadedFile.url);
@@ -217,7 +219,7 @@ export const ImageComponentEditor = ({ mdastNode }: JsxEditorProps) => {
   };
 
   return (
-    <>
+    <div className="relative h-70">
       {showBrowser && <ImageBrowseModal onSelect={(url, name) => { setSrc(url); if (!alt) setAlt(name); }} onClose={() => setShowBrowser(false)} />}
 
       <div className="bg-surface border-2 border-ink p-6 flex flex-col gap-6 shadow-wire my-4 font-sans text-ink">
@@ -262,7 +264,7 @@ export const ImageComponentEditor = ({ mdastNode }: JsxEditorProps) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

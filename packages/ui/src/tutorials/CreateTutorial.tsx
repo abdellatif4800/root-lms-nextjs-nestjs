@@ -30,13 +30,13 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
   });
 
   const [tutorialDetailes, setTutorialDetails] = useState({
-    tutorialName: tutorialData?.tutorialName,
+    tutorialName: tutorialData?.tutorialName ?? "",
     author: user?.sub,
-    category: tutorialData?.category,
-    description: tutorialData?.description,
-    level: tutorialData?.level,
-    thumbnail: tutorialData?.thumbnail,
-    publish: tutorialData?.publish,
+    category: tutorialData?.category ?? "",
+    description: tutorialData?.description ?? "",
+    level: tutorialData?.level ?? "",
+    thumbnail: tutorialData?.thumbnail ?? "",
+    publish: tutorialData?.publish ?? false,
   });
 
   const [units, setUnits] = useState<
@@ -151,16 +151,17 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("bucketName", "tutorial-images");
+      formData.append("folderName", "tutorial-images");
       formData.append("fileName", file.name);
 
       const response = await fetch(
-        `https://root-lms-api.vercel.app/files/uploadFile`,
+        'https://root-lms-api.vercel.app/files/uploadFileVercelBlob',
         {
           method: "POST",
           body: formData,
         }
       );
+
 
       if (!response.ok) {
         throw new Error("Upload failed");
@@ -347,7 +348,7 @@ export function CreateTutorialPage({ tutorialId }: { tutorialId?: string }) {
                   onChange={handleTutorialDetailsChange}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
                   <InputField
                     type="text"
                     name="category"
